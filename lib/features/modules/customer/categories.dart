@@ -1,9 +1,10 @@
 
 import 'package:elegantia_art/core/color_constants/color_constant.dart';
 import 'package:elegantia_art/features/login_signup/login.dart';
+import 'package:elegantia_art/features/modules/customer/catelog_1.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:flutter/material.dart';
-
+String c="";
 class CategoryList extends StatefulWidget {
   const CategoryList({super.key});
 
@@ -12,6 +13,13 @@ class CategoryList extends StatefulWidget {
 }
 
 class _CategoryListState extends State<CategoryList> {
+  List categories=[
+    "Washi",
+    "Ring Album",
+    "Polaroids",
+    "Hampers"
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,14 +53,24 @@ class _CategoryListState extends State<CategoryList> {
             children: [
               Expanded(
                 child: ListView.builder(itemBuilder: (context, index) {
-                  return Card(
-                    color: ColorConstant.secondaryColor.withOpacity(0.7),
-                    child: ListTile(
-                      title: Text("HEllo"),
+                  return InkWell(
+                    onTap: () {
+                      c=categories[index];
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => Catelog1(),));
+                      setState(() {
+
+                      });
+                    },
+                    child: Card(
+                      color: ColorConstant.secondaryColor.withOpacity(0.7),
+                      child: ListTile(
+                        title: Text(categories[index],),
+                      ),
                     ),
                   );
                 } ,
-                    itemCount: 15),
+                    itemCount: categories.length
+                ),
               ),
 
             ],

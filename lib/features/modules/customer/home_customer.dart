@@ -3,11 +3,13 @@ import 'package:elegantia_art/components/custom_drawer.dart';
 import 'package:elegantia_art/core/color_constants/color_constant.dart';
 import 'package:elegantia_art/core/image_constants/image_constant.dart';
 import 'package:elegantia_art/features/modules/customer/all_trending.dart';
+import 'package:elegantia_art/features/modules/customer/cart_c.dart';
 import 'package:elegantia_art/features/modules/customer/categories.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:search_app_bar_page/search_app_bar_page.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -92,7 +94,6 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           InkWell(
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(),));
                               setState(() {
 
                               });
@@ -106,9 +107,8 @@ class _HomePageState extends State<HomePage> {
                           SizedBox(width: width*0.03,),
                           InkWell(
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(),));
                             setState(() {
-
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => CartCustomer(),));
                             });
                           },
                             child: CircleAvatar(
@@ -164,7 +164,7 @@ class _HomePageState extends State<HomePage> {
                                 );
                               },
                               options: CarouselOptions(
-        
+
                                 viewportFraction: 1,
                                 autoPlay: true,
                                 height: height*0.3,
@@ -201,7 +201,7 @@ class _HomePageState extends State<HomePage> {
                         onTap: () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => CategoryList(),));
                           setState(() {
-                            
+
                           });
                         },
                         child: Text("See all",
@@ -340,13 +340,13 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: height*0.01,),
                   Container(
                     padding: EdgeInsets.all(width*0.005),
-                    height: height*0.65,
+
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(width*0.05),
                     ),
                     child: GridView.builder(
                       shrinkWrap: true,
-                      scrollDirection: Axis.vertical,
+                      physics: NeverScrollableScrollPhysics(),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                         childAspectRatio: 0.9

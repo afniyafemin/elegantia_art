@@ -2,6 +2,7 @@
 import 'package:elegantia_art/core/color_constants/color_constant.dart';
 import 'package:elegantia_art/features/login_signup/login.dart';
 import 'package:elegantia_art/features/modules/customer/99%20mall.dart';
+import 'package:elegantia_art/features/modules/customer/categories.dart';
 import 'package:elegantia_art/features/modules/customer/product_details.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,6 @@ class Catelog1 extends StatefulWidget {
   @override
   State<Catelog1> createState() => _Catelog1State();
 }
-List journal_stickers_category = ["Washi", "Paper", "Tapes","sdjf","sdjkf","fhfh","egfsdh"];
 bool lg = true;
 List p_names=[
   "Ring album",
@@ -65,7 +65,7 @@ class _Catelog1State extends State<Catelog1> {
           ),
         ],
         title: Text(
-          "JOURNALS STICKERS",
+          "$c",
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.w600,
@@ -77,37 +77,6 @@ class _Catelog1State extends State<Catelog1> {
           shrinkWrap: true,
           physics: BouncingScrollPhysics(),
           children: [
-            Padding(
-              padding:  EdgeInsets.only(left: width*0.03,right: width*0.03),
-              child: Container(
-                height: height * 0.03,
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Container(
-                      height: height * 0.03,
-                      width: width * 0.2,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(width * 0.05),
-                        color: Colors.black
-                      ),
-                      child: Center(
-                        child: Text(journal_stickers_category[index],style: TextStyle(
-                          color: Colors.white
-                        ),),
-                      ),
-                    );
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    return SizedBox(
-                      width: width * 0.03,
-                    );
-                  },
-                  itemCount: journal_stickers_category.length,
-                ),
-              ),
-            ),
             SizedBox(height: height*0.02,),
             Padding(
               padding: EdgeInsets.only(left: width*0.03,right: width*0.03),
