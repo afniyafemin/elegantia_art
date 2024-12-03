@@ -115,7 +115,6 @@ class _LaHomepageState extends State<LaHomepage> {
                                   Text("05")],
                                 )
                               ],
-
                             )
                           ],
                         ),

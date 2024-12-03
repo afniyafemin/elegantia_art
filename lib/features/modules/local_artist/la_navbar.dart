@@ -1,8 +1,13 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:elegantia_art/core/color_constants/color_constant.dart';
+import 'package:elegantia_art/features/modules/local_artist/chart_list_page.dart';
+import 'package:elegantia_art/features/modules/local_artist/job_portal.dart';
+import 'package:elegantia_art/features/modules/local_artist/la_homepage.dart';
+import 'package:elegantia_art/features/modules/local_artist/message_page.dart';
+import 'package:elegantia_art/features/modules/local_artist/profile_page.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 
 class LocalArtistNavbar extends StatefulWidget {
   const LocalArtistNavbar({super.key});
@@ -12,13 +17,12 @@ class LocalArtistNavbar extends StatefulWidget {
 }
 
 class _LocalArtistNavbarState extends State<LocalArtistNavbar> {
-   int currentIndex=0;
+  int currentIndex=0;
   List pages=[
+    JobPortal(),
     Container(),
-    Container(),
-    Container(),
-    Container(),
-    Container(),
+    ChartListPage(),
+    MessagePage(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -39,7 +43,6 @@ class _LocalArtistNavbarState extends State<LocalArtistNavbar> {
           Icon(Icons.category_outlined),
           Icon(Icons.area_chart),
           Icon(Icons.message),
-          Icon(Icons.person),
         ],
       ),
     );
