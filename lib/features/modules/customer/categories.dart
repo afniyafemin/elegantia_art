@@ -2,6 +2,7 @@
 import 'package:elegantia_art/core/color_constants/color_constant.dart';
 import 'package:elegantia_art/features/login_signup/login.dart';
 import 'package:elegantia_art/features/modules/customer/catelog_1.dart';
+import 'package:elegantia_art/features/modules/customer/catelogs.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:flutter/material.dart';
 String c="";
@@ -14,10 +15,11 @@ class CategoryList extends StatefulWidget {
 
 class _CategoryListState extends State<CategoryList> {
   List categories=[
-    "Washi",
-    "Ring Album",
-    "Polaroids",
-    "Hampers"
+    "Paper Crafts",
+    "Resin Art",
+    "Digital Crafts",
+    "Mixed Media Crafts",
+    "Other Creative Ideas"
   ];
 
   @override
@@ -56,15 +58,57 @@ class _CategoryListState extends State<CategoryList> {
                   return InkWell(
                     onTap: () {
                       c=categories[index];
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => Catelog1(),));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => Catelogs(),));
                       setState(() {
 
                       });
                     },
-                    child: Card(
-                      color: ColorConstant.secondaryColor.withOpacity(0.7),
-                      child: ListTile(
-                        title: Text(categories[index],),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        height: height*0.2,
+                        width: width*0.9,
+                        decoration: BoxDecoration(
+                          color: ColorConstant.primaryColor.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(width*0.03),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: width*0.45,
+                              decoration: BoxDecoration(
+                                color: Colors.white24,
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(width*0.03),
+                                  bottomLeft:  Radius.circular(width*0.03)
+                                ),
+                                image: DecorationImage(
+                                    image: AssetImage(
+                                        "asset/images/Product 1.jpg"
+                                    ,),fit: BoxFit.cover
+                                )
+                              ),
+                            ),
+                            Text(categories[index],
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: width*0.03,
+                              color: ColorConstant.secondaryColor
+                            ),),
+                            SizedBox(width: 10,)
+                          ],
+                        ),
+                        // child: Card(
+                        //   color: ColorConstant.secondaryColor.withOpacity(0.7),
+                        //   child: ListTile(
+                        //     title: Text(categories[index],
+                        //       style: TextStyle(
+                        //         fontSize: 20,
+                        //       ),
+                        //       textAlign: TextAlign.center,),
+                        //   ),
+                        // ),
                       ),
                     ),
                   );
