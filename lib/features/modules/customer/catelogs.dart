@@ -40,45 +40,45 @@ class _CatelogsState extends State<Catelogs> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: ColorConstant.secondaryColor,
-        body: Column(children: [
-          Container(
-            
-            child: Stack(
-              children: <Widget>[
-                Container(
-                  height: height * 0.3,
-                  width: width*1,
-                  color: ColorConstant.primaryColor,
-                  child: Icon(Icons.sort_outlined,color: ColorConstant.secondaryColor,),
-                ),
-               Positioned(
-                   top: 20.0,
-                   left: 0.0,
-                   right: 0.0,
-                   child: Container(
-                 height: height*0.7,
-                 child: Column(
-                   children: [Expanded(
-                       child:ListView.builder(itemCount: products.length,
-                           shrinkWrap: true,
-                           physics: BouncingScrollPhysics(),
-                           itemBuilder: (context,index){
-                         return Container(
-                           height: height*0.2,
-                           width: width*0.8,
-                           decoration: BoxDecoration(
-                             color: ColorConstant.primaryColor,
-                             borderRadius: BorderRadius.all(Radius.circular(20))
-                           ),
-                         );
-                           })
-                   )],
-                 ),
-               ))
-              ],
-            ),
+      backgroundColor: ColorConstant.secondaryColor,
+      body: Column(children: [
+        Container(
+          child: Stack(
+            children: <Widget>[
+              Container(
+                height: height * 0.3,
+                width: width*1,
+                color: ColorConstant.primaryColor,
+                child: Icon(Icons.sort_outlined,color: ColorConstant.secondaryColor,),
+              ),
+             Positioned(
+                 top: 20.0,
+                 left: 0.0,
+                 right: 0.0,
+                 child: Container(
+               height: height*0.7,
+               child: Column(
+                 children: [Expanded(
+                     child:ListView.builder(itemCount: products.length,
+                         shrinkWrap: true,
+                         physics: BouncingScrollPhysics(),
+                         itemBuilder: (context,index){
+                       return Container(
+                         height: height*0.2,
+                         width: width*0.8,
+                         decoration: BoxDecoration(
+                           color: ColorConstant.primaryColor,
+                           borderRadius: BorderRadius.all(Radius.circular(20))
+                         ),
+                       );
+                         })
+                 )],
+               ),
+             ))
+            ],
           ),
-        ]));
+        ),
+      ])
+    );
   }
 }

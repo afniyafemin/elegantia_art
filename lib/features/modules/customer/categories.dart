@@ -3,6 +3,7 @@ import 'package:elegantia_art/core/color_constants/color_constant.dart';
 import 'package:elegantia_art/features/login_signup/login.dart';
 import 'package:elegantia_art/features/modules/customer/catelog_1.dart';
 import 'package:elegantia_art/features/modules/customer/catelogs.dart';
+import 'package:elegantia_art/features/modules/customer/catelogs_new_ui.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:flutter/material.dart';
 String c="";
@@ -58,7 +59,7 @@ class _CategoryListState extends State<CategoryList> {
                   return InkWell(
                     onTap: () {
                       c=categories[index];
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => Catelogs(),));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => CatelogsNewUi(),));
                       setState(() {
 
                       });
