@@ -3,6 +3,7 @@ import 'package:elegantia_art/core/color_constants/color_constant.dart';
 import 'package:elegantia_art/features/modules/local_artist/job_category.dart';
 import 'package:elegantia_art/features/modules/local_artist/job_portal.dart';
 import 'package:elegantia_art/features/modules/local_artist/message_page.dart';
+import 'package:elegantia_art/features/modules/local_artist/my_jobs_list/my_jobs.dart';
 import 'package:elegantia_art/features/modules/local_artist/portfolio_page.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,8 +20,9 @@ class _LocalArtistNavbarState extends State<LocalArtistNavbar> {
   int currentIndex=0;
   List pages=[
     JobPortal(),
-    PortfolioPage(),
     JobCategoryPage(),
+    PortfolioPage(),
+    MyJobs(),
     MessagePage(),
   ];
   @override
@@ -42,7 +44,8 @@ class _LocalArtistNavbarState extends State<LocalArtistNavbar> {
         items: [
           Icon(Icons.home,color: ColorConstant.secondaryColor),
           Icon(Icons.category_outlined,color: ColorConstant.secondaryColor),
-          Icon(Icons.work,color: ColorConstant.secondaryColor),
+          Icon(Icons.credit_score,color: ColorConstant.secondaryColor),
+          Icon(Icons.list_outlined,color: ColorConstant.secondaryColor),
           Icon(Icons.message,color: ColorConstant.secondaryColor),
         ],
       ),
