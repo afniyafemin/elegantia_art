@@ -3,6 +3,7 @@ import 'package:elegantia_art/core/color_constants/color_constant.dart';
 import 'package:elegantia_art/core/image_constants/image_constant.dart';
 import 'package:elegantia_art/features/login_signup/login.dart';
 import 'package:elegantia_art/features/modules/customer/customer_navbar.dart';
+import 'package:elegantia_art/features/modules/local_artist/la_navbar.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:flutter/material.dart';
 
@@ -54,7 +55,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       onChanged: (value) {
                         toggleSwitch(value);
                         if(isSwitched){
-                          // Navigator.push(context, MaterialPageRoute(builder: (context)=> LocalArtistBottomNavigationPage()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> LocalArtistNavbar()));
                         }
                         else{
                           Navigator.push(context, MaterialPageRoute(builder: (context)=> CustomerNavbar()));

@@ -1,6 +1,6 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:elegantia_art/features/modules/customer/customer_navbar.dart';
-import 'package:elegantia_art/features/modules/local_artist/chart_list_page.dart';
+import 'package:elegantia_art/features/modules/local_artist/job_category.dart';
 import 'package:elegantia_art/features/modules/local_artist/la_homepage.dart';
 import 'package:elegantia_art/features/modules/local_artist/la_navbar.dart';
 import 'package:elegantia_art/features/modules/local_artist/message_page.dart';

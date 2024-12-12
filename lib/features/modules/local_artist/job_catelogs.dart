@@ -1,34 +1,34 @@
 import 'package:elegantia_art/core/color_constants/color_constant.dart';
-import 'package:elegantia_art/features/modules/customer/categories.dart';
-import 'package:elegantia_art/features/modules/customer/product_details.dart';
+import 'package:elegantia_art/features/modules/local_artist/job_category.dart';
+import 'package:elegantia_art/features/modules/local_artist/job_detail.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:flutter/material.dart';
 
-class CatelogsNewUi extends StatefulWidget {
-  const CatelogsNewUi({super.key});
+class JobCatelogs extends StatefulWidget {
+  const JobCatelogs({super.key});
 
   @override
-  State<CatelogsNewUi> createState() => _CatelogsNewUiState();
+  State<JobCatelogs> createState() => _JobCatelogsState();
 }
 
 bool lg = true;
 List p_names = ["Ring album", "Journals", "Resin", "Charm", "Stamps"];
 List<Map> products = [
-  {"name": "product 1", "price": "Rs"},
-  {"name": "product 2", "price": "Rs"},
-  {"name": "product 3", "price": "Rs"},
-  {"name": "product 4", "price": "Rs"},
-  {"name": "product 5", "price": "Rs"},
-  {"name": "product 6", "price": "Rs"},
-  {"name": "product 7", "price": "Rs"},
-  {"name": "product 8", "price": "Rs"},
-  {"name": "product 9", "price": "Rs"},
-  {"name": "product 10", "price": "Rs"},
-  {"name": "product 11", "price": "Rs"},
-  {"name": "product 12", "price": "Rs"},
-  {"name": "product 13", "price": "Rs"},
-  {"name": "product 14", "price": "Rs"},
-  {"name": "product 15", "price": "Rs"},
+  {"name": "Job 1", "price": "Rs"},
+  {"name": "Job 2", "price": "Rs"},
+  {"name": "Job 3", "price": "Rs"},
+  {"name": "Job 4", "price": "Rs"},
+  {"name": "Job 5", "price": "Rs"},
+  {"name": "Job 6", "price": "Rs"},
+  {"name": "Job 7", "price": "Rs"},
+  {"name": "Job 8", "price": "Rs"},
+  {"name": "Job 9", "price": "Rs"},
+  {"name": "Job 10", "price": "Rs"},
+  {"name": "Job 11", "price": "Rs"},
+  {"name": "Job 12", "price": "Rs"},
+  {"name": "Job 13", "price": "Rs"},
+  {"name": "Job 14", "price": "Rs"},
+  {"name": "Job 15", "price": "Rs"},
 ];
 List sort = [
   "Popular",
@@ -38,7 +38,7 @@ List sort = [
   "Price: High to Low"
 ];
 
-class _CatelogsNewUiState extends State<CatelogsNewUi> {
+class _JobCatelogsState extends State<JobCatelogs> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +64,7 @@ class _CatelogsNewUiState extends State<CatelogsNewUi> {
                         onTap: (){
                           Navigator.pop(context);
                         },
-                        child: Text("$c",
+                        child: Text("$j",
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
                           fontSize: height*0.04
@@ -198,7 +198,7 @@ class _CatelogsNewUiState extends State<CatelogsNewUi> {
                   child: InkWell(
                     onTap: (){
                       setState(() {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=> ProductInfo()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> JobInfo()));
                       });
                     },
                     child: Container(

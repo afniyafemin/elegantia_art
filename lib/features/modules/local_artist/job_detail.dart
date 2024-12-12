@@ -10,14 +10,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 
-class ProductInfo extends StatefulWidget {
-  const ProductInfo({super.key});
+class JobInfo extends StatefulWidget {
+  const JobInfo({super.key});
 
   @override
-  State<ProductInfo> createState() => _ProductInfoState();
+  State<JobInfo> createState() => _JobInfoState();
 }
 
-class _ProductInfoState extends State<ProductInfo> {
+class _JobInfoState extends State<JobInfo> {
   int count=0;
   @override
   Widget build(BuildContext context) {
@@ -59,7 +59,9 @@ class _ProductInfoState extends State<ProductInfo> {
                       //realpart ,product details
                       child: Column(
                         children: [
-
+                          Container(
+                            child: Text("Send Portfolio"),
+                          )
                         ],
                       )
                     ),

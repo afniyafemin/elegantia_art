@@ -1,8 +1,4 @@
-import 'package:elegantia_art/core/color_constants/color_constant.dart';
-import 'package:elegantia_art/features/login_signup/signup.dart';
-import 'package:elegantia_art/features/modules/customer/catelogs_new_ui.dart';
-import 'package:elegantia_art/features/modules/customer/customer_navbar.dart';
-import 'package:elegantia_art/features/modules/customer/product_details.dart';
+
 import 'package:elegantia_art/features/modules/module.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +18,7 @@ class MyApp extends StatelessWidget {
     width=MediaQuery.of(context).size.width;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: CatelogsNewUi(),
+      home: ModuleDivision(),
     );
   }
 }

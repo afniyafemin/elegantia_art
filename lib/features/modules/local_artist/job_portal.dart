@@ -8,7 +8,7 @@ import 'package:elegantia_art/main.dart';
 import 'package:flutter/material.dart';
 
 class JobPortal extends StatefulWidget {
-  const JobPortal({super.key});
+  const  JobPortal({super.key});
 
   @override
   State<JobPortal> createState() => _JobPortalState();
@@ -98,97 +98,103 @@ class _JobPortalState extends State<JobPortal> {
           )
         ],
       ),
-      body: Padding(
-        padding:EdgeInsets.all(width*0.03),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Featured Jobs",
-                  style: TextStyle(
-                      fontSize: width*0.04,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w700
-                  ),
-                ),
-                Text("see all",
-                  style: TextStyle(
-                      fontSize: width*0.03,
-                    color: Colors.black,
-                  ),
-                )
-              ],
-            ),
-            CarouselSlider.builder(
-              itemCount: 4,
-              itemBuilder: (BuildContext context, int index, int realIndex) {
-                return Stack(
-                    children: [
-                      Container(
-                        height: height*0.3,
-                        width: width*0.88,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(width*0.03),
-                            color: ColorConstant.primaryColor,
-                        ),
-                      ),
-                    ]
-                );
-              },
-              options: CarouselOptions(
-                viewportFraction: 1,
-                autoPlay: true,
-                height: height*0.3,
-                autoPlayAnimationDuration: Duration(
-                    seconds: 4
-                ),
-                onPageChanged: (index, reason) {
-                  setState(() {
-                    selectIndex=index;
-                  });
-                },
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Recommended Jobs",
-                  style: TextStyle(
-                      fontSize: width*0.04,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding:EdgeInsets.all(width*0.03),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Featured Jobs",
+                    style: TextStyle(
+                        fontSize: width*0.04,
                       color: Colors.black,
                       fontWeight: FontWeight.w700
+                    ),
                   ),
+                  Text("see all",
+                    style: TextStyle(
+                        fontSize: width*0.03,
+                      color: Colors.black,
+                    ),
+                  )
+                ],
+              ),
+              CarouselSlider.builder(
+                itemCount: 4,
+                itemBuilder: (BuildContext context, int index, int realIndex) {
+                  return Stack(
+                      children: [
+                        Container(
+                          height: height*0.3,
+                          width: width*0.88,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(width*0.03),
+                              color: ColorConstant.primaryColor,
+                          ),
+                        ),
+                      ]
+                  );
+                },
+                options: CarouselOptions(
+                  viewportFraction: 1,
+                  autoPlay: true,
+                  height: height*0.3,
+                  autoPlayAnimationDuration: Duration(
+                      seconds: 4
+                  ),
+                  onPageChanged: (index, reason) {
+                    setState(() {
+                      selectIndex=index;
+                    });
+                  },
                 ),
-                Text("see all",
-                  style: TextStyle(
-                    fontSize: width*0.03,
-                    color: Colors.black,
-                  ),
-                )
-              ],
-            ),
-            Container(
-              height: height*0.2,
-              width: width*0.9,
-              child: Expanded(
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Recommended Jobs",
+                      style: TextStyle(
+                          fontSize: width*0.04,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w700
+                      ),
+                    ),
+                    Text("see all",
+                      style: TextStyle(
+                        fontSize: width*0.03,
+                        color: Colors.black,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                height: height*0.5,
+                width: width*0.9,
                 child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
+                    physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       return Container(
                         height: height*0.15,
                         width: width*0.3,
-                        color: ColorConstant.primaryColor,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(width*0.03),
+                          color: ColorConstant.primaryColor,
+                        ),
                       );
                     },
                     separatorBuilder: (context, index) {
-                      return SizedBox(width: width*0.03,);
+                      return SizedBox(height: height*0.01,);
                     },
                     itemCount: 5
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

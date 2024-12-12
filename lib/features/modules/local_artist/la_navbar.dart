@@ -1,10 +1,9 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:elegantia_art/core/color_constants/color_constant.dart';
-import 'package:elegantia_art/features/modules/local_artist/chart_list_page.dart';
+import 'package:elegantia_art/features/modules/local_artist/job_category.dart';
 import 'package:elegantia_art/features/modules/local_artist/job_portal.dart';
-import 'package:elegantia_art/features/modules/local_artist/la_homepage.dart';
 import 'package:elegantia_art/features/modules/local_artist/message_page.dart';
-import 'package:elegantia_art/features/modules/local_artist/profile_page.dart';
+import 'package:elegantia_art/features/modules/local_artist/portfolio_page.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,8 +19,8 @@ class _LocalArtistNavbarState extends State<LocalArtistNavbar> {
   int currentIndex=0;
   List pages=[
     JobPortal(),
-    Container(),
-    ChartListPage(),
+    PortfolioPage(),
+    JobCategoryPage(),
     MessagePage(),
   ];
   @override
@@ -36,13 +35,15 @@ class _LocalArtistNavbarState extends State<LocalArtistNavbar> {
 
           });
         },
-        backgroundColor: ColorConstant.primaryColor,
+        backgroundColor: ColorConstant.secondaryColor,
         height: height*0.075,
+        animationDuration: Duration(milliseconds: 300),
+        color: ColorConstant.primaryColor,
         items: [
-          Icon(Icons.home),
-          Icon(Icons.category_outlined),
-          Icon(Icons.area_chart),
-          Icon(Icons.message),
+          Icon(Icons.home,color: ColorConstant.secondaryColor),
+          Icon(Icons.category_outlined,color: ColorConstant.secondaryColor),
+          Icon(Icons.work,color: ColorConstant.secondaryColor),
+          Icon(Icons.message,color: ColorConstant.secondaryColor),
         ],
       ),
     );
