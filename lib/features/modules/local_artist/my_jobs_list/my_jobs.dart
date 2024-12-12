@@ -16,25 +16,36 @@ class _MyJobsState extends State<MyJobs> {
   Widget build(BuildContext context) {
     return DefaultTabController(length: 2,
         child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: ColorConstant.secondaryColor,
-            title: Text("My Jobs"),
+          appBar: AppBar(automaticallyImplyLeading: false,
+            backgroundColor: ColorConstant.primaryColor,
+            title: Text("My Jobs",
+              style: TextStyle(
+            fontWeight: FontWeight.bold,
+                color: ColorConstant.secondaryColor
+            ),),
             centerTitle: true,
             bottom: TabBar(
+//              indicatorSize: height*0.02,
               indicatorColor: ColorConstant.primaryColor,
                 tabs: [
-              Text("Requested",
-                style: TextStyle(
-                  color: ColorConstant.primaryColor,
-                  fontWeight: FontWeight.w700,
-                  fontSize: width*0.04
-                ),
-              ),
-              Text("Accepted",
-                style: TextStyle(
-                    color: ColorConstant.primaryColor,
+              Container(
+                height: height*0.04,
+                child: Text("Requested",
+                  style: TextStyle(
+                    color: ColorConstant.secondaryColor,
                     fontWeight: FontWeight.w700,
                     fontSize: width*0.04
+                  ),
+                ),
+              ),
+              Container(
+                height: height*0.04,
+                child: Text("Accepted",
+                  style: TextStyle(
+                      color: ColorConstant.secondaryColor,
+                      fontWeight: FontWeight.w700,
+                      fontSize: width*0.04
+                  ),
                 ),
               ),
             ]),

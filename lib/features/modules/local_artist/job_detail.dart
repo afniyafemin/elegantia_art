@@ -18,6 +18,29 @@ class JobInfo extends StatefulWidget {
 }
 
 class _JobInfoState extends State<JobInfo> {
+  // List<Map> portfolio =[
+  //   {
+  //     "job name" : "first job",
+  //     "deadline" : "15-12-2024"
+  //   },
+  //   {
+  //     "job name" : "second job",
+  //     "deadline" : "15-12-2024"
+  //   },
+  //   {
+  //     "job name" : "3rd job",
+  //     "deadline" : "15-12-2024"
+  //   },
+  //   {
+  //     "job name" : "4th job",
+  //     "deadline" : "15-12-2024"
+  //   },
+  //   {
+  //     "job name" : "5th job",
+  //     "deadline" : "15-12-2024"
+  //   },
+  //
+  // ];
   int count=0;
   @override
   Widget build(BuildContext context) {
@@ -60,6 +83,10 @@ class _JobInfoState extends State<JobInfo> {
                       child: Column(
                         children: [
                           Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(height*0.02),
+                              color: ColorConstant.primaryColor.withOpacity(0.5)
+                            ),
                             child: Text("Send Portfolio"),
                           )
                         ],
