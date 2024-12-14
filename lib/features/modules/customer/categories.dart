@@ -1,7 +1,5 @@
 
 import 'package:elegantia_art/core/color_constants/color_constant.dart';
-import 'package:elegantia_art/features/login_signup/login.dart';
-import 'package:elegantia_art/features/modules/customer/catelog_1.dart';
 import 'package:elegantia_art/features/modules/customer/catelogs_new_ui.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:flutter/material.dart';
@@ -27,12 +25,7 @@ class _CategoryListState extends State<CategoryList> {
     return Scaffold(
       backgroundColor: ColorConstant.secondaryColor,
       appBar: AppBar(
-        leading: GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
-          },
-            child: Icon(Icons.arrow_back_ios)
-        ),
+        automaticallyImplyLeading: false,
         backgroundColor: ColorConstant.primaryColor,
         title: Text("Categories",style: TextStyle(
           fontWeight: FontWeight.bold,

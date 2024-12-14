@@ -36,119 +36,119 @@ class _MallMallState extends State<MallMall> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstant.secondaryColor,
-      appBar: AppBar(
-        backgroundColor: ColorConstant.secondaryColor,
-        centerTitle: true,
-        title: Text(
-          "99 MALL",
-          style: TextStyle(
-              color: ColorConstant.primaryColor,
-              fontWeight: FontWeight.w800,
-              fontSize: width * 0.05),
-        ),
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.65,
+            Stack(children: [
+              Container(
+                height: height * 0.35,
+                width: width * 1,
+                decoration: BoxDecoration(
+                  color: ColorConstant.primaryColor,
+                  borderRadius: BorderRadius.only(
+                    bottomRight: Radius.circular(width * 0.35),
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        "99 mall", // Changed from $c to "99 mall"
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: height * 0.04,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              itemCount:8,
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  color: Colors.white,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Stack(
-                        children: [
-                          Container(
-                            height: height * 0.225,
-                            width: width * 0.35,
-                            decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(width * 0.03),
-                                image: DecorationImage(
-                                    image: AssetImage(
-                                        "asset/images/Product_1.jpg"),
-                                    fit: BoxFit.cover)),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                                left: width * 0.25, top: width * 0.3525),
-                            child: InkWell(
-                              onTap: () {
-                                setState(() {});
-                              },
-                              child: Container(
-                                height: height * 0.06,
-                                width: width * 0.12,
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: ColorConstant.primaryColor,
-                                        blurRadius: width * 0.03)
-                                  ],
-                                  borderRadius:
-                                      BorderRadius.circular(width * 0.2),
-                                  color: Colors.white,
-                                ),
-                                child: Icon(Icons.favorite_outline),
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.only(top: height * 0.25),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: ColorConstant.primaryColor.withOpacity(0.5),
+                          spreadRadius: 3,
+                          blurRadius: 200,
+                          offset: Offset(-5, 5),
+                        )
+                      ],
+                    ),
+                    height: height * 0.725,
+                    width: width * 0.9,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          bottom: 60), // Add padding to avoid overlap with bottom navigation bar
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.7,
+                        ),
+                        itemCount: products.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: ColorConstant.secondaryColor,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: ColorConstant.primaryColor
+                                        .withOpacity(0.1),
+                                    spreadRadius: 1,
+                                    blurRadius: 200,
+                                    offset: Offset(5, 5),
+                                  )
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  AspectRatio(
+                                    aspectRatio: 1,
+                                    child: Padding(
+                                        padding: EdgeInsets.all(width * 0.04),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                              image: AssetImage(
+                                                  "asset/images/Product_1.jpg"),
+                                              fit: BoxFit.cover,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                        )),
+                                  ),
+                                  Text(
+                                    products[index]["name"],
+                                    style: TextStyle(
+                                      color: ColorConstant.primaryColor,
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: height * 0.025,
+                                    ),
+                                  ),
+                                  Text(products[index]["price"]),
+                                ],
                               ),
                             ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
-                      Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.star,
-                                color: Colors.yellow,
-                                size: width * 0.075,
-                              ),
-                              Icon(
-                                Icons.star,
-                                color: Colors.yellow,
-                                size: width * 0.075,
-                              ),
-                              Icon(
-                                Icons.star,
-                                color: Colors.yellow,
-                                size: width * 0.075,
-                              ),
-                              Icon(
-                                Icons.star_outline,
-                                size: width * 0.075,
-                              ),
-                              Icon(
-                                Icons.star_outline,
-                                size: width * 0.075,
-                              ),
-                            ],
-                          ),
-                          Text(
-                            p_names[index],
-                            style: TextStyle(
-                                fontSize: width * 0.04,
-                                fontWeight: FontWeight.w700),
-                          ),
-                          Text(
-                            products[index]["price"],
-                            textAlign: TextAlign.center,
-                          )
-                        ],
-                      ),
-                    ],
+                    ),
                   ),
-                );
-              },
-            )
+                ),
+              ),
+            ]),
           ],
         ),
       ),
