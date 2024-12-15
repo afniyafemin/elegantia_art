@@ -92,7 +92,7 @@ class _PortfolioPageState extends State<PortfolioPage> {
                                   ),
                                   GestureDetector(
                                     onTap:(){
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => PortfolioTemplate(),));
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => PortfolioTemplate(workName: null, workDescription: null,),));
                                       setState(() {
 
                                       });
@@ -173,6 +173,7 @@ class _PortfolioPageState extends State<PortfolioPage> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(15)),
                                 content: Container(
+                                  height: height*0.8,
                                   width: width * 0.95,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -187,13 +188,116 @@ class _PortfolioPageState extends State<PortfolioPage> {
                                             )
                                             ),
                                       ),
-                                      Text("Project Name"),
+                                      Row(
+                                        children: [
+                                          Text("work name",
+                                            style: TextStyle(
+                                                color: ColorConstant.primaryColor.withOpacity(0.25)
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text("$workName"),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text("description",
+                                            style: TextStyle(
+                                                color: ColorConstant.primaryColor.withOpacity(0.25)
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            height: height*0.1,
+                                              width: width*0.6,
+                                              child: Text("$workDescription")
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text("more images of my work",
+                                            style: TextStyle(
+                                              color: ColorConstant.primaryColor.withOpacity(0.25)
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Container(
+                                        height: height*0.15,
+                                        width: width*0.8,
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: ListView.separated(
+                                                shrinkWrap: true,
+                                                  scrollDirection: Axis.horizontal,
+                                                  itemBuilder: (context, index) {
+                                                    return Container(
+                                                      height: height*0.15,
+                                                      width: width*0.3,
+                                                      color: ColorConstant.primaryColor,
+                                                    );
+                                                  },
+                                                separatorBuilder: (context, index) {
+                                                  return SizedBox(width: width*0.03,);
+                                                },
+                                                itemCount: 6,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                       Row(mainAxisAlignment: MainAxisAlignment.end,
                                         children: [
                                           GestureDetector(onTap: (){
                                             setState(() {
-                                              _images.removeAt(index);
-                                              Navigator.of(context).pop();
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return AlertDialog(
+                                                        backgroundColor: ColorConstant.secondaryColor,
+                                                        title: Text("Do you want to delete this portfolio ?"),
+                                                        actions: [
+                                                          GestureDetector(
+                                                            onTap:(){
+                                                              setState(() {
+                                                                _images.removeAt(index);
+                                                                Navigator.pop(context);
+                                                                Navigator.pop(context);
+                                                              });
+                                                            },
+                                                              child: Text("delete",
+                                                                style: TextStyle(
+                                                                  color: ColorConstant.primaryColor,
+                                                                  fontWeight: FontWeight.w700
+                                                                ),
+                                                              )
+                                                          ),
+                                                          GestureDetector(
+                                                            onTap:(){
+                                                              setState(() {
+                                                                Navigator.pop(context);
+                                                                Navigator.pop(context);
+                                                              });
+                                                            },
+                                                            child: Text("cancel",
+                                                              style: TextStyle(
+                                                                  color: ColorConstant.primaryColor,
+                                                                  fontWeight: FontWeight.w700
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
                                             });
                                           },
                                             child: Container(
@@ -209,14 +313,21 @@ class _PortfolioPageState extends State<PortfolioPage> {
                                           SizedBox(
                                             width: width*0.02,
                                           ),
-                                          Container(
-                                            height: height*0.05,
-                                            width: width*0.1,
-                                            decoration: BoxDecoration(
-                                                color: ColorConstant.primaryColor,
-                                                borderRadius: BorderRadius.circular(width*0.03)
+                                          GestureDetector(
+                                            onTap:(){
+                                              setState(() {
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) => PortfolioTemplate(workName: workName, workDescription: workDescription,),));
+                                              });
+                                            },
+                                            child: Container(
+                                              height: height*0.05,
+                                              width: width*0.1,
+                                              decoration: BoxDecoration(
+                                                  color: ColorConstant.primaryColor,
+                                                  borderRadius: BorderRadius.circular(width*0.03)
+                                              ),
+                                              child: Icon(Icons.edit,color: ColorConstant.secondaryColor,),
                                             ),
-                                            child: Icon(Icons.edit,color: ColorConstant.secondaryColor,),
                                           )
                                         ],
                                       )
