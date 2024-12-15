@@ -1,8 +1,10 @@
 
-import 'package:elegantia_art/features/modules/module.dart';
-import 'package:flutter/material.dart';
 
-import 'features/splash/splash.dart';
+
+import 'package:elegantia_art/users_module/modules/module.dart';
+import 'package:elegantia_art/users_module/splash/splash.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());

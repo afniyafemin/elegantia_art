@@ -1,11 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:elegantia_art/components/custom_drawer.dart';
-import 'package:elegantia_art/core/color_constants/color_constant.dart';
-import 'package:elegantia_art/core/image_constants/image_constant.dart';
-import 'package:elegantia_art/features/modules/customer/all_trending.dart';
-import 'package:elegantia_art/features/modules/customer/cart_c.dart';
-import 'package:elegantia_art/features/modules/customer/categories.dart';
+import 'package:elegantia_art/constants/color_constants/color_constant.dart';
+import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/users_module/modules/customer/all_trending.dart';
+import 'package:elegantia_art/users_module/modules/customer/cart_c.dart';
+import 'package:elegantia_art/users_module/modules/customer/categories.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';

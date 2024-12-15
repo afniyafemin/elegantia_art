@@ -1,10 +1,12 @@
-import 'package:elegantia_art/features/modules/module.dart';
+
+
+
+import 'package:elegantia_art/constants/color_constants/color_constant.dart';
+import 'package:elegantia_art/constants/image_constants/image_constant.dart';
+import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/users_module/modules/module.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import '../../../main.dart';
-import '../../core/color_constants/color_constant.dart';
-import '../../core/image_constants/image_constant.dart';
-
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});

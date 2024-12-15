@@ -1,13 +1,8 @@
 
-
-
-import 'package:elegantia_art/core/color_constants/color_constant.dart';
-import 'package:elegantia_art/features/modules/customer/catelog_1.dart';
-import 'package:elegantia_art/features/modules/customer/catelogs_new_ui.dart';
+import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 
 class ProductInfo extends StatefulWidget {

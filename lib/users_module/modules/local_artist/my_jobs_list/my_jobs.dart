@@ -1,7 +1,8 @@
-import 'package:elegantia_art/core/color_constants/color_constant.dart';
-import 'package:elegantia_art/features/modules/local_artist/my_jobs_list/Accepted_jobs.dart';
-import 'package:elegantia_art/features/modules/local_artist/my_jobs_list/requested_jobs.dart';
+
+import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/users_module/modules/local_artist/my_jobs_list/Accepted_jobs.dart';
+import 'package:elegantia_art/users_module/modules/local_artist/my_jobs_list/requested_jobs.dart';
 import 'package:flutter/material.dart';
 
 class MyJobs extends StatefulWidget {

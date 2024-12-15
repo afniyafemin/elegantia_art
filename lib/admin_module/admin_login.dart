@@ -1,35 +1,23 @@
-
-
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/users_module/login_signup/otp_login.dart';
-import 'package:elegantia_art/users_module/login_signup/signup.dart';
-import 'package:elegantia_art/users_module/modules/customer/customer_navbar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class Login extends StatefulWidget {
+class AdminLogin extends StatefulWidget {
+  const AdminLogin({super.key});
+
   @override
-  State<Login> createState() => _LoginState();
+  State<AdminLogin> createState() => _AdminLoginState();
 }
 
-bool pass = true;
+class _AdminLoginState extends State<AdminLogin> {
+  bool pass = true;
 
-class _LoginState extends State<Login> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-
-
-  // void signUserIn()async{
-  //   await FirebaseAuth.instance.signInWithEmailAndPassword(
-  //       email: emailController.text,
-  //       password: passwordController.text
-  //   );
-  //
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -157,8 +145,8 @@ class _LoginState extends State<Login> {
                           ),
                           InkWell(
                             onTap: () {
-                              if (_formKey.currentState!.validate()){
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerNavbar()));
+                              if (_formKey.currentState!.validate()) {
+                                // Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerNavbar()));
                               }
                             },
                             child: Container(
@@ -242,23 +230,23 @@ class _LoginState extends State<Login> {
                             "Don't have an accout ?",
                             style: TextStyle(color: ColorConstant.primaryColor),
                           ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SignUp(),
-                                  ));
-                              setState(() {});
-                            },
-                            child: Text(
-                              "Create New",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: width * 0.03,
-                                  color: ColorConstant.primaryColor),
-                            ),
-                          ),
+                          // InkWell(
+                          // onTap: () {
+                          // Navigator.push(
+                          // context,
+                          // MaterialPageRoute(
+                          // builder: (context) => SignUp(),
+                          // ));
+                          // setState(() {});
+                          // },
+                          // child: Text(
+                          // "Create New",
+                          // style: TextStyle(
+                          // fontWeight: FontWeight.w800,
+                          // fontSize: width * 0.03,
+                          // color: ColorConstant.primaryColor),
+                          // ),
+                          // ),
                         ],
                       ),
                     )

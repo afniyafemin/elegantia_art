@@ -1,7 +1,7 @@
-import 'package:elegantia_art/core/color_constants/color_constant.dart';
-import 'package:elegantia_art/features/modules/local_artist/job_category.dart';
-import 'package:elegantia_art/features/modules/local_artist/job_detail.dart';
+import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/users_module/modules/local_artist/job_category.dart';
+import 'package:elegantia_art/users_module/modules/local_artist/job_detail.dart';
 import 'package:flutter/material.dart';
 
 class JobCatelogs extends StatefulWidget {

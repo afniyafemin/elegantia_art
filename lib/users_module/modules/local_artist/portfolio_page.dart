@@ -1,6 +1,7 @@
-import 'package:elegantia_art/core/color_constants/color_constant.dart';
-import 'package:elegantia_art/core/image_constants/image_constant.dart';
-import 'package:elegantia_art/features/modules/local_artist/portfolio_template.dart';
+
+import 'package:elegantia_art/constants/color_constants/color_constant.dart';
+import 'package:elegantia_art/constants/image_constants/image_constant.dart';
+import 'package:elegantia_art/users_module/modules/local_artist/portfolio_template.dart';
 import 'package:flutter/material.dart';
 
 import '../../../main.dart';

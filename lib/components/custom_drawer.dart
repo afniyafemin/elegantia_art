@@ -1,10 +1,11 @@
 
-import 'package:elegantia_art/core/color_constants/color_constant.dart';
-import 'package:elegantia_art/core/image_constants/image_constant.dart';
-import 'package:elegantia_art/features/login_signup/login.dart';
-import 'package:elegantia_art/features/modules/customer/customer_navbar.dart';
-import 'package:elegantia_art/features/modules/local_artist/la_navbar.dart';
+
+import 'package:elegantia_art/constants/color_constants/color_constant.dart';
+import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/users_module/login_signup/login.dart';
+import 'package:elegantia_art/users_module/modules/customer/customer_navbar.dart';
+import 'package:elegantia_art/users_module/modules/local_artist/la_navbar.dart';
 import 'package:flutter/material.dart';
 
 class CustomDrawer extends StatefulWidget {

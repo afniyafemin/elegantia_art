@@ -1,7 +1,8 @@
-import 'package:elegantia_art/core/color_constants/color_constant.dart';
-import 'package:elegantia_art/core/image_constants/image_constant.dart';
-import 'package:elegantia_art/features/modules/local_artist/job_catelogs.dart';
+
+import 'package:elegantia_art/constants/color_constants/color_constant.dart';
+import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/users_module/modules/local_artist/job_catelogs.dart';
 import 'package:flutter/material.dart';
 String j="";
 

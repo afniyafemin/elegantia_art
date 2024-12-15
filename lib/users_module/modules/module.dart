@@ -1,15 +1,12 @@
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:elegantia_art/features/modules/customer/customer_navbar.dart';
-import 'package:elegantia_art/features/modules/local_artist/job_category.dart';
-import 'package:elegantia_art/features/modules/local_artist/la_homepage.dart';
-import 'package:elegantia_art/features/modules/local_artist/la_navbar.dart';
-import 'package:elegantia_art/features/modules/local_artist/message_page.dart';
-import 'package:elegantia_art/features/modules/local_artist/profile_page.dart';
-import 'package:flutter/material.dart';
 
-import '../../core/color_constants/color_constant.dart';
-import '../../core/image_constants/image_constant.dart';
-import '../../main.dart';
+
+import 'package:elegantia_art/constants/color_constants/color_constant.dart';
+import 'package:elegantia_art/constants/image_constants/image_constant.dart';
+import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/users_module/modules/customer/customer_navbar.dart';
+import 'package:elegantia_art/users_module/modules/local_artist/la_navbar.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class ModuleDivision extends StatefulWidget {
   const ModuleDivision({super.key});

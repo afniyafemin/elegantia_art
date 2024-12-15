@@ -1,7 +1,8 @@
-import 'package:elegantia_art/core/color_constants/color_constant.dart';
-import 'package:elegantia_art/features/modules/customer/categories.dart';
-import 'package:elegantia_art/features/modules/customer/product_details.dart';
+
+import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/users_module/modules/customer/categories.dart';
+import 'package:elegantia_art/users_module/modules/customer/product_details.dart';
 import 'package:flutter/material.dart';
 
 class CatelogsNewUi extends StatefulWidget {

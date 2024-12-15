@@ -1,8 +1,8 @@
-import 'package:elegantia_art/features/login_signup/login.dart';
-import 'package:elegantia_art/features/login_signup/signup.dart';
+
+import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/users_module/login_signup/login.dart';
 import 'package:flutter/material.dart';
-import '../../core/color_constants/color_constant.dart';
 
 class Splash extends StatefulWidget {
   const Splash({super.key});
