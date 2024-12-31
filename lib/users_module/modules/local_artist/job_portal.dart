@@ -1,9 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:elegantia_art/components/custom_drawer.dart';
-import 'package:elegantia_art/core/color_constants/color_constant.dart';
-import 'package:elegantia_art/core/image_constants/image_constant.dart';
 import 'package:flutter/material.dart';
 
+import '../../../constants/color_constants/color_constant.dart';
+import '../../../constants/image_constants/image_constant.dart';
 import '../../../main.dart';
 
 class JobPortal extends StatefulWidget {

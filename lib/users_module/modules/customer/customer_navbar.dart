@@ -4,6 +4,7 @@ import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/users_module/modules/customer/99%20mall.dart';
 import 'package:elegantia_art/users_module/modules/customer/categories.dart';
 import 'package:elegantia_art/users_module/modules/customer/home_customer.dart';
+import 'package:elegantia_art/users_module/modules/customer/pins.dart';
 import 'package:flutter/material.dart';
 
 class CustomerNavbar extends StatefulWidget {
@@ -19,14 +20,17 @@ class _CustomerNavbarState extends State<CustomerNavbar> {
     HomePage(),
     CategoryList(),
     MallMall(),
-    MallMall()
+    Pins()
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorConstant.primaryColor,
       body: pages[currentIndex],
       bottomNavigationBar: CurvedNavigationBar(
+        buttonBackgroundColor: ColorConstant.primaryColor,
+        color: ColorConstant.primaryColor,
         onTap: (index) {
           setState(() {
             currentIndex = index;
@@ -36,10 +40,10 @@ class _CustomerNavbarState extends State<CustomerNavbar> {
         backgroundColor: ColorConstant.secondaryColor,
         height: height * 0.075,
         items: [
-          Icon(Icons.home),
-          Icon(Icons.category_outlined),
-          Icon(Icons.local_mall_outlined),
-          Icon(Icons.favorite_outline_rounded),
+          Icon(Icons.home,color: ColorConstant.secondaryColor,),
+          Icon(Icons.category_outlined,color: ColorConstant.secondaryColor,),
+          Icon(Icons.local_mall_outlined,color: ColorConstant.secondaryColor,),
+          Icon(Icons.favorite_outline_rounded,color: ColorConstant.secondaryColor,),
         ],
       ),
     );

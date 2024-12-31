@@ -1,13 +1,20 @@
 
 
 
+import 'package:elegantia_art/auth/stream.dart';
+import 'package:elegantia_art/firebase_options.dart';
 import 'package:elegantia_art/users_module/modules/module.dart';
 import 'package:elegantia_art/users_module/splash/splash.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform
+  );
+  runApp(MyApp());
 }
 var height;
 var width;
@@ -20,7 +27,7 @@ class MyApp extends StatelessWidget {
     width=MediaQuery.of(context).size.width;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ModuleDivision(),
+      home: StreamPage(),
     );
   }
 }

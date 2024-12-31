@@ -8,13 +8,23 @@ import 'package:elegantia_art/users_module/modules/module.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../services/sign_up_method.dart';
+
 class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+  final VoidCallback showLoginPage;
+  const SignUp({super.key, required this.showLoginPage});
 
   @override
   State<SignUp> createState() => _SignUpState();
 }
 bool pass=true;
+
+final TextEditingController nameController = TextEditingController();
+final TextEditingController emailController = TextEditingController();
+final TextEditingController passwordController = TextEditingController();
+final TextEditingController confirmPasswordController = TextEditingController();
+final TextEditingController phoneController = TextEditingController();
+
 class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
@@ -66,6 +76,7 @@ class _SignUpState extends State<SignUp> {
                                 )
                               ),
                               child: TextFormField(
+                                controller: nameController,
                                 decoration: InputDecoration(
                                   suffixIcon: Icon(Icons.person,color: ColorConstant.primaryColor,size: height*0.02,),
                                     hintText: "Username",
@@ -93,6 +104,7 @@ class _SignUpState extends State<SignUp> {
                                   )
                               ),
                               child: TextFormField(
+                                controller: emailController,
                                 decoration: InputDecoration(
                                   suffixIcon: Icon(Icons.mail,color: ColorConstant.primaryColor,size: height*0.02,),
                                     hintText: "valid email",
@@ -120,6 +132,7 @@ class _SignUpState extends State<SignUp> {
                                   )
                               ),
                               child: TextFormField(
+                                controller: passwordController,
                                 obscureText: pass?true:false,
                                 decoration: InputDecoration(
                                   suffixIcon: InkWell(
@@ -155,6 +168,7 @@ class _SignUpState extends State<SignUp> {
                                   )
                               ),
                               child: TextFormField(
+                                controller: confirmPasswordController,
                                 decoration: InputDecoration(
                                     suffixIcon: InkWell(
                                         onTap: () {
@@ -189,6 +203,12 @@ class _SignUpState extends State<SignUp> {
                                   )
                               ),
                               child: TextFormField(
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return "phone number required";
+                                  }
+                                },
+                                controller: phoneController,
                                 decoration: InputDecoration(
                                   suffixIcon: Icon(Icons.phone,color: ColorConstant.primaryColor,size: height*0.02,),
                                     hintText: "phone no",
@@ -203,12 +223,23 @@ class _SignUpState extends State<SignUp> {
                             ),
                           ],
                         ),
-                        InkWell(
-                          onTap: () {
-                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ModuleDivision(),));
+                        GestureDetector(
+                          onTap: () async {
                             setState(() {
 
                             });
+                            final userModel= await signUp(
+                                emailController.text,
+                                passwordController.text,
+                                nameController.text,
+                                phoneController.text
+                            );
+
+                            if (userModel != null) {
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ModuleDivision(),));
+                            }else{
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Signup Failed")));
+                            }
                           },
                           child: Container(
                             height: height*0.05,
@@ -237,13 +268,8 @@ class _SignUpState extends State<SignUp> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text("Already have an account ?"),
-                        InkWell(
-                          onTap: () {
-                            // Navigator.push(context, MaterialPageRoute(builder: (context) => Login(),));
-                            setState(() {
-
-                            });
-                          },
+                        GestureDetector(
+                          onTap: widget.showLoginPage,
                           child: Container(
                             height: height*0.03,
                             width: width*0.3,

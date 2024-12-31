@@ -9,7 +9,11 @@ import 'package:elegantia_art/users_module/modules/customer/customer_navbar.dart
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../services/sign_in_method.dart';
+
 class Login extends StatefulWidget {
+  final VoidCallback showRegisterPage;
+  const Login({super.key, required this.showRegisterPage});
   @override
   State<Login> createState() => _LoginState();
 }
@@ -156,10 +160,10 @@ class _LoginState extends State<Login> {
                             ),
                           ),
                           InkWell(
-                            onTap: () {
-                              if (_formKey.currentState!.validate()){
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerNavbar()));
-                              }
+                            onTap: (){
+                              setState(() {
+                                signIn(emailController.text, passwordController.text);
+                              });
                             },
                             child: Container(
                               height: height * 0.05,
@@ -232,34 +236,27 @@ class _LoginState extends State<Login> {
                         ],
                       ),
                     ),
-                    Container(
-                      height: height * 0.15,
-                      width: width * 0.75,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            "Don't have an accout ?",
-                            style: TextStyle(color: ColorConstant.primaryColor),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SignUp(),
-                                  ));
-                              setState(() {});
-                            },
-                            child: Text(
+                    GestureDetector(
+                      onTap: widget.showRegisterPage,
+                      child: Container(
+                        height: height * 0.15,
+                        width: width * 0.75,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              "Don't have an accout ?",
+                              style: TextStyle(color: ColorConstant.primaryColor),
+                            ),
+                            Text(
                               "Create New",
                               style: TextStyle(
                                   fontWeight: FontWeight.w800,
                                   fontSize: width * 0.03,
                                   color: ColorConstant.primaryColor),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     )
                   ],

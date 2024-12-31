@@ -1,7 +1,7 @@
-
-import 'package:elegantia_art/core/color_constants/color_constant.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:flutter/material.dart';
+
+import '../constants/color_constants/color_constant.dart';
 
 class CustomContainer extends StatelessWidget {
   final String title;

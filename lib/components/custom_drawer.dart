@@ -1,5 +1,6 @@
 
 
+import 'package:elegantia_art/auth/stream.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
@@ -7,6 +8,8 @@ import 'package:elegantia_art/users_module/login_signup/login.dart';
 import 'package:elegantia_art/users_module/modules/customer/customer_navbar.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/la_navbar.dart';
 import 'package:flutter/material.dart';
+
+import '../services/sign_out_method.dart';
 
 class CustomDrawer extends StatefulWidget {
 
@@ -80,9 +83,14 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
             //LogOut button
 
-            InkWell(
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> Login()));
+            GestureDetector(
+              onTap: () async {
+                await signOut(); // Call the signOut function
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => StreamPage()),
+                      (Route<dynamic> route) => false, // Remove all previous routes
+                );
               },
               child: Container(
                 height: height*0.05,

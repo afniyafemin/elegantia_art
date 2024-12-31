@@ -15,7 +15,7 @@ class _SplashState extends State<Splash> {
   void initState(){
     Future.delayed(
         Duration(seconds: 4)
-    ).then((value)=>Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => Login(),)));
+    ).then((value)=>Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => Login(showRegisterPage: () {  },),)));
   }
   @override
   Widget build(BuildContext context) {

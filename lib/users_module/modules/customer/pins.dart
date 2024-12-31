@@ -1,9 +1,9 @@
-
-
-import 'package:elegantia_art/core/color_constants/color_constant.dart';
 import 'package:elegantia_art/main.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../../constants/color_constants/color_constant.dart';
+import '../../../services/favorites_method.dart'; // Import your service
 
 class Pins extends StatefulWidget {
   const Pins({super.key});
@@ -13,30 +13,33 @@ class Pins extends StatefulWidget {
 }
 
 class _PinsState extends State<Pins> {
+  List<Map<String, dynamic>> favoriteProducts = []; // List to hold favorite products
+  final AddToFav _addToFav = AddToFav(); // Create an instance of your service
 
-  List p_names = [
-    "Ring album",
-    "Journals",
-    "Journals",
-    "Resin",
-    "Charm",
-    "Charm",
-    "Stamps",
-    "Stamps",
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fetchFavoriteProducts();
+  }
 
-  List<Map> products = [
-    {"name": "product 1", "price": "Rs"},
-    {"name": "product 2", "price": "Rs"},
-    {"name": "product 3", "price": "Rs"},
-    {"name": "product 4", "price": "Rs"},
-    {"name": "product 5", "price": "Rs"},
-    {"name": "product 6", "price": "Rs"},
-    {"name": "product 7", "price": "Rs"},
-    {"name": "product 8", "price": "Rs"},
-  ];
+  Future<void> _fetchFavoriteProducts() async {
+    final user = FirebaseAuth.instance.currentUser ;
+    if (user != null) {
+      final likedItemsCollection = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('favorites');
 
+      final snapshot = await likedItemsCollection.get();
+      setState(() {
+        favoriteProducts = snapshot.docs.map((doc) {
+          return doc.data() as Map<String, dynamic>;
+        }).toList();
+      });
+    }
+  }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstant.secondaryColor,
@@ -97,7 +100,7 @@ class _PinsState extends State<Pins> {
                           crossAxisCount: 2,
                           childAspectRatio: 0.7,
                         ),
-                        itemCount: products.length,
+                        itemCount: favoriteProducts.length,
                         itemBuilder: (BuildContext context, int index) {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -107,8 +110,7 @@ class _PinsState extends State<Pins> {
                                 color: ColorConstant.secondaryColor,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: ColorConstant.primaryColor
-                                        .withOpacity(0.1),
+                                    color: ColorConstant.primaryColor.withOpacity(0.1),
                                     spreadRadius: 1,
                                     blurRadius: 200,
                                     offset: Offset(5, 5),
@@ -124,24 +126,22 @@ class _PinsState extends State<Pins> {
                                         child: Container(
                                           decoration: BoxDecoration(
                                             image: DecorationImage(
-                                              image: AssetImage(
-                                                  "asset/images/Product_1.jpg"),
+                                              image: AssetImage("asset/images/Product_1.jpg"),
                                               fit: BoxFit.cover,
                                             ),
-                                            borderRadius:
-                                            BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(12),
                                           ),
                                         )),
                                   ),
                                   Text(
-                                    products[index]["name"],
+                                    favoriteProducts[index]["name"] ?? 'Unknown Product',
                                     style: TextStyle(
                                       color: ColorConstant.primaryColor,
                                       fontWeight: FontWeight.w800,
                                       fontSize: height * 0.025,
                                     ),
                                   ),
-                                  Text(products[index]["price"]),
+                                  Text("₹${favoriteProducts[index]["price"].toString() ?? 'Price not available'}",)
                                 ],
                               ),
                             ),
