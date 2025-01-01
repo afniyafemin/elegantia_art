@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../../constants/color_constants/color_constant.dart';
+import '../../../main.dart';
 
 class MallMall extends StatefulWidget {
   const MallMall({super.key});
@@ -43,8 +44,6 @@ class _MallMallState extends State<MallMall> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: ColorConstant.secondaryColor,
