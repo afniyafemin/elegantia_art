@@ -49,6 +49,37 @@ class _CartCustomerState extends State<CartCustomer> {
     }
   }
 
+  Future<List<Map<String, dynamic>>> fetchAddresses(String userId) async {
+    // Check if userId is valid
+    if (userId.isEmpty) {
+      print('User  ID is empty.');
+      return [];
+    }
+
+    try {
+      // Fetch the addresses from Firestore
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('address')
+          .get();
+
+      // Convert each document to a Map<String, dynamic>
+      List<Map<String, dynamic>> addresses = snapshot.docs.map((doc) {
+        return doc.data() as Map<String, dynamic>;
+      }).toList();
+
+      // Optionally, you can log the number of addresses fetched
+      print('Fetched ${addresses.length} addresses for user ID: $userId');
+
+      return addresses;
+    } catch (e) {
+      // Log the error for debugging
+      print('Error fetching addresses for user ID $userId: $e');
+      return [];
+    }
+  }
+
   Future<void> _removeFromCart(String? productId) async {
     if (productId == null) {
       print('Product ID is null, cannot remove from cart.');
@@ -89,6 +120,8 @@ class _CartCustomerState extends State<CartCustomer> {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser ;
+
     return Stack(
       children: [
         Scaffold(
@@ -109,18 +142,38 @@ class _CartCustomerState extends State<CartCustomer> {
               children: [
                 Container(
                   padding: EdgeInsets.all(width * 0.05),
-                  height: height * 0.1,
+                  height: height * 0.2,
                   decoration: BoxDecoration(
                       color: ColorConstant.primaryColor.withOpacity(0.4),
                       borderRadius: BorderRadius.circular(width * 0.05)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        children: [
-                          Text("Deliver to : Username"),
-                          Text("Address")
-                        ],
+                      FutureBuilder<List<Map<String, dynamic>>>(
+                        future: fetchAddresses(user!.uid),
+                        builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(child: Text('Error: ${snapshot.error}'));
+                          } else {
+                            List<Map<String , dynamic>> addrs = snapshot.data! as List<Map<String, dynamic>>;
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("Deliver to : ${addrs[0]['name'] ?? ' aaa'}"),
+                                Text("Address  "),
+                                // Text("========"),
+                                Text( "${addrs[0]['post'] ?? ''}" ),
+                                Text( "${addrs[0]['pin'] ?? ''}" ),
+                                Text( "${addrs[0]['landmark'] ?? ''}" ),
+                                Text( "${addrs[0]['phone'] ?? ''}" ),
+
+
+                              ],
+                            );
+                          }
+                        },
                       ),
                       InkWell(
                         onTap: () {
@@ -136,8 +189,7 @@ class _CartCustomerState extends State<CartCustomer> {
                           width: width * 0.25,
                           decoration: BoxDecoration(
                               color: ColorConstant.primaryColor,
-                              borderRadius:
-                              BorderRadius.circular(width * 0.05)),
+                              borderRadius: BorderRadius.circular(width * 0.05)),
                           child: Center(
                             child: Text(
                               "Change",
@@ -179,8 +231,7 @@ class _CartCustomerState extends State<CartCustomer> {
                                   height: height * 0.2,
                                   width: width * 0.35,
                                   decoration: BoxDecoration(
-                                    borderRadius:
-                                    BorderRadius.circular(width * 0.03),
+                                    borderRadius: BorderRadius.circular(width * 0.03),
                                     image: DecorationImage(
                                       image: AssetImage(ImageConstant.product2),
                                       fit: BoxFit.fill,
@@ -188,17 +239,12 @@ class _CartCustomerState extends State<CartCustomer> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(
-                                      top: height * 0.12, left: width * 0.25),
+                                  padding: EdgeInsets.only(top: height * 0.12, left: width * 0.25),
                                   child: IconButton(
                                     onPressed: () => _toggleLike(item),
                                     icon: Icon(
-                                      item['isLiked']
-                                          ? Icons.favorite
-                                          : Icons.favorite_border,
-                                      color: item['isLiked']
-                                          ? Colors.red
-                                          : ColorConstant.primaryColor,
+                                      item['isLiked'] ? Icons.favorite : Icons.favorite_border,
+                                      color: item['isLiked'] ? Colors.red : ColorConstant.primaryColor,
                                     ),
                                   ),
                                 )
@@ -214,22 +260,20 @@ class _CartCustomerState extends State<CartCustomer> {
                                 Row(
                                   children: [
                                     GestureDetector(
-                                      onTap: (){
-                                        Navigator.push(context, MaterialPageRoute(builder: (context)=>BuyNowPage(product: item)));
-                                      }
-                                      ,child: Container(
+                                      onTap: () {
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => BuyNowPage(product: item)));
+                                      },
+                                      child: Container(
                                         height: height * 0.05,
                                         width: width * 0.275,
                                         decoration: BoxDecoration(
                                             color: ColorConstant.primaryColor,
-                                            borderRadius: BorderRadius.circular(
-                                                width * 0.03)),
+                                            borderRadius: BorderRadius.circular(width * 0.03)),
                                         child: Center(
                                           child: Text(
                                             "Buy Now",
                                             style: TextStyle(
-                                                color:
-                                                ColorConstant.secondaryColor,
+                                                color: ColorConstant.secondaryColor,
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: width * 0.03),
                                           ),
@@ -244,8 +288,7 @@ class _CartCustomerState extends State<CartCustomer> {
                                         width: width * 0.15,
                                         decoration: BoxDecoration(
                                           color: ColorConstant.primaryColor,
-                                          borderRadius: BorderRadius.circular(
-                                              width * 0.03),
+                                          borderRadius: BorderRadius.circular(width * 0.03),
                                         ),
                                         child: Center(
                                           child: Icon(

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/users_module/login_signup/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -13,38 +14,68 @@ class ChangeAddress extends StatefulWidget {
 }
 
 class _ChangeAddressState extends State<ChangeAddress> {
+  final nameController = TextEditingController();
+  final postController = TextEditingController();
+  final pinController = TextEditingController();
+  final landmarkController = TextEditingController();
+  final phoneController = TextEditingController();
 
-  final _formKey = GlobalKey<FormState>();
   String name = '';
   String post = '';
   String pin = '';
   String landmark = '';
   String phone = '';
 
+  Future<void> _loadUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      if (userDoc.exists) {
+        var data = userDoc.data() as Map<String, dynamic>;
+        setState(() {
+          nameController.text = data['name'];
+          postController.text = data['post'];
+          pinController.text = data['pin'];
+          landmarkController.text = data['landmark'];
+          phoneController.text = data['phone'];
+        });
+      }
+    }
+  }
+
+  final _formKey = GlobalKey<FormState>();
+
   Future<void> _saveAddress() async {
-  final user = FirebaseAuth.instance.currentUser ;
-  if (user != null) {
-  final addressCollection = FirebaseFirestore.instance
-      .collection('users')
-      .doc(user.uid)
-      .collection('address');
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final addressCollection = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('address');
 
-  await addressCollection.doc('currentAddress').set({
-  'name': name,
-  'post': post,
-  'pin': pin,
-  'landmark': landmark,
-  'phone': phone,
-  });
+      await addressCollection.doc('currentAddress').set({
+        'name': name,
+        'post': post,
+        'pin': pin,
+        'landmark': landmark,
+        'phone': phone,
+      });
 
-  ScaffoldMessenger.of(context).showSnackBar(
-  SnackBar(content: Text('Address saved successfully!')),
-  );
-  Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Address saved successfully!')),
+      );
+      Navigator.pop(context);
+    }
   }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData(); // Call the function to load user data on initState
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +88,8 @@ class _ChangeAddressState extends State<ChangeAddress> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                height: height*1,
-                width: width*1,
+                height: height * 1,
+                width: width * 1,
                 color: ColorConstant.primaryColor,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -76,7 +107,7 @@ class _ChangeAddressState extends State<ChangeAddress> {
                           Column(
                             children: [
                               TextFormField(
-                                onChanged: (value) => name = value,
+                                controller: nameController,
                                 decoration: InputDecoration(
                                   label: Text(
                                     'Name',
@@ -99,6 +130,7 @@ class _ChangeAddressState extends State<ChangeAddress> {
                                 height: height * 0.02,
                               ),
                               TextFormField(
+                                controller: postController,
                                 decoration: InputDecoration(
                                   label: Text(
                                     'Post',
@@ -121,6 +153,7 @@ class _ChangeAddressState extends State<ChangeAddress> {
                                 height: height * 0.02,
                               ),
                               TextFormField(
+                                controller: pinController,
                                 decoration: InputDecoration(
                                   label: Text(
                                     'Pin',
@@ -143,6 +176,7 @@ class _ChangeAddressState extends State<ChangeAddress> {
                                 height: height * 0.02,
                               ),
                               TextFormField(
+                                controller: landmarkController,
                                 decoration: InputDecoration(
                                   label: Text(
                                     'Any Landmark',
@@ -165,6 +199,7 @@ class _ChangeAddressState extends State<ChangeAddress> {
                                 height: height * 0.02,
                               ),
                               TextFormField(
+                                controller: phoneController,
                                 decoration: InputDecoration(
                                   label: Text(
                                     'Phone',
