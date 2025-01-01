@@ -14,9 +14,9 @@ class CartCustomer extends StatefulWidget {
   @override
   State<CartCustomer> createState() => _CartCustomerState();
 }
-
+List<Map<String, dynamic>> _cartItems = [];
 class _CartCustomerState extends State<CartCustomer> {
-  List<Map<String, dynamic>> _cartItems = [];
+
   double totalAmount = 0.0; // Variable to track total amount
   final AddToFav _addToFav = AddToFav(); // Create an instance of LikeService
 
@@ -99,7 +99,7 @@ class _CartCustomerState extends State<CartCustomer> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Item removed from cart successfully!'),
-            backgroundColor: Colors.green,
+            // backgroundColor: Colors.green,
           ),
         );
 
@@ -149,32 +149,35 @@ class _CartCustomerState extends State<CartCustomer> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      FutureBuilder<List<Map<String, dynamic>>>(
-                        future: fetchAddresses(user!.uid),
-                        builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
-                          } else if (snapshot.hasError) {
-                            return Center(child: Text('Error: ${snapshot.error}'));
-                          } else {
-                            List<Map<String , dynamic>> addrs = snapshot.data! as List<Map<String, dynamic>>;
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("Deliver to : ${addrs[0]['name'] ?? ' aaa'}"),
-                                Text("Address  "),
-                                // Text("========"),
-                                Text( "${addrs[0]['post'] ?? ''}" ),
-                                Text( "${addrs[0]['pin'] ?? ''}" ),
-                                Text( "${addrs[0]['landmark'] ?? ''}" ),
-                                Text( "${addrs[0]['phone'] ?? ''}" ),
-
-
-                              ],
-                            );
-                          }
-                        },
-                      ),
+                      // Check if user is not null before fetching addresses
+                      if (user != null)
+                        FutureBuilder<List<Map<String, dynamic>>>(
+                          future: fetchAddresses(user.uid),
+                          builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Center(child: Text('Error: ${snapshot.error}'));
+                            } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                              List<Map<String, dynamic>> addrs = snapshot.data!;
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Deliver to: ${addrs[0]['name'] ?? 'Unknown'}"),
+                                  Text("Address:"),
+                                  Text("${addrs[0]['post'] ?? ''}"),
+                                  Text("${addrs[0]['pin'] ?? ''}"),
+                                  Text("${addrs[0]['landmark'] ?? ''}"),
+                                  Text("${addrs[0]['phone'] ?? ''}"),
+                                ],
+                              );
+                            } else {
+                              return Text('No addresses found.');
+                            }
+                          },
+                        )
+                      else
+                        Text('User  not logged in.'),
                       InkWell(
                         onTap: () {
                           Navigator.push(
@@ -243,8 +246,8 @@ class _CartCustomerState extends State<CartCustomer> {
                                   child: IconButton(
                                     onPressed: () => _toggleLike(item),
                                     icon: Icon(
-                                      item['isLiked'] ? Icons.favorite : Icons.favorite_border,
-                                      color: item['isLiked'] ? Colors.red : ColorConstant.primaryColor,
+                                      item['isLiked'] == true ? Icons.favorite : Icons.favorite_border,
+                                      color: item['isLiked'] == true ? Colors.red : ColorConstant.primaryColor,
                                     ),
                                   ),
                                 )
@@ -351,4 +354,5 @@ class _CartCustomerState extends State<CartCustomer> {
       ],
     );
   }
+
 }

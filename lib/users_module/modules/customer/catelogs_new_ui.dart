@@ -185,123 +185,134 @@ class _CatelogsNewUiState extends State<CatelogsNewUi> {
                     ],
                   ),
                 ),
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.only(bottom: height * 0.35),
-              child: Container(
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: ColorConstant.primaryColor.withOpacity(0.5),
-                      spreadRadius: 3,
-                      blurRadius: 200,
-                      offset: Offset(-5, 5),
-                    )
-                  ],
-                ),
-                height: height * 0.725,
-                width: width * 0.9,
-                child: Column(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(
-                      child: isGridView
-                          ? GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2, // Adjust as needed
-                          childAspectRatio: 0.7,
+                    Padding(
+                      padding:  EdgeInsets.only(top: height*0.25),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: ColorConstant.primaryColor.withOpacity(0.5),
+                              spreadRadius: 3,
+                              blurRadius: 200,
+                              offset: Offset(-5, 5),
+                            )
+                          ],
                         ),
-                        itemCount: products.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final product = products[index];
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ProductDetails(product: product),
+                        height: height * 0.725,
+                        width: width * 0.9,
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: isGridView
+                                  ? GridView.builder(
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2, // Adjust as needed
+                                  childAspectRatio: 0.7,
+                                  crossAxisSpacing: width*0.03
                                 ),
-                              );
-                            },
-                            child: Container(
-                              margin: EdgeInsets.all(width * 0.005),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: ColorConstant.secondaryColor,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: ColorConstant.primaryColor.withOpacity(0.1),
-                                    spreadRadius: 1,
-                                    blurRadius: 200,
-                                    offset: Offset(5, 5),
-                                  )
-                                ],
-                              ),
-                              child: Column(
-                                children: [
-                                  AspectRatio(
-                                    aspectRatio: 1,
-                                    child: Padding(
-                                      padding: EdgeInsets.all(width * 0.04),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image: AssetImage(ImageConstant.product2),
-                                            fit: BoxFit.cover,
-                                          ),
-                                          borderRadius: BorderRadius.circular(12),
+                                itemCount: products.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  final product = products[index];
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ProductDetails(product: product),
                                         ),
+                                      );
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.all(width * 0.005),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        color: ColorConstant.secondaryColor,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: ColorConstant.primaryColor.withOpacity(0.1),
+                                            spreadRadius: 1,
+                                            blurRadius: 200,
+                                            offset: Offset(5, 5),
+                                          )
+                                        ],
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          AspectRatio(
+                                            aspectRatio: 1,
+                                            child: Padding(
+                                              padding: EdgeInsets.all(width * 0.04),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                    image: AssetImage(ImageConstant.product2),
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Text(
+                                            product['name'],
+                                            style: TextStyle(
+                                              color: ColorConstant.primaryColor,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: height * 0.015,
+                                            ),
+                                          ),
+                                          Text(
+                                            "₹${product['price']}", // Assuming price is stored in INR
+                                            style: TextStyle(color: ColorConstant.primaryColor),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                  Text(
-                                    product['name'],
-                                    style: TextStyle(
-                                      color: ColorConstant.primaryColor,
-                                      fontWeight: FontWeight.w800,
-                                      fontSize: height * 0.025,
+                                  );
+                                },
+                              )
+                                  : ListView.builder(
+                                itemCount: products.length,
+                                itemBuilder: (context, index) {
+                                  final product = products[index];
+                                  return Container(
+                                    margin: EdgeInsets.all(width*0.015),
+                                    height: height*0.1,
+                                    decoration: BoxDecoration(
+                                      color: ColorConstant.secondaryColor,
+                                      borderRadius: BorderRadius.circular(width*0.05),
                                     ),
-                                  ),
-                                  Text(
-                                    "₹${product['price']}", // Assuming price is stored in INR
-                                    style: TextStyle(color: ColorConstant.primaryColor),
-                                  ),
-                                ],
+                                    child: Center(
+                                      child: ListTile(
+                                        leading: Image(image: AssetImage(ImageConstant.product2)),
+                                        title: Text(product['name']),
+                                        subtitle: Text("₹${product['price']}"),
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => ProductDetails(product: product),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
-                          );
-                        },
-                      )
-                          : ListView.builder(
-                        itemCount: products.length,
-                        itemBuilder: (context, index) {
-                          final product = products[index];
-                          return ListTile(
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                color: ColorConstant.primaryColor,
-                                width: 2,
-                              )
-                            ),
-                            leading: Image(image: AssetImage(ImageConstant.product2)),
-                            title: Text(product['name']),
-                            subtitle: Text("₹${product['price']}"),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ProductDetails(product: product),
-                                ),
-                              );
-                            },
-                          );
-                        },
+                          ],
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ),
+              ],
             ),
+
           ],
         ),
       ),
