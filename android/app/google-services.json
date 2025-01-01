@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "30153363439",
+    "project_id": "elegantia-a34c2",
+    "storage_bucket": "elegantia-a34c2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:30153363439:android:9899c72143c04895bf301a",
+        "android_client_info": {
+          "package_name": "com.example.admin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUaMkTkJDuK6mUgd3zCirAG88_dika2Eg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:30153363439:android:33c2aeb81e1f2621bf301a",
+        "android_client_info": {
+          "package_name": "com.example.elegantia_art"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUaMkTkJDuK6mUgd3zCirAG88_dika2Eg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

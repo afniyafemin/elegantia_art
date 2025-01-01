@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../constants/color_constants/color_constant.dart';
+import 'dart:convert';
+import 'package:intl/intl.dart';
 
 class BuyNowPage extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -14,6 +16,7 @@ class BuyNowPage extends StatefulWidget {
 }
 
 class _BuyNowPageState extends State<BuyNowPage> {
+  String formattedDate = DateFormat('yyyy-MM-dd').format(Timestamp.now().toDate());
   final _formKey = GlobalKey<FormState>();
   String? address;
   String? phoneNumber;
@@ -30,15 +33,18 @@ class _BuyNowPageState extends State<BuyNowPage> {
           if (widget.product['productId'] == null || widget.product['price'] == null) {
             throw Exception("Product data is incomplete.");
           }
+          String orderId = DateTime.now().millisecondsSinceEpoch.toString();
 
           await orderCollection.add({
+            'orderId': orderId,
             'userId': user.uid,
             'productId': widget.product['productId'],
             'productName': widget.product['productName'] ?? 'Unknown Product', // Handle null
             'price': widget.product['price'] ?? 0.0, // Handle null
             'address': address ?? 'No address provided', // Handle null
             'phoneNumber': phoneNumber ?? 'No phone number provided', // Handle null
-            'timestamp': FieldValue.serverTimestamp(),
+            'orderDate': formattedDate,
+            'status': 'Pending',
           });
 
           ScaffoldMessenger.of(context).showSnackBar(
