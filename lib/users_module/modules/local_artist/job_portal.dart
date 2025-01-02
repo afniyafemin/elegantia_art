@@ -1,9 +1,7 @@
-import 'dart:core';
-import 'dart:core';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elegantia_art/components/custom_drawer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../../constants/color_constants/color_constant.dart';
 import '../../../constants/image_constants/image_constant.dart';
@@ -133,9 +131,8 @@ class _JobPortalState extends State<JobPortal> {
                   Text(
                     "see all",
                     style: TextStyle(
-                      fontSize: width * 0.03,
-                      color: Colors.black,
-                    ),
+                        fontSize: width * 0.03,
+                        color: Colors.black ),
                   ),
                 ],
               ),
@@ -196,9 +193,11 @@ class _JobPortalState extends State<JobPortal> {
                 child: FutureBuilder<List<Map<String, dynamic>>>(
                   future: fetchCollaborationData(),
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    }
+
+                    // if (snapshot.connectionState == ConnectionState.waiting) {
+                    //   return Center(child: CircularProgressIndicator());
+                    // }
+
                     if (snapshot.hasError) {
                       return Center(child: Text("Error: ${snapshot.error}"));
                     }
@@ -250,9 +249,16 @@ class _JobPortalState extends State<JobPortal> {
                                       ),
                                       GestureDetector(
                                         onTap: () {
-                                          String userId = "user_id_here"; // Replace with actual user ID
-                                          String jobId = item['id'] ?? ''; // Ensure jobId is not null
-                                          double amount = item['amount'] ?? 0.0; // Get the amount
+                                          String userId = FirebaseAuth.instance.currentUser!.uid; // Replace with actual user ID
+                                          String jobId = item['jobId'] ?? ''; // Ensure jobId is not null
+                                          double amount;
+
+                                          // Check if amount is a String and convert it to double
+                                          if (item['amount'] is String) {
+                                            amount = double.tryParse(item['amount']) ?? 0.0;
+                                          } else {
+                                            amount = item['amount'] ?? 0.0; // Get the amount
+                                          }
 
                                           if (jobId.isNotEmpty) {
                                             applyForJob(userId, jobId, amount);
@@ -296,7 +302,7 @@ class CustomSearchDelegate extends SearchDelegate {
   List<String> searchTerms = [
     "Ring album",
     "Journals",
-    "Resin",
+    "Res in",
     "Charm",
     "Stamps",
   ];
