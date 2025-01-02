@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elegantia_art/users_module/modules/customer/buy_now_page.dart';
+import 'package:elegantia_art/users_module/modules/customer/my_orders.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../../constants/color_constants/color_constant.dart';
@@ -133,9 +134,34 @@ class _CartCustomerState extends State<CartCustomer> {
               "My Cart",
               style: TextStyle(
                   color: ColorConstant.secondaryColor,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w900,
                   fontSize: width * 0.05),
             ),
+            actions: [
+              Padding(
+                padding:  EdgeInsets.all(width*0.03),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => MyOrders(),));
+                  },
+                  child: Column(
+                    children: [
+                      Icon(Icons.card_travel,
+                        color: ColorConstant.secondaryColor,
+                        size: width*0.05,
+                      ),
+                      Text("My Orders",
+                        style: TextStyle(
+                          fontSize: width*0.015,
+                          color: ColorConstant.secondaryColor,
+                          fontWeight: FontWeight.w900
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              )
+            ],
           ),
           body: Padding(
             padding: EdgeInsets.all(width * 0.03),

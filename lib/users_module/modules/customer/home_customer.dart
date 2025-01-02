@@ -7,6 +7,7 @@ import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/users_module/modules/customer/all_trending.dart';
 import 'package:elegantia_art/users_module/modules/customer/cart_c.dart';
 import 'package:elegantia_art/users_module/modules/customer/categories.dart';
+import 'package:elegantia_art/users_module/modules/customer/pins.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
