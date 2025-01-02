@@ -75,6 +75,14 @@ class _BuyNowPageState extends State<BuyNowPage> {
     }
   }
 
+
+  @override
+  void initState() {
+    super.initState();
+    print("Product data: ${widget.product}"); // Debugging line
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

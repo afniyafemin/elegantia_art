@@ -6,10 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import '../../../constants/image_constants/image_constant.dart';
-import '../../../main.dart';
 import '../../../services/favorites_method.dart';
 import '../../../services/cart_service.dart';
-import '../customer/cart_c.dart';
 
 class ProductDetails extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -31,7 +29,6 @@ class _ProductDetailsState extends State<ProductDetails> {
   double _productRating = 0.0;
   double _avgRating = 0.0;
   final TextEditingController _feedbackController = TextEditingController();
-
 
   @override
   void initState() {
@@ -73,7 +70,6 @@ class _ProductDetailsState extends State<ProductDetails> {
       }
     } catch (e) {
       print('Error fetching product rating: $e');
-      // Handle error (e.g., show an error message to the user)
     }
   }
 
@@ -98,7 +94,6 @@ class _ProductDetailsState extends State<ProductDetails> {
   }
 
   Future<void> _submitRating() async {
-    // Ensure user is logged in and rating is valid
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null || _productRating <= 0) {
       return; // Handle invalid scenario (e.g., show a message)
@@ -109,22 +104,18 @@ class _ProductDetailsState extends State<ProductDetails> {
           .collection('products')
           .doc(widget.product['id']);
 
-      // Perform a transaction to ensure data consistency
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         final documentSnapshot = await transaction.get(productRef);
         final existingRatings =
             List<dynamic>.from(documentSnapshot.data()?['ratings'] ?? []);
 
-        // Find the index of the current user's rating
         int index = existingRatings
             .indexWhere((rating) => rating['userId'] == currentUser.uid);
 
         if (index != -1) {
-          // Update the existing rating
           existingRatings[index]['rating'] = _productRating;
           existingRatings[index]['feedback'] = _feedbackController.text;
         } else {
-          // Add a new rating if it doesn't exist
           existingRatings.add({
             'userId': currentUser.uid,
             'rating': _productRating,
@@ -132,225 +123,175 @@ class _ProductDetailsState extends State<ProductDetails> {
           });
         }
 
-        // Update the product document with the updated ratings
         transaction.update(productRef, {'ratings': existingRatings});
       });
 
-      // Recalculate average rating (optional, for immediate display)
       _getProductRating();
-
       setState(() {});
     } catch (e) {
       print('Error submitting rating: $e');
-      // Handle error (e.g., show an error message to the user)
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorConstant.secondaryColor,
-      body: Stack(
-        children: [
-          Container(
-            height: height * 0.5,
-            width: width,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(ImageConstant.product2),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(15.0),
-            child: InkWell(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: CircleAvatar(
-                radius: width * 0.05,
-                backgroundColor: ColorConstant.secondaryColor,
-                child: Icon(Icons.arrow_back),
-              ),
-            ),
-          ),
-          DraggableScrollableSheet(
-            initialChildSize: 0.6,
-            maxChildSize: 1.0,
-            minChildSize: 0.6,
-            builder: (context, scrollController) {
-              return Container(
-                clipBehavior: Clip.hardEdge,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(width * 0.05),
-                    topRight: Radius.circular(width * 0.05),
-                  ),
-                  color: ColorConstant.secondaryColor,
+        backgroundColor: ColorConstant.secondaryColor,
+        body: Stack(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height * 0.5,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(ImageConstant.product2),
+                  fit: BoxFit.cover,
                 ),
-                child: Padding(
-                  padding: EdgeInsets.all(width * 0.07),
-                  child: SingleChildScrollView(
-                    controller: scrollController,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  widget.product['name'],
-                                  style: TextStyle(
-                                    fontSize: width * 0.05,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
-                                SizedBox(height: height * 0.003),
-                                Text(widget.product['category']),
-                                SizedBox(
-                                  height: height * 0.015,
-                                ),
-                                RatingStars(
-                                  starSize: 15,
-                                  starColor: Color(0xFFF2C94C),
-                                  valueLabelVisibility: false,
-                                  value: _avgRating,
-                                  starOffColor: ColorConstant.primaryColor,
-                                ),
-                                SizedBox(
-                                  height: height * 0.015,
-                                ),
-                                Text(
-                                  "₹${widget.product['price']}",
-                                  style: TextStyle(
-                                    fontSize: width * 0.05,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            IconButton(
-                              onPressed: _toggleLike,
-                              icon: Icon(
-                                isLiked
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: isLiked
-                                    ? Colors.red
-                                    : ColorConstant.primaryColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: height * 0.03),
-                        Text(
-                          "${widget.product['description']}",
-                          style: TextStyle(
-                              color:
-                                  ColorConstant.primaryColor.withOpacity(0.5),
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Divider(
-                          color: ColorConstant.primaryColor
-                          ,
-                        ),
-                        Text("Note :"),
-                        Text(
-                          "You can customize your products during the 'Proceeding the Order' section or at the final stage of the ordering process. Make sure to review and confirm all customizations before completing your order to ensure it meets your preferences!",
-                          style: TextStyle(
-                              color:
-                                  ColorConstant.primaryColor.withOpacity(0.5),
-                              fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: height*0.04,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () async {
-                                // Use CartService to add to cart
-                                try {
-                                  await _cartService.addToCart(
-                                    widget.product['id'],
-                                    {
-                                      'name': widget.product['name'],
-                                      'price': widget.product['price'],
-                                      'category': widget.product['category'],
-                                      'customizationText': customizationText,
-                                      'customizationImage':
-                                          customizationImageURL,
-                                      'isLiked': isLiked,
-                                    },
-                                    quantity,
-                                  );
-
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content:
-                                          Text('Added to cart successfully!'),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(15.0),
+              child: InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: CircleAvatar(
+                  radius: MediaQuery.of(context).size.width * 0.05,
+                  backgroundColor: ColorConstant.secondaryColor,
+                  child: Icon(Icons.arrow_back),
+                ),
+              ),
+            ),
+            DraggableScrollableSheet(
+              initialChildSize: 0.6,
+              maxChildSize: 1.0,
+              minChildSize: 0.6,
+              builder: (context, scrollController) {
+                return Container(
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(
+                          MediaQuery.of(context).size.width * 0.05),
+                      topRight: Radius.circular(
+                          MediaQuery.of(context).size.width * 0.05),
+                    ),
+                    color: ColorConstant.secondaryColor,
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(
+                        MediaQuery.of(context).size.width * 0.07),
+                    child: SingleChildScrollView(
+                      controller: scrollController,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.product['name'],
+                                    style: TextStyle(
+                                      fontSize:
+                                          MediaQuery.of(context).size.width *
+                                              0.05,
+                                      fontWeight: FontWeight.w900,
                                     ),
-                                  );
-                                } catch (e) {
-                                  print('Error adding to cart: $e');
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: ColorConstant.primaryColor,
+                                  ),
+                                  SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.003),
+                                  Text(widget.product['category']),
+                                  SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.015),
+                                  RatingStars(
+                                    starSize: 15,
+                                    starColor: Color(0xFFF2C94C),
+                                    valueLabelVisibility: false,
+                                    value: _avgRating,
+                                    starOffColor: ColorConstant.primaryColor,
+                                  ),
+                                  SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.015),
+                                  Text(
+                                    "₹${widget.product['price']}",
+                                    style: TextStyle(
+                                      fontSize:
+                                          MediaQuery.of(context).size.width *
+                                              0.05,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              child: Text(
-                                "Add to Cart",
-                                style: TextStyle(
-                                  color: ColorConstant.secondaryColor,
+                              IconButton(
+                                onPressed: _toggleLike,
+                                icon: Icon(
+                                  isLiked
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: isLiked
+                                      ? Colors.red
+                                      : ColorConstant.primaryColor,
                                 ),
                               ),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => BuyNowPage(
-                                        product: {},
-                                      ),
-                                    ));
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: ColorConstant.primaryColor,
-                              ),
-                              child: Text(
-                                "buy Now",
-                                style: TextStyle(
-                                  color: ColorConstant.secondaryColor,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: height*0.02,),
-                        Divider(
-                          color: ColorConstant.primaryColor
-                          ,
-                        ),
-                        Text("Ratings and Reviews",style: TextStyle(
-                          fontSize: width*0.06,
-                          fontWeight: FontWeight.w800,
-
-                        ),),
-                          Text("We value your feedback! Please take a moment to rate the product and share your experience. Your rating helps us improve and assists other customers in making informed decisions. Thank you for your support!",
-                          style: TextStyle(
+                            ],
+                          ),
+                          SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.03),
+                          Text(
+                            "${widget.product['description']}",
+                            style: TextStyle(
                               color:
-                              ColorConstant.primaryColor.withOpacity(0.5),
-                              fontWeight: FontWeight.bold
-                          ),),
+                                  ColorConstant.primaryColor.withOpacity(0.5),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Divider(color: ColorConstant.primaryColor),
+                          Text("Note:"),
+                          Text(
+                            "You can customize your products during the 'Proceeding the Order' section or at the final stage of the ordering process. Make sure to review and confirm all customizations before completing your order to ensure it meets your preferences!",
+                            style: TextStyle(
+                              color:
+                                  ColorConstant.primaryColor.withOpacity(0.5),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.02),
+                          Divider(color: ColorConstant.primaryColor),
+                          Text(
+                            "Ratings and Reviews",
+                            style: TextStyle(
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.06,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          Text(
+                            "We value your feedback! Please take a moment to rate the product and share your experience. Your rating helps us improve and assists other customers in making informed decisions. Thank you for your support!",
+                            style: TextStyle(
+                              color:
+                                  ColorConstant.primaryColor.withOpacity(0.5),
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.025,
+                            ),
+                          ),
                           Row(
                             children: [
-                              SizedBox(height: height * 0.1),
+                              SizedBox(
+                                  height: MediaQuery.of(context).size.height *
+                                      0.075),
                               RatingBar.builder(
                                 initialRating: _avgRating,
                                 minRating: 1,
@@ -363,10 +304,11 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   color: Color(0xFFF2C94C),
                                   shadows: [
                                     Shadow(
-                                      color: ColorConstant.primaryColor.withOpacity(0.5),
+                                      color: ColorConstant.primaryColor
+                                          .withOpacity(0.5),
                                       blurRadius: 1,
-                                      offset: Offset(0, 1)
-                                    )
+                                      offset: Offset(0, 1),
+                                    ),
                                   ],
                                 ),
                                 onRatingUpdate: (rating) {
@@ -375,55 +317,143 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   });
                                 },
                               ),
-                              SizedBox(width: width*0.03,),
+                              SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.03),
+                            ],
+                          ),
+                          TextField(
+                            controller: _feedbackController,
+                            cursorColor: ColorConstant.primaryColor,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor:
+                                  ColorConstant.primaryColor.withOpacity(0.1),
+                              labelText: 'Add your reviews',
+                              labelStyle:
+                                  TextStyle(color: ColorConstant.primaryColor),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                    MediaQuery.of(context).size.width * 0.2),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                    MediaQuery.of(context).size.width * 0.2),
+                                borderSide: BorderSide(
+                                    color: ColorConstant.primaryColor),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                    MediaQuery.of(context).size.width * 0.2),
+                                borderSide: BorderSide(
+                                    color: ColorConstant.primaryColor),
+                              ),
+                            ),
+                            style: TextStyle(color: ColorConstant.primaryColor),
+                          ),
+                          SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.02),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
                               GestureDetector(
                                 onTap: _submitRating, // Call _submitRating here
                                 child: Container(
-                                  height: height * 0.03,
-                                  width: width * 0.1,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.03,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.15,
                                   decoration: BoxDecoration(
-                                      color: ColorConstant.primaryColor,
-                                    borderRadius: BorderRadius.circular(15)
+                                    color: ColorConstant.primaryColor,
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "Set",
+                                      style: TextStyle(
+                                        color: ColorConstant.secondaryColor,
                                       ),
-                                  child: Center(child: Text("Set",
-                                  style: TextStyle(
-                                    color: ColorConstant.secondaryColor,
-                                  ),)),
+                                    ),
+                                  ),
                                 ),
                               ),
-                              // SizedBox(height: height * 0.02),
-                              // TextField(
-                              //   cursorColor: ColorConstant.primaryColor,
-                              //   decoration: InputDecoration(
-                              //     filled: true,
-                              //     fillColor: ColorConstant.primaryColor.withOpacity(0.1),
-                              //     labelText: 'Add Customization Text',
-                              //     labelStyle: TextStyle(color: ColorConstant.primaryColor),
-                              //     border: OutlineInputBorder(
-                              //       borderRadius: BorderRadius.circular(width * 0.2),
-                              //     ),
-                              //     enabledBorder: OutlineInputBorder(
-                              //       borderRadius: BorderRadius.circular(width * 0.2),
-                              //       borderSide: BorderSide(color: ColorConstant.primaryColor),
-                              //     ),
-                              //     focusedBorder: OutlineInputBorder(
-                              //       borderRadius: BorderRadius.circular(width * 0.2),
-                              //       borderSide: BorderSide(color: ColorConstant.primaryColor),
-                              //     ),
-                              //   ),
-                              //   style: TextStyle(color: ColorConstant.primaryColor),
-                              // ),
                             ],
                           ),
-                      ],
+                          SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.1),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () async {
+                                  try {
+                                    await _cartService.addToCart(
+                                      widget.product['id'],
+                                      {
+                                        'name': widget.product['name'],
+                                        'price': widget.product['price'],
+                                        'category': widget.product['category'],
+                                        'customizationText': customizationText,
+                                        'customizationImage':
+                                            customizationImageURL,
+                                        'isLiked': isLiked,
+                                      },
+                                      quantity,
+                                    );
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content:
+                                            Text('Added to cart successfully!'),
+                                      ),
+                                    );
+                                  } catch (e) {
+                                    print('Error adding to cart: $e');
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: ColorConstant.primaryColor,
+                                ),
+                                child: Text(
+                                  "Add to Cart",
+                                  style: TextStyle(
+                                    color: ColorConstant.secondaryColor,
+                                  ),
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BuyNowPage(
+                                        product: widget
+                                            .product, // Pass the correct product data
+                                      ),
+                                    ),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: ColorConstant.primaryColor,
+                                ),
+                                child: Text(
+                                  "Buy Now",
+                                  style: TextStyle(
+                                    color: ColorConstant.secondaryColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
+                );
+              },
+            ),
+          ],
+        ));
   }
 }

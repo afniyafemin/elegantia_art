@@ -9,7 +9,8 @@ import '../../../services/favorites_method.dart';
 import 'change_address.dart';
 
 class CartCustomer extends StatefulWidget {
-  const CartCustomer({super.key});
+
+  const CartCustomer({super.key,});
 
   @override
   State<CartCustomer> createState() => _CartCustomerState();
@@ -217,6 +218,7 @@ class _CartCustomerState extends State<CartCustomer> {
                       final productName = item['productName'];
                       final price = item['price'];
                       final description = item['description'];
+                      final category = item['category'];
 
                       return Container(
                         padding: EdgeInsets.all(width * 0.03),
@@ -258,7 +260,7 @@ class _CartCustomerState extends State<CartCustomer> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Text(
-                                  "${productName ?? 'Unknown Product'} \n ₹${price ?? '0'}",
+                                  "${productName ?? 'Unknown Product'} \n ₹${price ?? '0'} \n ${category ?? ''}",
                                   style: TextStyle(color: Colors.black),
                                 ),
                                 Row(
