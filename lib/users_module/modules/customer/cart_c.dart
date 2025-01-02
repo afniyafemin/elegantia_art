@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:elegantia_art/users_module/modules/customer/buy_now_all.dart';
 import 'package:elegantia_art/users_module/modules/customer/buy_now_page.dart';
 import 'package:elegantia_art/users_module/modules/customer/my_orders.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,7 +17,7 @@ class CartCustomer extends StatefulWidget {
   @override
   State<CartCustomer> createState() => _CartCustomerState();
 }
-List<Map<String, dynamic>> _cartItems = [];
+List<Map<String, dynamic>> allCartItems = [];
 class _CartCustomerState extends State<CartCustomer> {
 
   double totalAmount = 0.0; // Variable to track total amount
@@ -38,11 +39,11 @@ class _CartCustomerState extends State<CartCustomer> {
             .collection('cart');
         final snapshot = await cartCollection.get();
         setState(() {
-          _cartItems = snapshot.docs.map((doc) {
+          allCartItems = snapshot.docs.map((doc) {
             return doc.data() as Map<String, dynamic>;
           }).toList();
           // Calculate total amount
-          totalAmount = _cartItems.fold(
+          totalAmount = allCartItems.fold(
               0, (sum, item) => sum + (item['price'] * item['quantity']));
         });
       }
@@ -237,9 +238,9 @@ class _CartCustomerState extends State<CartCustomer> {
                 SizedBox(height: height * 0.015),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: _cartItems.length,
+                    itemCount: allCartItems.length,
                     itemBuilder: (context, index) {
-                      final item = _cartItems[index];
+                      final item = allCartItems[index];
                       final productId = item['productId'];
                       final productName = item['productName'];
                       final price = item['price'];
@@ -361,18 +362,23 @@ class _CartCustomerState extends State<CartCustomer> {
                       fontSize: width * 0.03,
                       color: ColorConstant.primaryColor),
                 ),
-                Container(
-                  height: height * 0.05,
-                  width: width * 0.4,
-                  decoration: BoxDecoration(
-                      color: ColorConstant.primaryColor,
-                      borderRadius: BorderRadius.circular(width * 0.03)),
-                  child: Center(
-                    child: Text(
-                      "Buy Now",
-                      style: TextStyle(
-                          color: ColorConstant.secondaryColor,
-                          fontSize: width * 0.03),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => BuyNowAllPage(allCartItems: allCartItems, totalAmount: totalAmount,),));
+                  },
+                  child: Container(
+                    height: height * 0.05,
+                    width: width * 0.4,
+                    decoration: BoxDecoration(
+                        color: ColorConstant.primaryColor,
+                        borderRadius: BorderRadius.circular(width * 0.03)),
+                    child: Center(
+                      child: Text(
+                        "Buy Now",
+                        style: TextStyle(
+                            color: ColorConstant.secondaryColor,
+                            fontSize: width * 0.03),
+                      ),
                     ),
                   ),
                 )
