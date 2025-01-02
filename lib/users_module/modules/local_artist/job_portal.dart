@@ -1,7 +1,10 @@
+import 'dart:core';
+import 'dart:core';
+
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elegantia_art/components/custom_drawer.dart';
 import 'package:flutter/material.dart';
-
 import '../../../constants/color_constants/color_constant.dart';
 import '../../../constants/image_constants/image_constant.dart';
 import '../../../main.dart';
@@ -14,12 +17,42 @@ class JobPortal extends StatefulWidget {
 }
 
 class _JobPortalState extends State<JobPortal> {
+  Future<List<Map<String, dynamic>>> fetchCollaborationData() async {
+    final collaborationCollection = FirebaseFirestore.instance.collection('collaborations');
+    List<Map<String, dynamic>> collaborationData = [];
+
+    try {
+      final snapshot = await collaborationCollection.get();
+      for (var doc in snapshot.docs) {
+        collaborationData.add(doc.data() as Map<String, dynamic>);
+      }
+    } catch (e) {
+      print("Error fetching collaboration data: $e");
+    }
+
+    return collaborationData;
+  }
+
+  Future<void> applyForJob(String userId, String jobId, double amount) async {
+    final requestedJobsCollection = FirebaseFirestore.instance.collection('requestedJobs');
+
+    try {
+      await requestedJobsCollection.add({
+        'userId': userId,
+        'jobId': jobId,
+        'amount': amount,
+      });
+      print("Job applied successfully!");
+    } catch (e) {
+      print("Error applying for job: $e");
+    }
+  }
+
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       key: scaffoldKey,
       drawer: CustomDrawer(scaffoldKey: scaffoldKey),
@@ -72,7 +105,7 @@ class _JobPortalState extends State<JobPortal> {
                   filled: true,
                   fillColor: ColorConstant.secondaryColor,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30.0),
+                    borderRadius: BorderRadius.circular(width * 0.03),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -129,7 +162,7 @@ class _JobPortalState extends State<JobPortal> {
                   autoPlayAnimationDuration: Duration(seconds: 4),
                   onPageChanged: (index, reason) {
                     setState(() {
-                      currentIndex = index; // Fixed variable name
+                      currentIndex = index;
                     });
                   },
                 ),
@@ -160,22 +193,95 @@ class _JobPortalState extends State<JobPortal> {
               Container(
                 height: height * 0.5,
                 width: width * 0.9,
-                child: ListView.separated(
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return Container(
-                      height: height * 0.15,
-                      width: width * 0.3,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(width * 0.03),
-                        color: ColorConstant.primaryColor,
-                      ),
+                child: FutureBuilder<List<Map<String, dynamic>>>(
+                  future: fetchCollaborationData(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      return Center(child: Text("Error: ${snapshot.error}"));
+                    }
+
+                    final data = snapshot.data!;
+
+                    return ListView.separated(
+                      itemBuilder: (context, index) {
+                        final item = data[index];
+
+                        return Container(
+                          height: height * 0.15,
+                          width: width * 0.3,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(width * 0.03),
+                            color: ColorConstant.primaryColor,
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(width * 0.03),
+                            child: Row(
+                              children: [
+                                Container(
+                                  height: height * 0.1,
+                                  width: width * 0.25,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(width * 0.05),
+                                    image: DecorationImage(image: AssetImage(ImageConstant.product1)),
+                                  ),
+                                ),
+                                SizedBox(width: width * 0.025),
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Category: ${item['category'] ?? 'N/A'}",
+                                        style: TextStyle(
+                                          color: ColorConstant.secondaryColor,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      Text(
+                                        "Amount: ${item['amount']?.toString() ?? 'N/A'}",
+                                        style: TextStyle(
+                                          color: ColorConstant.secondaryColor,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          String userId = "user_id_here"; // Replace with actual user ID
+                                          String jobId = item['id'] ?? ''; // Ensure jobId is not null
+                                          double amount = item['amount'] ?? 0.0; // Get the amount
+
+                                          if (jobId.isNotEmpty) {
+                                            applyForJob(userId, jobId, amount);
+                                          } else {
+                                            print("Job ID is null or empty");
+                                          }
+                                        },
+                                        child: Text(
+                                          "Apply",
+                                          style: TextStyle(
+                                            color: ColorConstant.secondaryColor,
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return SizedBox(height: height * 0.01);
+                      },
+                      itemCount: data.length,
                     );
                   },
-                  separatorBuilder: (context, index) {
-                    return SizedBox(height: height * 0.01);
-                  },
-                  itemCount: 5,
                 ),
               ),
             ],
