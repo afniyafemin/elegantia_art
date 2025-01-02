@@ -48,6 +48,8 @@ dependencies:
   firebase_auth: ^5.3.4
   cloud_firestore: ^5.6.0
   firebase_storage: ^12.3.7
+  flutter_rating_stars: ^1.1.0
+
 
 
 

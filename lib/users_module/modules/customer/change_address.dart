@@ -49,6 +49,13 @@ class _ChangeAddressState extends State<ChangeAddress> {
   final _formKey = GlobalKey<FormState>();
 
   Future<void> _saveAddress() async {
+
+    name = nameController.text.trim();
+    post = postController.text.trim();
+    pin = pinController.text.trim();
+    landmark = landmarkController.text.trim();
+    phone = phoneController.text.trim();
+
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final addressCollection = FirebaseFirestore.instance
@@ -108,6 +115,7 @@ class _ChangeAddressState extends State<ChangeAddress> {
                             children: [
                               TextFormField(
                                 controller: nameController,
+
                                 decoration: InputDecoration(
                                   label: Text(
                                     'Name',

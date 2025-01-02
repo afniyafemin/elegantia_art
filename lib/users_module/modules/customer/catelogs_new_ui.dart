@@ -287,7 +287,7 @@ class _CatelogsNewUiState extends State<CatelogsNewUi> {
                                     ),
                                     child: Center(
                                       child: ListTile(
-                                        leading: Image(image: AssetImage(ImageConstant.product2)),
+                                        leading: Image(image: AssetImage(ImageConstant.product2),),
                                         title: Text(product['name']),
                                         subtitle: Text("₹${product['price']}"),
                                         onTap: () {

@@ -216,6 +216,7 @@ class _CartCustomerState extends State<CartCustomer> {
                       final productId = item['productId'];
                       final productName = item['productName'];
                       final price = item['price'];
+                      final description = item['description'];
 
                       return Container(
                         padding: EdgeInsets.all(width * 0.03),

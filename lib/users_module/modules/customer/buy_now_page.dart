@@ -38,6 +38,7 @@ class _BuyNowPageState extends State<BuyNowPage> {
           await orderCollection.add({
             'orderId': orderId,
             'userId': user.uid,
+            'category': widget.product['category'],
             'productId': widget.product['productId'],
             'productName': widget.product['productName'] ?? 'Unknown Product', // Handle null
             'price': widget.product['price'] ?? 0.0, // Handle null
@@ -122,6 +123,11 @@ class _BuyNowPageState extends State<BuyNowPage> {
                   children: [
                     Text(
                       widget.product['productName'] ?? 'Unknown Product', // Handle null
+                      style: TextStyle(fontSize: width*0.03, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: height*0.01),
+                    Text(
+                      widget.product['category'] ?? 'Unknown ', // Handle null
                       style: TextStyle(fontSize: width*0.03, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: height*0.01),

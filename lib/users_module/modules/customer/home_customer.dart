@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elegantia_art/components/custom_drawer.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/constants/image_constants/image_constant.dart';
@@ -6,6 +7,7 @@ import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/users_module/modules/customer/all_trending.dart';
 import 'package:elegantia_art/users_module/modules/customer/cart_c.dart';
 import 'package:elegantia_art/users_module/modules/customer/categories.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -21,6 +23,10 @@ class HomePage extends StatefulWidget {
 int selectIndex=0;
 
 class _HomePageState extends State<HomePage> {
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String currentUserName = "";
+
   List products=[
     ImageConstant.product1,
     ImageConstant.product2,
@@ -50,6 +56,35 @@ class _HomePageState extends State<HomePage> {
 
   }
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCurrentUserName(); // Fetch the current user's name when the widget is initialized
+  }
+
+  Future<void> _fetchCurrentUserName() async {
+    User? user = FirebaseAuth.instance.currentUser ;
+    if (user != null) {
+      try {
+        DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          setState(() {
+            currentUserName = userDoc['username'] ?? "User "; // Assuming 'username' is a field in the user document
+          });
+        } else {
+          print("User  document does not exist.");
+        }
+      } catch (error) {
+        print("Error fetching user name: $error");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to load user name. Please try again.")),
+        );
+      }
+    } else {
+      print("No user is currently signed in.");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,10 +117,11 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                               SizedBox(width: width*0.03,),
-                              Text("Username",
+                              Text(currentUserName,
                                 style: TextStyle(
                                     fontSize: width*0.05,
-                                    fontWeight: FontWeight.w700
+                                    fontWeight: FontWeight.w700,
+                                  color: ColorConstant.primaryColor
                                 ),
                               ),
                             ],
