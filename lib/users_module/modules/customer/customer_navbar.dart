@@ -2,7 +2,6 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/users_module/modules/customer/99%20mall.dart';
-import 'package:elegantia_art/users_module/modules/customer/cart_c_shelved.dart';
 import 'package:elegantia_art/users_module/modules/customer/categories.dart';
 import 'package:elegantia_art/users_module/modules/customer/home_customer.dart';
 import 'package:elegantia_art/users_module/modules/customer/pins.dart';

@@ -220,11 +220,11 @@ class _JobPortalState extends State<JobPortal> {
                             child: Row(
                               children: [
                                 Container(
-                                  height: height * 0.1,
+                                  height: height * 0.12,
                                   width: width * 0.25,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(width * 0.05),
-                                    image: DecorationImage(image: AssetImage(ImageConstant.product1)),
+                                    borderRadius: BorderRadius.circular(width * 0.02),
+                                    image: DecorationImage(image: AssetImage(ImageConstant.product1),fit: BoxFit.cover),
                                   ),
                                 ),
                                 SizedBox(width: width * 0.025),
