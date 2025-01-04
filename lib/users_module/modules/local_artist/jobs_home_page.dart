@@ -1,11 +1,12 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elegantia_art/components/custom_drawer.dart';
+import 'package:elegantia_art/constants/color_constants/color_constant.dart';
+import 'package:elegantia_art/constants/image_constants/image_constant.dart';
+import 'package:elegantia_art/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../../constants/color_constants/color_constant.dart';
-import '../../../constants/image_constants/image_constant.dart';
-import '../../../main.dart';
+
 
 class JobPortal extends StatefulWidget {
   const JobPortal({super.key});
@@ -15,20 +16,19 @@ class JobPortal extends StatefulWidget {
 }
 
 class _JobPortalState extends State<JobPortal> {
-  Future<List<Map<String, dynamic>>> fetchCollaborationData() async {
-    final collaborationCollection = FirebaseFirestore.instance.collection('collaborations');
-    List<Map<String, dynamic>> collaborationData = [];
+  Future<Map<String , dynamic>> fetchCollaborationData() async {
 
-    try {
-      final snapshot = await collaborationCollection.get();
-      for (var doc in snapshot.docs) {
-        collaborationData.add(doc.data() as Map<String, dynamic>);
-      }
-    } catch (e) {
-      print("Error fetching collaboration data: $e");
+    final collabId = await FirebaseFirestore.instance.collection('collaborations').doc('jobId').get();
+
+    if (collabId == null) {
+      return {};
     }
 
-    return collaborationData;
+    final collabDoc = await FirebaseFirestore.instance.collection('orders')
+    .where('orderId', isEqualTo: collabId).get();
+
+    return collabDoc as Map<String , dynamic>;
+
   }
 
   Future<void> applyForJob(String userId, String jobId, double amount) async {
@@ -36,9 +36,9 @@ class _JobPortalState extends State<JobPortal> {
 
     try {
       await requestedJobsCollection.add({
-        'userId': userId,
+        'userId' : FirebaseAuth.instance.currentUser!.uid,
         'jobId': jobId,
-        'amount': amount,
+        'amount' : amount
       });
       print("Job applied successfully!");
     } catch (e) {
@@ -48,6 +48,8 @@ class _JobPortalState extends State<JobPortal> {
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   int currentIndex = 0;
+
+  late List<Map<String , dynamic>> data =[{}] ;
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +120,6 @@ class _JobPortalState extends State<JobPortal> {
           child: Column(
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     "Featured Jobs",
@@ -127,12 +128,6 @@ class _JobPortalState extends State<JobPortal> {
                       color: Colors.black,
                       fontWeight: FontWeight.w700,
                     ),
-                  ),
-                  Text(
-                    "see all",
-                    style: TextStyle(
-                        fontSize: width * 0.03,
-                        color: Colors.black ),
                   ),
                 ],
               ),
@@ -167,7 +162,6 @@ class _JobPortalState extends State<JobPortal> {
               Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       "Recommended Jobs",
@@ -177,20 +171,13 @@ class _JobPortalState extends State<JobPortal> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    Text(
-                      "see all",
-                      style: TextStyle(
-                        fontSize: width * 0.03,
-                        color: Colors.black,
-                      ),
-                    ),
                   ],
                 ),
               ),
               Container(
-                height: height * 0.5,
+                height: (height * 0.15)*(data.length)+(height*0.05),
                 width: width * 0.9,
-                child: FutureBuilder<List<Map<String, dynamic>>>(
+                child: FutureBuilder<Map<String, dynamic>>(
                   future: fetchCollaborationData(),
                   builder: (context, snapshot) {
 
@@ -202,9 +189,10 @@ class _JobPortalState extends State<JobPortal> {
                       return Center(child: Text("Error: ${snapshot.error}"));
                     }
 
-                    final data = snapshot.data!;
+                    data = snapshot.data! as List<Map<String, dynamic>>;
 
                     return ListView.separated(
+                      physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         final item = data[index];
 
