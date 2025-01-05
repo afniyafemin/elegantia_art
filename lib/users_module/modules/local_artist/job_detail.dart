@@ -49,6 +49,7 @@ class _JobInfoState extends State<JobInfo> {
         'customizationImage': widget.customizationImage,
         'date': widget.date,
         'orderId': widget.jobId
+
       });
       setState(() {
         isRequested = true; // Change the state to requested
