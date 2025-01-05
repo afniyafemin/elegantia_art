@@ -2,12 +2,13 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/job_category.dart';
-import 'package:elegantia_art/users_module/modules/local_artist/job_portal.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/message_page.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/my_jobs_list/my_jobs.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/portfolio_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'jobs_home_page.dart';
 
 class LocalArtistNavbar extends StatefulWidget {
   const LocalArtistNavbar({super.key});

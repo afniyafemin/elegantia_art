@@ -4,9 +4,9 @@ import 'package:elegantia_art/components/custom_drawer.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/users_module/modules/local_artist/job_detail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 
 class JobPortal extends StatefulWidget {
   const JobPortal({super.key});
@@ -16,19 +16,33 @@ class JobPortal extends StatefulWidget {
 }
 
 class _JobPortalState extends State<JobPortal> {
-  Future<Map<String , dynamic>> fetchCollaborationData() async {
+  late Future<List<Map<String, dynamic>>> collaborationsFuture;
+  int currentIndex = 0;
 
-    final collabId = await FirebaseFirestore.instance.collection('collaborations').doc('jobId').get();
+  @override
+  void initState() {
+    super.initState();
+    collaborationsFuture = fetchCollaborationData(); // Fetch collaboration data once
+  }
 
-    if (collabId == null) {
-      return {};
+  Future<List<Map<String, dynamic>>> fetchCollaborationData() async {
+    final collaborationDocs = await FirebaseFirestore.instance.collection('collaborations').get();
+
+    List<Map<String, dynamic>> collaborations = [];
+
+    for (var doc in collaborationDocs.docs) {
+      final jobId = doc.get('jobId'); // Get jobId from the collaboration document
+      final orderDoc = await FirebaseFirestore.instance.collection('orders').where('orderId', isEqualTo: jobId).get();
+
+      if (orderDoc.docs.isNotEmpty) {
+        collaborations.add({
+          'collaboration': doc.data(),
+          'order': orderDoc.docs.first.data(), // Get the first matching order
+        });
+      }
     }
 
-    final collabDoc = await FirebaseFirestore.instance.collection('orders')
-    .where('orderId', isEqualTo: collabId).get();
-
-    return collabDoc as Map<String , dynamic>;
-
+    return collaborations;
   }
 
   Future<void> applyForJob(String userId, String jobId, double amount) async {
@@ -36,9 +50,9 @@ class _JobPortalState extends State<JobPortal> {
 
     try {
       await requestedJobsCollection.add({
-        'userId' : FirebaseAuth.instance.currentUser!.uid,
+        'userId': userId,
         'jobId': jobId,
-        'amount' : amount
+        'amount': amount,
       });
       print("Job applied successfully!");
     } catch (e) {
@@ -47,9 +61,6 @@ class _JobPortalState extends State<JobPortal> {
   }
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  int currentIndex = 0;
-
-  late List<Map<String , dynamic>> data =[{}] ;
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +100,6 @@ class _JobPortalState extends State<JobPortal> {
                 ),
               ],
             ),
-            // Search TextField
             Padding(
               padding: EdgeInsets.symmetric(horizontal: width * 0.05),
               child: TextField(
@@ -174,27 +184,26 @@ class _JobPortalState extends State<JobPortal> {
                   ],
                 ),
               ),
-              Container(
-                height: (height * 0.15)*(data.length)+(height*0.05),
-                width: width * 0.9,
-                child: FutureBuilder<Map<String, dynamic>>(
-                  future: fetchCollaborationData(),
-                  builder: (context, snapshot) {
+              FutureBuilder<List<Map<String, dynamic>>>(
+                future: collaborationsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
 
-                    // if (snapshot.connectionState == ConnectionState.waiting) {
-                    //   return Center(child: CircularProgressIndicator());
-                    // }
+                  if (snapshot.hasError) {
+                    return Center(child: Text("Error: ${snapshot.error}"));
+                  }
 
-                    if (snapshot.hasError) {
-                      return Center(child: Text("Error: ${snapshot.error}"));
-                    }
+                  final collaborations = snapshot.data!;
 
-                    data = snapshot.data! as List<Map<String, dynamic>>;
-
-                    return ListView.separated(
-                      physics: NeverScrollableScrollPhysics(),
+                  return Container(
+                    height: (height * 0.15) * (collaborations.length) + (height * 0.05),
+                    width: width * 0.9,
+                    child: ListView.separated(
                       itemBuilder: (context, index) {
-                        final item = data[index];
+                        final collaborationData = collaborations[index]['collaboration'];
+                        final orderData = collaborations[index]['order'];
 
                         return Container(
                           height: height * 0.15,
@@ -212,7 +221,7 @@ class _JobPortalState extends State<JobPortal> {
                                   width: width * 0.25,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(width * 0.02),
-                                    image: DecorationImage(image: AssetImage(ImageConstant.product1),fit: BoxFit.cover),
+                                    image: DecorationImage(image: AssetImage(ImageConstant.product1), fit: BoxFit.cover),
                                   ),
                                 ),
                                 SizedBox(width: width * 0.025),
@@ -222,14 +231,21 @@ class _JobPortalState extends State<JobPortal> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        "Category: ${item['category'] ?? 'N/A'}",
+                                        "Product Name: ${orderData['productName'] ?? 'N/A'}", // Fetch product name from order data
                                         style: TextStyle(
                                           color: ColorConstant.secondaryColor,
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
                                       Text(
-                                        "Amount: ${item['amount']?.toString() ?? 'N/A'}",
+                                        "Category: ${orderData['category'] ?? 'N/A'}", // Fetch category from order data
+                                        style: TextStyle(
+                                          color: ColorConstant.secondaryColor,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      Text(
+                                        "Amount: \$${collaborationData['amount']?.toString() ?? 'N/A'}",
                                         style: TextStyle(
                                           color: ColorConstant.secondaryColor,
                                           fontWeight: FontWeight.w500,
@@ -237,28 +253,42 @@ class _JobPortalState extends State<JobPortal> {
                                       ),
                                       GestureDetector(
                                         onTap: () {
-                                          String userId = FirebaseAuth.instance.currentUser!.uid; // Replace with actual user ID
-                                          String jobId = item['jobId'] ?? ''; // Ensure jobId is not null
-                                          double amount;
-
-                                          // Check if amount is a String and convert it to double
-                                          if (item['amount'] is String) {
-                                            amount = double.tryParse(item['amount']) ?? 0.0;
-                                          } else {
-                                            amount = item['amount'] ?? 0.0; // Get the amount
-                                          }
+                                          String userId = FirebaseAuth.instance.currentUser !.uid; // Replace with actual user ID
+                                          String jobId = collaborationData['jobId'] ?? ''; // Ensure jobId is not null
+                                          double amount = collaborationData['amount'] ?? 0.0; // Get the amount
 
                                           if (jobId.isNotEmpty) {
                                             applyForJob(userId, jobId, amount);
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => JobInfo(
+                                                  productName: orderData['productName'] ?? 'N/A',
+                                                  category: orderData['category'] ?? 'N/A',
+                                                  amount: collaborationData['amount'] ?? 0.0,
+                                                  customizationText: orderData['customizationText'] ?? 'N/A',
+                                                  customizationImage: orderData['customizationImage'] ?? '',
+                                                  date: orderData['orderDate'] ?? 'N/A',
+                                                  jobId: collaborationData['jobId'] ?? '',
+                                                ),
+                                              ),
+                                            );
                                           } else {
                                             print("Job ID is null or empty");
                                           }
                                         },
-                                        child: Text(
-                                          "Apply",
-                                          style: TextStyle(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                                          decoration: BoxDecoration(
                                             color: ColorConstant.secondaryColor,
-                                            fontWeight: FontWeight.w900,
+                                            borderRadius: BorderRadius.circular(8.0),
+                                          ),
+                                          child: Text(
+                                            "Apply",
+                                            style: TextStyle(
+                                              color: ColorConstant.primaryColor,
+                                              fontWeight: FontWeight.w900,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -273,10 +303,10 @@ class _JobPortalState extends State<JobPortal> {
                       separatorBuilder: (context, index) {
                         return SizedBox(height: height * 0.01);
                       },
-                      itemCount: data.length,
-                    );
-                  },
-                ),
+                      itemCount: collaborations.length,
+                    ),
+                  );
+                },
               ),
             ],
           ),

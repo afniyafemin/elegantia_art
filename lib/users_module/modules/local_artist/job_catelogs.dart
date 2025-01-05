@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/main.dart';
-import 'package:elegantia_art/users_module/modules/local_artist/job_category.dart';
-import 'package:elegantia_art/users_module/modules/local_artist/job_detail.dart';
 import 'package:flutter/material.dart';
 
 class JobCatelogs extends StatefulWidget {
@@ -26,10 +24,24 @@ class _JobCatelogsState extends State<JobCatelogs> {
 
   Future<void> _fetchJobs() async {
     try {
-      final jobsRef = _firestore.collection('collaborators');
-      final querySnapshot = await jobsRef.get();
+      final collaborationsRef = _firestore.collection('collaborations');
+      final querySnapshot = await collaborationsRef.where('jobId', isEqualTo: widget.category).get();
+
+      // Fetch the corresponding orders based on jobId
+      for (var doc in querySnapshot.docs) {
+        final jobId = doc.get('jobId'); // Get jobId from collaborations
+        final orderDoc = await _firestore.collection('orders').where('orderId', isEqualTo: jobId).get();
+
+        if (orderDoc.docs.isNotEmpty) {
+          jobs.add({
+            'collaborations': doc.data(),
+            'order': orderDoc.docs.first.data(), // Get the first matching order
+          });
+        }
+      }
+
       setState(() {
-        jobs = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+        // Update the jobs list with collaboration and order data
       });
     } catch (error) {
       print("Error fetching jobs: $error");
@@ -59,19 +71,13 @@ class _JobCatelogsState extends State<JobCatelogs> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        "$j",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: height * 0.04,
-                        ),
+                    Text(
+                      widget.category, // Display the selected category
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: height * 0.04,
                       ),
                     ),
-                    // Other UI elements...
                   ],
                 ),
               ),
@@ -86,6 +92,9 @@ class _JobCatelogsState extends State<JobCatelogs> {
                       itemCount: jobs.length,
                       separatorBuilder: (context, index) => SizedBox(height: height * 0.03),
                       itemBuilder: (context, index) {
+                        final collaborationData = jobs[index]['collaborations'];
+                        final orderData = jobs[index]['order'];
+
                         return Container(
                           height: height * 0.15,
                           width: width * 0.75,
@@ -110,18 +119,19 @@ class _JobCatelogsState extends State<JobCatelogs> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      jobs[index]["orderDetails"]['productName'] ?? "Job Name", // Assuming 'name' is a field in the document
+                                      orderData["productName"] ?? "Job Name", // Assuming 'productName' is a field in the document
                                       style: TextStyle(
                                         color: ColorConstant.primaryColor,
                                         fontWeight: FontWeight.w800,
                                         fontSize: height * 0.025,
                                       ),
                                     ),
-                                    Text('Price: \$${jobs[index]['orderDetails']["price"]?.toStringAsFixed(2) ?? "N/A"}')                                  ],
+                                    Text('Price: \$${collaborationData["amount"]?.toStringAsFixed(2) ?? "N/A"}'), // Display amount from collaborations
+                                  ],
                                 ),
                               ),
                               Container(
-                                height: height *  0.15,
+                                height: height * 0.15,
                                 width: width * 0.3,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.only(
