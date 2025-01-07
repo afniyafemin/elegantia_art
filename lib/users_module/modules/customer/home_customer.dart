@@ -229,7 +229,7 @@ class _HomePageState extends State<HomePage> {
                                               ),
                                               Padding(
                                                 padding:EdgeInsets.only(top: height*0.15,left: width*0.05),
-                                                child: Text(p_names[index],
+                                                child: Text(products_[index]['name'],
                                                   style: TextStyle(
                                                       fontSize: width*0.1,
                                                       color: Colors.white,
@@ -417,7 +417,6 @@ class _HomePageState extends State<HomePage> {
                       SizedBox(height: height*0.01,),
                       Container(
                         padding: EdgeInsets.all(width*0.005),
-
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(width*0.05),
                         ),
@@ -425,8 +424,10 @@ class _HomePageState extends State<HomePage> {
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: 0.9
+                              crossAxisCount: 3,
+                              childAspectRatio: 0.5,
+                            mainAxisSpacing: width*0.03,
+                            crossAxisSpacing: width*0.03
                           ),
                           itemCount: products_.length,
                           itemBuilder: (BuildContext context, int index) {
@@ -442,10 +443,10 @@ class _HomePageState extends State<HomePage> {
                                   Stack(
                                     children: [
                                       Container(
-                                        height: height*0.175,
-                                        width: width*0.35,
+                                        height: height*0.2,
+                                        width: width*0.4,
                                         decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(width*0.1),
+                                            borderRadius: BorderRadius.circular(width*0.03),
                                             image: DecorationImage(image: AssetImage(products[index]),fit: BoxFit.fill)
                                         ),
                                       ),
