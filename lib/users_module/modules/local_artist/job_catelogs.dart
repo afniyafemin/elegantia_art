@@ -145,7 +145,7 @@ class _JobCatelogsState extends State<JobCatelogs> {
                                 return CircularProgressIndicator();
                               }
 
-                              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                              if (!snapshot.hasData) {
                                 return Text("no jobs yet");
                               }
 

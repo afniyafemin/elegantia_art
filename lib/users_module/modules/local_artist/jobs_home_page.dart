@@ -4,7 +4,10 @@ import 'package:elegantia_art/components/custom_drawer.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/users_module/modules/customer/product_details.dart';
+import 'package:elegantia_art/users_module/modules/local_artist/job_catelogs.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/job_detail.dart';
+import 'package:elegantia_art/users_module/modules/local_artist/message_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -104,12 +107,48 @@ class _JobPortalState extends State<JobPortal> {
 
           ],
         ),
+        actions: [
+          Padding(
+            padding:  EdgeInsets.only(right: width*0.03),
+            child: GestureDetector(
+              onTap: () {
+                showSearch(context: context, delegate: CustomSearchDelegate());
+              },
+                child: Icon(Icons.search,color: ColorConstant.primaryColor,size: width*0.075,)
+            ),
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(width * 0.03),
           child: Column(
             children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => MessagePage(),));
+                },
+                child: Column(
+                  children: [
+                    Text('''Interact with us ''',
+                      style: TextStyle(
+                        fontSize: width*0.075,
+                        fontWeight: FontWeight.w900,
+                        color: ColorConstant.primaryColor.withOpacity(0.5)
+                      ),
+                    ),
+                    Text(''' to know more about the reward ''',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          color: ColorConstant.primaryColor.withOpacity(0.25),
+                          fontSize: width*0.03
+                      ),
+                    ),
+                    SizedBox(height: height*0.025,)
+                  ],
+                ),
+              ),
+
               TextField(
                 onTap: () {
                   showSearch(
