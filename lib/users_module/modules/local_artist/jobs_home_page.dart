@@ -75,31 +75,31 @@ class _JobPortalState extends State<JobPortal> {
         automaticallyImplyLeading: false,
         leading: Column(
           children: [
-            Row(
-              children: [
-                SizedBox(width: 10,),
-                Padding(
-                  padding:  EdgeInsets.only(left: 7.0,right: 7.0,top: 10.0),
-                  child: InkWell(
+            Padding(
+              padding: EdgeInsets.only(left : width*0.05, top: height*0.015),
+              child: Row(
+                children: [
+                  InkWell(
                     onTap: () {
                       scaffoldKey.currentState?.openDrawer();
                     },
                     child: CircleAvatar(
-                      radius: width * 0.05,
+                      radius: width * 0.04,
                       backgroundImage: AssetImage(ImageConstant.user_profile),
                     ),
                   ),
-                ),
-                Text(
-                  "John",
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    fontSize: width * 0.06,
-                    fontWeight: FontWeight.w900,
-                    color: ColorConstant.primaryColor,
+                  SizedBox(width: width*0.03,),
+                  Text(
+                    "John",
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                      fontSize: width * 0.06,
+                      fontWeight: FontWeight.w900,
+                      color: ColorConstant.primaryColor,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
 
           ],
@@ -110,25 +110,22 @@ class _JobPortalState extends State<JobPortal> {
           padding: EdgeInsets.all(width * 0.03),
           child: Column(
             children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-                child: TextField(
-                  onTap: () {
-                    showSearch(
-                      context: context,
-                      delegate: CustomSearchDelegate(),
-                    );
-                  },
-                  decoration: InputDecoration(
-                    hintText: "Search for jobs or products",
-                    prefixIcon: Icon(Icons.search, color: ColorConstant.primaryColor),
-                    filled: true,
-                    fillColor: ColorConstant.secondaryColor,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(width * 0.03),
-                      borderSide: BorderSide(
-                        color: ColorConstant.primaryColor
-                      ),
+              TextField(
+                onTap: () {
+                  showSearch(
+                    context: context,
+                    delegate: CustomSearchDelegate(),
+                  );
+                },
+                decoration: InputDecoration(
+                  hintText: "Search for jobs or products",
+                  prefixIcon: Icon(Icons.search, color: ColorConstant.primaryColor),
+                  filled: true,
+                  fillColor: ColorConstant.secondaryColor,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(width * 0.03),
+                    borderSide: BorderSide(
+                      color: ColorConstant.primaryColor
                     ),
                   ),
                 ),
