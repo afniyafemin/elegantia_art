@@ -1,69 +1,118 @@
-import 'package:elegantia_art/main.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../../../../constants/color_constants/color_constant.dart';
 
 class RequestedJobs extends StatefulWidget {
-  const RequestedJobs({super.key});
+  const RequestedJobs({Key? key}) : super(key: key);
 
   @override
   State<RequestedJobs> createState() => _RequestedJobsState();
 }
 
 class _RequestedJobsState extends State<RequestedJobs> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final String currentUserId = FirebaseAuth.instance.currentUser !.uid;
+  late Future<List<String>> _requestedJobIds;
+
+  @override
+  void initState() {
+    super.initState();
+    _requestedJobIds = _fetchRequestedJobs();
+  }
+
+  Future<List<String>> _fetchRequestedJobs() async {
+    List<String> jobIds = [];
+    try {
+      // Fetch the jobs subcollection for the current user
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('users')
+          .doc(currentUserId)
+          .collection('jobs')
+          .where('status', isEqualTo: 'requested')
+          .get();
+
+      // Extract the orderId (or document ID) from the fetched documents
+      for (var doc in querySnapshot.docs) {
+        jobIds.add(doc.id); // or doc['orderId'] if you have a field named orderId
+      }
+    } catch (e) {
+      print('Error fetching requested jobs: $e');
+    }
+    return jobIds;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: ColorConstant.secondaryColor,
-        body: ListView.builder(
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: EdgeInsets.only(
-                  top: width * 0.007, left: width * 0.02, right: width * 0.02),
-              child: Container(
-                height: height * 0.1,
-                decoration: BoxDecoration(
-                  color: ColorConstant.secondaryColor,
-                  borderRadius: BorderRadius.circular(width * 0.02),
-                  boxShadow: [
-                    BoxShadow(
-                      color: ColorConstant.primaryColor.withOpacity(0.3),
-                      spreadRadius: 3,
-                      blurRadius: 7,
-                      offset: Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: ListTile(
-                    title: Text("Job Name"),
-                    trailing: Container(
-                      height: height * 0.05,
-                      width: width * 0.2,
-                      decoration: BoxDecoration(
-                        color: ColorConstant.primaryColor,
-                        borderRadius: BorderRadius.circular(width * 0.03),
+      backgroundColor: ColorConstant.secondaryColor,
+      body: FutureBuilder<List<String>>(
+        future: _requestedJobIds,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No requested jobs found.'));
+          }
+
+          final jobIds = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: jobIds.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: EdgeInsets.only(
+                    top: 8.0, left: 16.0, right: 16.0),
+                child: Container(
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: ColorConstant.secondaryColor,
+                    borderRadius: BorderRadius.circular(16.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: ColorConstant.primaryColor.withOpacity(0.3),
+                        spreadRadius: 3,
+                        blurRadius: 7,
+                        offset: Offset(0, 3),
                       ),
-                      child: InkWell(
-                        onTap: () {
-                          _showCancelRequestAlert(context);
-                        },
-                        child: Center(child: Text("requested",
-                          style: TextStyle(
-                            color: ColorConstant.secondaryColor,
+                    ],
+                  ),
+                  child: Center(
+                    child: ListTile(
+                      title: Text("Job ID: ${jobIds[index]}"),
+                      trailing: Container(
+                        height: 40,
+                        width: 80,
+                        decoration: BoxDecoration(
+                          color: ColorConstant.primaryColor,
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            _showCancelRequestAlert(context);
+                          },
+                          child: Center(
+                            child: Text(
+                              "Requested",
+                              style: TextStyle(
+                                color: ColorConstant.secondaryColor,
+                              ),
+                            ),
                           ),
-                        )),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            );
-          },
-        )
+              );
+            },
+          );
+        },
+      ),
     );
   }
-
 
   void _showCancelRequestAlert(BuildContext context) {
     showDialog(
@@ -78,18 +127,23 @@ class _RequestedJobsState extends State<RequestedJobs> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('No',style: TextStyle(color: ColorConstant.primaryColor),),
+              child: const Text(
+                'No',
+                style: TextStyle(color: ColorConstant.primaryColor),
+              ),
             ),
             TextButton(
               onPressed: () {
                 // Add your cancel request logic here
                 Navigator.of(context).pop();
               },
-              child: const Text('Yes',style: TextStyle(color: ColorConstant.primaryColor)),
+              child: const Text(
+                'Yes',
+                style: TextStyle(color: ColorConstant.primaryColor),
+              ),
             ),
           ],
         );
       },
     );
-  }
-}
+  }}

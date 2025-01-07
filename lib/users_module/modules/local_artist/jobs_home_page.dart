@@ -70,21 +70,22 @@ class _JobPortalState extends State<JobPortal> {
       backgroundColor: ColorConstant.secondaryColor,
       appBar: AppBar(
         leadingWidth: width * 0.8,
-        backgroundColor: ColorConstant.primaryColor,
-        toolbarHeight: height * 0.2,
+        backgroundColor: ColorConstant.secondaryColor,
+       // toolbarHeight: height * 0.1,
         automaticallyImplyLeading: false,
         leading: Column(
           children: [
             Row(
               children: [
+                SizedBox(width: 10,),
                 Padding(
-                  padding: EdgeInsets.all(width * 0.05),
+                  padding:  EdgeInsets.only(left: 7.0,right: 7.0,top: 10.0),
                   child: InkWell(
                     onTap: () {
                       scaffoldKey.currentState?.openDrawer();
                     },
                     child: CircleAvatar(
-                      radius: width * 0.06,
+                      radius: width * 0.05,
                       backgroundImage: AssetImage(ImageConstant.user_profile),
                     ),
                   ),
@@ -95,32 +96,12 @@ class _JobPortalState extends State<JobPortal> {
                   style: TextStyle(
                     fontSize: width * 0.06,
                     fontWeight: FontWeight.w900,
-                    color: ColorConstant.secondaryColor,
+                    color: ColorConstant.primaryColor,
                   ),
                 ),
               ],
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-              child: TextField(
-                onTap: () {
-                  showSearch(
-                    context: context,
-                    delegate: CustomSearchDelegate(),
-                  );
-                },
-                decoration: InputDecoration(
-                  hintText: "Search for jobs or products",
-                  prefixIcon: Icon(Icons.search, color: ColorConstant.primaryColor),
-                  filled: true,
-                  fillColor: ColorConstant.secondaryColor,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(width * 0.03),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-            ),
+
           ],
         ),
       ),
@@ -129,6 +110,32 @@ class _JobPortalState extends State<JobPortal> {
           padding: EdgeInsets.all(width * 0.03),
           child: Column(
             children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+                child: TextField(
+                  onTap: () {
+                    showSearch(
+                      context: context,
+                      delegate: CustomSearchDelegate(),
+                    );
+                  },
+                  decoration: InputDecoration(
+                    hintText: "Search for jobs or products",
+                    prefixIcon: Icon(Icons.search, color: ColorConstant.primaryColor),
+                    filled: true,
+                    fillColor: ColorConstant.secondaryColor,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(width * 0.03),
+                      borderSide: BorderSide(
+                        color: ColorConstant.primaryColor
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: height*0.02,
+              ),
               Row(
                 children: [
                   Text(
@@ -151,7 +158,8 @@ class _JobPortalState extends State<JobPortal> {
                         width: width * 0.88,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(width * 0.03),
-                          color: ColorConstant.primaryColor,
+                         color: ColorConstant.primaryColor,
+                          image: DecorationImage(image: AssetImage(ImageConstant.product2),fit: BoxFit.cover)
                         ),
                       ),
                     ],
@@ -210,7 +218,12 @@ class _JobPortalState extends State<JobPortal> {
                           width: width * 0.3,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(width * 0.03),
-                            color: ColorConstant.primaryColor,
+                            color: ColorConstant.primaryColor.withOpacity(0.2),
+                            border: Border.all(
+                              color: ColorConstant.primaryColor.withOpacity(0.2),
+                              width: 1,
+                             
+                            ),
                           ),
                           child: Padding(
                             padding: EdgeInsets.all(width * 0.03),
@@ -233,68 +246,78 @@ class _JobPortalState extends State<JobPortal> {
                                       Text(
                                         "Product Name: ${orderData['productName'] ?? 'N/A'}", // Fetch product name from order data
                                         style: TextStyle(
-                                          color: ColorConstant.secondaryColor,
+                                          color: ColorConstant.primaryColor,
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
                                       Text(
                                         "Category: ${orderData['category'] ?? 'N/A'}", // Fetch category from order data
                                         style: TextStyle(
-                                          color: ColorConstant.secondaryColor,
+                                          color: ColorConstant.primaryColor,
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
                                       Text(
                                         "Amount: \$${collaborationData['amount']?.toString() ?? 'N/A'}",
                                         style: TextStyle(
-                                          color: ColorConstant.secondaryColor,
+                                          color: ColorConstant.primaryColor,
                                           fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          String userId = FirebaseAuth.instance.currentUser !.uid; // Replace with actual user ID
-                                          String jobId = collaborationData['jobId'] ?? ''; // Ensure jobId is not null
-                                          double amount = collaborationData['amount'] ?? 0.0; // Get the amount
-
-                                          if (jobId.isNotEmpty) {
-                                            applyForJob(userId, jobId, amount);
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => JobInfo(
-                                                  productName: orderData['productName'] ?? 'N/A',
-                                                  category: orderData['category'] ?? 'N/A',
-                                                  amount: collaborationData['amount'] ?? 0.0,
-                                                  customizationText: orderData['customizationText'] ?? 'N/A',
-                                                  customizationImage: orderData['customizationImage'] ?? '',
-                                                  date: orderData['orderDate'] ?? 'N/A',
-                                                  jobId: collaborationData['jobId'] ?? '',
-                                                ),
-                                              ),
-                                            );
-                                          } else {
-                                            print("Job ID is null or empty");
-                                          }
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                                          decoration: BoxDecoration(
-                                            color: ColorConstant.secondaryColor,
-                                            borderRadius: BorderRadius.circular(8.0),
-                                          ),
-                                          child: Text(
-                                            "Apply",
-                                            style: TextStyle(
-                                              color: ColorConstant.primaryColor,
-                                              fontWeight: FontWeight.w900,
-                                            ),
-                                          ),
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        String userId = FirebaseAuth.instance.currentUser !.uid; // Replace with actual user ID
+                                        String jobId = collaborationData['jobId'] ?? ''; // Ensure jobId is not null
+                                        double amount = collaborationData['amount'] ?? 0.0; // Get the amount
+
+                                        if (jobId.isNotEmpty) {
+                                          applyForJob(userId, jobId, amount);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => JobInfo(
+                                                productName: orderData['productName'] ?? 'N/A',
+                                                category: orderData['category'] ?? 'N/A',
+                                                amount: collaborationData['amount'] ?? 0.0,
+                                                customizationText: orderData['customizationText'] ?? 'N/A',
+                                                customizationImage: orderData['customizationImage'] ?? '',
+                                                date: orderData['orderDate'] ?? 'N/A',
+                                                jobId: collaborationData['jobId'] ?? '',
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          print("Job ID is null or empty");
+                                        }
+                                      },
+                                      child: Container(
+                                        height: height*0.03,
+                                        width: width*0.15,
+                                        decoration: BoxDecoration(
+                                          color: ColorConstant.primaryColor,
+                                          borderRadius: BorderRadius.circular(8.0),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "Apply",
+                                            style: TextStyle(
+                                                color: ColorConstant.secondaryColor,
+                                                fontWeight: FontWeight.w900,
+                                                fontSize: 10
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
                               ],
                             ),
                           ),
