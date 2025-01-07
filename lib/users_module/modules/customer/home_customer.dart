@@ -7,7 +7,9 @@ import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/users_module/modules/customer/all_trending.dart';
 import 'package:elegantia_art/users_module/modules/customer/cart_c.dart';
 import 'package:elegantia_art/users_module/modules/customer/categories.dart';
+import 'package:elegantia_art/users_module/modules/customer/catelogs_new_shelved.dart';
 import 'package:elegantia_art/users_module/modules/customer/pins.dart';
+import 'package:elegantia_art/users_module/modules/customer/product_details.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +29,7 @@ class _HomePageState extends State<HomePage> {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String currentUserName = "";
+  List<Map<String, dynamic>> products_ = [];
 
   List products=[
     ImageConstant.product1,
@@ -40,18 +43,10 @@ class _HomePageState extends State<HomePage> {
     ImageConstant.product2,
     ImageConstant.product1,
   ];
-  List p_names=[
-    "Ring album",
-    "Journals",
-    "Resin",
-    "Charm",
-    "Stamps",
-    "Ring album",
-    "Journals",
-    "Resin",
-    "Charm",
-    "Stamps"
-  ];
+
+  bool isLoading = false;
+
+  List<Map<String, dynamic>> categories = [];
 
   void signUserOut(){
 
@@ -61,7 +56,50 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _fetchCurrentUserName(); // Fetch the current user's name when the widget is initialized
+    _fetchCurrentUserName();
+    _fetchCategories();
+    _fetchProducts(currentUserName);
+  }
+
+  Future<void> _fetchCategories() async {
+    try {
+      final categoriesRef = _firestore.collection('categories');
+      final querySnapshot = await categoriesRef.get();
+      setState(() {
+        categories = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      });
+    } catch (error) {
+      print("Error fetching categories: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to load categories. Please try again.")),
+      );
+    }
+  }
+
+  Future<void> _fetchProducts(String category) async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      final productsRef = _firestore.collection('products');
+      Query<Map<String, dynamic>> query = productsRef;
+      if (category.isNotEmpty) {
+        query = query.orderBy('likeCount' , descending: true);
+      }
+      final querySnapshot = await query.get();
+      setState(() {
+        products_ = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      });
+    } catch (error) {
+      print("Error fetching products: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to load products. Please try again.")),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> _fetchCurrentUserName() async {
@@ -86,6 +124,8 @@ class _HomePageState extends State<HomePage> {
       print("No user is currently signed in.");
     }
   }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -230,7 +270,9 @@ class _HomePageState extends State<HomePage> {
                             dotWidth: width*0.03
                         ),
                       ),
+
                       SizedBox(height: height*0.015,),
+
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           CustomText(text: "Categories"),
@@ -260,91 +302,28 @@ class _HomePageState extends State<HomePage> {
                             shrinkWrap: true,
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index) {
-                              return Padding(
-                                padding:  EdgeInsets.only(left:width*0.015,right:width*0.015),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    CircleAvatar(
-                                        radius: width*0.1,
-                                        backgroundImage: AssetImage(products[index])
-                                    ),
-                                    Padding(
-                                      padding:EdgeInsets.all(width*0.015),
-                                      child: Text(p_names[index],
-                                        style: TextStyle(
-                                            fontSize: width*0.03
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              );
-                            },
-                            itemCount:5
-                        ),
-                      ),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          CustomText(text: "Trending"),
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => TrendingPage(),));
-                              setState(() {
-
-                              });
-                            },
-                            child: Text("See all",
-                              style: TextStyle(
-                                  fontSize: width*0.03
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      SizedBox(height: height*0.01,),
-                      Container(
-                        height: height*0.2,
-                        width: width*0.95,
-                        decoration: BoxDecoration(
-                          color: ColorConstant.primaryColor.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(width*0.03),
-                        ),
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding:  EdgeInsets.all(width*0.015),
-                                child: Container(
-                                  height: height*0.1,
-                                  width: width*0.2,
-                                  decoration: BoxDecoration(
-                                    color: ColorConstant.secondaryColor,
-                                    borderRadius: BorderRadius.circular(width*0.02),
-                                    // boxShadow: [BoxShadow(
-                                    //   color: ColorConstant.primaryColor.withOpacity(0.5),
-                                    //   spreadRadius: width*0.05,
-                                    //   blurRadius: width*0.8,
-                                    //   offset: Offset(-3,3),
-                                    // )]
-                                  ),
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => CatelogsNewUi(selectedCategory: categories[index]['name'],),));
+                                },
+                                child: Padding(
+                                  padding:  EdgeInsets.only(left:width*0.015,right:width*0.015),
                                   child: Column(
-                                    children: [SizedBox(height: height*0.01,),
-                                      Container(
-                                        height: height*0.13,
-                                        width: width*0.175,
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(width*0.015),
-                                            color: ColorConstant.primaryColor,
-                                            image: DecorationImage(image: AssetImage(products[index]),fit: BoxFit.cover)
-                                        ),
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      CircleAvatar(
+                                          radius: width*0.1,
+                                          backgroundImage: AssetImage(products[index])
                                       ),
-                                      SizedBox(height: width*0.015,),
-                                      Text(p_names[index],
-                                        style: TextStyle(
-                                            fontSize: width*0.03
+                                      Padding(
+                                        padding:EdgeInsets.all(width*0.015),
+                                        child: Text(
+                                      categories[index]['name'],
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                              fontSize: width*0.0175,
+                                          ),
                                         ),
                                       )
                                     ],
@@ -352,7 +331,68 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               );
                             },
-                            itemCount:5
+                            itemCount:categories.length
+                        ),
+                      ),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CustomText(text: "Trending"),
+                        ],
+                      ),
+                      SizedBox(height: height*0.01,),
+                      Container(
+                        height: height*0.2,
+                        width: width*0.95,
+                        decoration: BoxDecoration(
+                          color: ColorConstant.primaryColor.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(width*0.03),
+                        ),
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails(product: products_[index],),));
+                                },
+                                child: Padding(
+                                  padding:  EdgeInsets.all(width*0.015),
+                                  child: Container(
+                                    height: height*1,
+                                    width: width*0.2,
+                                    decoration: BoxDecoration(
+                                      color: ColorConstant.secondaryColor,
+                                      borderRadius: BorderRadius.circular(width*0.02),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [SizedBox(height: height*0.01,),
+                                        Container(
+                                          height: height*0.13,
+                                          width: width*0.175,
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(width*0.015),
+                                              color: ColorConstant.primaryColor,
+                                              image: DecorationImage(image: AssetImage(products[index]),fit: BoxFit.cover)
+                                          ),
+                                        ),
+                                        SizedBox(height: width*0.015,),
+                                        Center(
+                                          child: Text('''${products_[index]['name']}''',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                                fontSize: width*0.02
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            itemCount:products.length
                         ),
                       ),
                       SizedBox(height: height*0.015,),
@@ -388,7 +428,7 @@ class _HomePageState extends State<HomePage> {
                               crossAxisCount: 2,
                               childAspectRatio: 0.9
                           ),
-                          itemCount: products.length,
+                          itemCount: products_.length,
                           itemBuilder: (BuildContext context, int index) {
                             return Container(
                               margin: EdgeInsets.all(width*0.005),
@@ -409,41 +449,33 @@ class _HomePageState extends State<HomePage> {
                                             image: DecorationImage(image: AssetImage(products[index]),fit: BoxFit.fill)
                                         ),
                                       ),
-                                      Padding(
-                                        padding:  EdgeInsets.only(
-                                            left: width*0.253,
-                                            top: width*0.275
-                                        ),
-                                        child: Container(
-                                          height: height*0.045,
-                                          width: width*0.09,
-                                          decoration: BoxDecoration(
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  color: ColorConstant.primaryColor,
-                                                  blurRadius: width*0.01,
-                                                  spreadRadius: width*0.001
-                                              )
-                                            ],
-                                            borderRadius: BorderRadius.circular(width*0.1),
-                                            color: Colors.white,
-                                          ),
-                                          child: Icon(Icons.favorite_outline,color: ColorConstant.primaryColor,),
-                                        ),
-                                      )
+
+                                      // Padding(
+                                      //   padding:  EdgeInsets.only(
+                                      //       left: width*0.253,
+                                      //       top: width*0.275
+                                      //   ),
+                                      //   child: Container(
+                                      //     height: height*0.045,
+                                      //     width: width*0.09,
+                                      //     decoration: BoxDecoration(
+                                      //       boxShadow: [
+                                      //         BoxShadow(
+                                      //             color: ColorConstant.primaryColor,
+                                      //             blurRadius: width*0.01,
+                                      //             spreadRadius: width*0.001
+                                      //         )
+                                      //       ],
+                                      //       borderRadius: BorderRadius.circular(width*0.1),
+                                      //       color: Colors.white,
+                                      //     ),
+                                      //     child: Icon(Icons.favorite_outline,color: ColorConstant.primaryColor,),
+                                      //   ),
+                                      // )
+
                                     ],
                                   ),
-                                  Text(p_names[index],),
-                                  Row(
-                                    // for viw until package used
-                                    children: [
-                                      Icon(Icons.star,size: width*0.05,),
-                                      Icon(Icons.star,size: width*0.05,),
-                                      Icon(Icons.star,size: width*0.05,),
-                                      Icon(Icons.star,size: width*0.05,),
-                                      Icon(Icons.star,size: width*0.05,),
-                                    ],
-                                  )
+                                  Text(products_[index]['name'],),
                                 ],
                               ),
                             );
