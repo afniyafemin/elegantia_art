@@ -1,6 +1,7 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/services/chatting/chat_page.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/job_category.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/message_page.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/my_jobs_list/my_jobs.dart';
@@ -24,7 +25,7 @@ class _LocalArtistNavbarState extends State<LocalArtistNavbar> {
     JobCategoryPage(),
     PortfolioPage(),
     MyJobs(),
-    MessagePage(),
+    ChatPage(),
   ];
   @override
   Widget build(BuildContext context) {
