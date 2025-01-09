@@ -245,7 +245,9 @@ class _JobPortalState extends State<JobPortal> {
                     height: (height * 0.15) * (collaborations.length) + (height * 0.05),
                     width: width * 0.9,
                     child: ListView.separated(
+                      physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
+
                         final collaborationData = collaborations[index]['collaboration'];
                         final orderData = collaborations[index]['order'];
 

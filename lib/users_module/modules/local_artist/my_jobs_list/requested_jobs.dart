@@ -146,4 +146,5 @@ class _RequestedJobsState extends State<RequestedJobs> {
         );
       },
     );
-  }}
+  }
+}

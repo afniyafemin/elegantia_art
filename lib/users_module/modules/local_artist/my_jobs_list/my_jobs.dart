@@ -21,35 +21,35 @@ class _MyJobsState extends State<MyJobs> {
             backgroundColor: ColorConstant.primaryColor,
             title: Text("My Jobs",
               style: TextStyle(
-            fontWeight: FontWeight.bold,
-                color: ColorConstant.secondaryColor
-            ),),
+                  fontWeight: FontWeight.bold,
+                  color: ColorConstant.secondaryColor
+              ),),
             centerTitle: true,
             bottom: TabBar(
 //              indicatorSize: height*0.02,
-              indicatorColor: ColorConstant.primaryColor,
+                indicatorColor: ColorConstant.primaryColor,
                 tabs: [
-              Container(
-                height: height*0.04,
-                child: Text("Requested",
-                  style: TextStyle(
-                    color: ColorConstant.secondaryColor,
-                    fontWeight: FontWeight.w700,
-                    fontSize: width*0.04
+                  Container(
+                    height: height*0.04,
+                    child: Text("Requested",
+                      style: TextStyle(
+                          color: ColorConstant.secondaryColor,
+                          fontWeight: FontWeight.w700,
+                          fontSize: width*0.04
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              Container(
-                height: height*0.04,
-                child: Text("Accepted",
-                  style: TextStyle(
-                      color: ColorConstant.secondaryColor,
-                      fontWeight: FontWeight.w700,
-                      fontSize: width*0.04
+                  Container(
+                    height: height*0.04,
+                    child: Text("Accepted",
+                      style: TextStyle(
+                          color: ColorConstant.secondaryColor,
+                          fontWeight: FontWeight.w700,
+                          fontSize: width*0.04
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ]),
+                ]),
           ),
           body: TabBarView(
             children: [

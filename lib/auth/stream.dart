@@ -1,4 +1,5 @@
 import 'package:elegantia_art/users_module/modules/module.dart';
+import 'package:elegantia_art/users_module/splash/splash.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,7 @@ class StreamPage extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return ModuleDivision();
+              return Splash();
             }else{
               return AuthPage();
             }
