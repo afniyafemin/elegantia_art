@@ -7,8 +7,9 @@ import 'package:flutter/material.dart';
 
 class CatelogsNewUi extends StatefulWidget {
   final String selectedCategory;
+  final String description;
 
-  const CatelogsNewUi({super.key, required this.selectedCategory});
+  const CatelogsNewUi({super.key, required this.selectedCategory, required this.description});
 
   @override
   State<CatelogsNewUi> createState() => _CatelogsNewUiState();
@@ -75,111 +76,39 @@ class _CatelogsNewUiState extends State<CatelogsNewUi> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text(
-                          widget.selectedCategory,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: height * 0.04,
-                          ),
+                      Text(
+                        widget.selectedCategory,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: height * 0.04,
+                          color: ColorConstant.secondaryColor.withOpacity(0.5)
+                        ),
+                      ),
+                      Text(
+                        widget.description,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: height * 0.015,
+                          color: ColorConstant.secondaryColor.withOpacity(0.85)
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(top: width * 0.1, left: width * 0.03, right: width * 0.07),
-                        child: Container(
-                          height: height * 0.03,
-                          color: ColorConstant.primaryColor,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return Container(
-                                        height: height * 0.45,
-                                        width: width * 1,
-                                        decoration: BoxDecoration(
-                                          color: ColorConstant.secondaryColor,
-                                          borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(width * 0.05),
-                                            topRight: Radius.circular(width * 0.05),
-                                          ),
-                                        ),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                          children: [
-                                            SizedBox(height: height * 0.015),
-                                            Container(
-                                              height: height * 0.01,
-                                              width: width * 0.25,
-                                              decoration: BoxDecoration(
-                                                color: ColorConstant.primaryColor,
-                                                borderRadius: BorderRadius.circular(width * 0.1),
-                                              ),
-                                            ),
-                                            SizedBox(height: height * 0.015),
-                                            Text(
-                                              "Sort By",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: width * 0.05,
-                                              ),
-                                            ),
-                                            SizedBox(height: height * 0.015),
-                                            Expanded(
-                                              child: ListView.builder(
-                                                itemCount: 5, // Assuming you have 5 sorting options
-                                                itemBuilder: (BuildContext context, int index) {
-                                                  return Card(
-                                                    color: ColorConstant.primaryColor,
-                                                    child: ListTile(
-                                                      leading: Text(
-                                                        ["Popular ", "Newest", "Price: Low to High", "Price: High to Low"][index],
-                                                        style: TextStyle(color: ColorConstant.secondaryColor),
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                                child: Padding(
-                                  padding: EdgeInsets.only(left: width * 0.02),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.sort_outlined, color: ColorConstant.secondaryColor),
-                                      SizedBox(width: width * 0.01),
-                                      Text(
-                                        "Sort By",
-                                        style: TextStyle(fontWeight: FontWeight.w600, color: ColorConstant.secondaryColor),
-                                      )
-                                    ],
-                                  ),
-                                ),
+                        padding: EdgeInsets.only(top: height * 0.065, right: width * 0.07),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  isGridView = !isGridView;
+                                });
+                              },
+                              child: Icon(
+                                isGridView ? Icons.list : Icons.grid_view_sharp,
+                                color: ColorConstant.secondaryColor,
                               ),
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    isGridView = !isGridView;
-                                  });
-                                },
-                                child: Icon(
-                                  isGridView ? Icons.list : Icons.grid_view_sharp,
-                                  color: ColorConstant.secondaryColor,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -194,10 +123,10 @@ class _CatelogsNewUiState extends State<CatelogsNewUi> {
                         decoration: BoxDecoration(
                           boxShadow: [
                             BoxShadow(
-                              color: ColorConstant.primaryColor.withOpacity(0.5),
+                              color: ColorConstant.primaryColor.withOpacity(0.25),
                               spreadRadius: 3,
                               blurRadius: 200,
-                              offset: Offset(-5, 5),
+                              offset: Offset(0, 4),
                             )
                           ],
                         ),
@@ -287,7 +216,15 @@ class _CatelogsNewUiState extends State<CatelogsNewUi> {
                                     ),
                                     child: Center(
                                       child: ListTile(
-                                        leading: Image(image: AssetImage(ImageConstant.product2),),
+                                        leading: Container(
+                                          height: height*0.075,
+                                          width: width*0.125,
+                                          decoration: BoxDecoration(
+                                            color: ColorConstant.primaryColor,
+                                            borderRadius: BorderRadius.circular(width*0.025),
+                                            image: DecorationImage(image: AssetImage(ImageConstant.product2),fit: BoxFit.fill,)
+                                          ),
+                                        ),
                                         title: Text(product['name']),
                                         subtitle: Text("₹${product['price']}"),
                                         onTap: () {

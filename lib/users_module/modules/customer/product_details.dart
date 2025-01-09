@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
+import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/users_module/modules/customer/buy_now_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -196,8 +197,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                     widget.product['name'],
                                     style: TextStyle(
                                       fontSize:
-                                          MediaQuery.of(context).size.width *
-                                              0.05,
+                                          width * 0.05,
                                       fontWeight: FontWeight.w900,
                                     ),
                                   ),
@@ -428,8 +428,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => BuyNowPage(
-                                        product: widget
-                                            .product, // Pass the correct product data
+                                        product: widget.product,
                                       ),
                                     ),
                                   );

@@ -61,19 +61,25 @@ class _MallMallState extends State<MallMall> {
                       bottomRight: Radius.circular(width * 0.35),
                     ),
                   ),
-                  child: Center(
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
                         "99 mall",
                         style: TextStyle(
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w900,
+                          color: ColorConstant.secondaryColor.withOpacity(0.5),
                           fontSize: height * 0.04,
                         ),
                       ),
-                    ),
+                      Text("Buy products with Rs.99 and below Rs.99",
+                        style: TextStyle(
+                          color: ColorConstant.secondaryColor.withOpacity(0.8),
+                          fontWeight: FontWeight.w700,
+                          fontSize: width*0.03,
+                        ),
+                      )
+                    ],
                   ),
                 ),
                 Center(

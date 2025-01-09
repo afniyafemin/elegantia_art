@@ -75,7 +75,7 @@ class _LoginState extends State<Login> {
                             child: Column(
                               children: [
                                 Container(
-                                  height: height * 0.05,
+                                  height: height * 0.075,
                                   width: width * 0.55,
                                   decoration: BoxDecoration(
                                       border: Border(
@@ -114,7 +114,7 @@ class _LoginState extends State<Login> {
                                   height: height * 0.015,
                                 ),
                                 Container(
-                                  height: height * 0.05,
+                                  height: height * 0.075,
                                   width: width * 0.55,
                                   decoration: BoxDecoration(
                                       border: Border(

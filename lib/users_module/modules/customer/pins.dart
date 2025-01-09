@@ -59,16 +59,20 @@ class _PinsState extends State<Pins> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        "Pins",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: height * 0.04,
-                        ),
+                    Text(
+                      "Pins",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        color: ColorConstant.secondaryColor.withOpacity(0.5),
+                        fontSize: height * 0.04,
+                      ),
+                    ),
+                    Text(
+                      "Your Favorite Products",
+                      style: TextStyle(
+                        color: ColorConstant.secondaryColor.withOpacity(0.8),
+                        fontWeight: FontWeight.w700,
+                        fontSize: height * 0.015,
                       ),
                     ),
                   ],
@@ -81,9 +85,9 @@ class _PinsState extends State<Pins> {
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
-                          color: ColorConstant.primaryColor.withOpacity(0.5),
+                          color: ColorConstant.primaryColor.withOpacity(0.1),
                           spreadRadius: 3,
-                          blurRadius: 200,
+                          blurRadius: 100,
                           offset: Offset(-5, 5),
                         )
                       ],
@@ -104,46 +108,54 @@ class _PinsState extends State<Pins> {
                         itemBuilder: (BuildContext context, int index) {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: ColorConstant.secondaryColor,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: ColorConstant.primaryColor.withOpacity(0.1),
-                                    spreadRadius: 1,
-                                    blurRadius: 200,
-                                    offset: Offset(5, 5),
-                                  )
-                                ],
-                              ),
-                              child: Column(
-                                children: [
-                                  AspectRatio(
-                                    aspectRatio: 1,
-                                    child: Padding(
-                                        padding: EdgeInsets.all(width * 0.04),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                              image: AssetImage("asset/images/Product_1.jpg"),
-                                              fit: BoxFit.cover,
+                            child: Stack(
+                              children: [
+                                Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: ColorConstant.secondaryColor,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: ColorConstant.primaryColor.withOpacity(0.1),
+                                      spreadRadius: 1,
+                                      blurRadius: 200,
+                                      offset: Offset(5, 5),
+                                    )
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    AspectRatio(
+                                      aspectRatio: 1,
+                                      child: Padding(
+                                          padding: EdgeInsets.all(width * 0.04),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                image: AssetImage("asset/images/Product_1.jpg"),
+                                                fit: BoxFit.cover,
+                                              ),
+                                              borderRadius: BorderRadius.circular(12),
                                             ),
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                        )),
-                                  ),
-                                  Text(
-                                    favoriteProducts[index]["name"] ?? 'Unknown Product',
-                                    style: TextStyle(
-                                      color: ColorConstant.primaryColor,
-                                      fontWeight: FontWeight.w800,
-                                      fontSize: height * 0.025,
+                                          )),
                                     ),
-                                  ),
-                                  Text("₹${favoriteProducts[index]["price"].toString() ?? 'Price not available'}",)
-                                ],
+                                    Text(
+                                      favoriteProducts[index]["name"] ?? 'Unknown Product',
+                                      style: TextStyle(
+                                        color: ColorConstant.primaryColor,
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: height * 0.025,
+                                      ),
+                                    ),
+                                    Text("₹${favoriteProducts[index]["price"].toString() ?? 'Price not available'}",)
+                                  ],
+                                ),
                               ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: width*0.325, top: height*0.26),
+                                  child: Icon(Icons.favorite,color: ColorConstant.primaryColor,),
+                                )
+                              ]
                             ),
                           );
                         },

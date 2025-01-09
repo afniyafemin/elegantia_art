@@ -4,12 +4,14 @@ import 'package:elegantia_art/components/custom_drawer.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/services/search/search_products.dart';
 import 'package:elegantia_art/users_module/modules/customer/product_details.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/job_catelogs.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/job_detail.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/message_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 
 class JobPortal extends StatefulWidget {
   const JobPortal({super.key});
@@ -377,72 +379,3 @@ class _JobPortalState extends State<JobPortal> {
   }
 }
 
-class CustomSearchDelegate extends SearchDelegate {
-  List<String> searchTerms = [
-    "Ring album",
-    "Journals",
-    "Res in",
-    "Charm",
-    "Stamps",
-  ];
-
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: Icon(Icons.clear, color: ColorConstant.primaryColor),
-        onPressed: () {
-          query = '';
-        },
-      ),
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      onPressed: () {
-        close(context, null);
-      },
-      icon: Icon(Icons.arrow_back, color: ColorConstant.primaryColor),
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    List<String> matchQuery = searchTerms
-        .where((item) => item.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-    return Container(
-      color: ColorConstant.secondaryColor,
-      child: ListView.builder(
-        itemCount: matchQuery.length,
-        itemBuilder: (context, index) {
-          var result = matchQuery[index];
-          return ListTile(
-            title: Text(result),
-          );
-        },
-      ),
-    );
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    List<String> matchQuery = searchTerms
-        .where((item) => item.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-    return Container(
-      color: ColorConstant.secondaryColor,
-      child: ListView.builder(
-        itemCount: matchQuery.length,
-        itemBuilder: (context, index) {
-          var result = matchQuery[index];
-          return ListTile(
-            title: Text(result),
-          );
-        },
-      ),
-    );
-  }
-}

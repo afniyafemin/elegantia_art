@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/services/search/search_products.dart';
 import 'package:elegantia_art/users_module/modules/customer/catelogs_new_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,16 @@ class CategoryList extends StatefulWidget {
 class _CategoryListState extends State<CategoryList> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<Map<String, dynamic>> categories = [];
+
+  List<String> description_for_category = [
+    "description for Art & Craft" ,
+    "description for Craft Tools" ,
+    "description for Decorative Supplies" ,
+    "description for Gifting" ,
+    "description for Memory Keeping" ,
+    "description for Testing Products" ,
+    "description for tttttt" ,
+  ];
 
   @override
   void initState() {
@@ -52,12 +63,12 @@ class _CategoryListState extends State<CategoryList> {
         actions: [
           IconButton(
             onPressed: () {
-              // Implement search functionality (optional)
+              showSearch(context: context, delegate: CustomCategorySearchDelegate());
             },
             icon: Icon(
               Icons.search_sharp,
               size: width * 0.07,
-              color: Colors.black,
+              color: ColorConstant.secondaryColor,
             ),
           ),
         ],
@@ -75,14 +86,14 @@ class _CategoryListState extends State<CategoryList> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CatelogsNewUi(selectedCategory: categories[index]['name']),
+                            builder: (context) => CatelogsNewUi(selectedCategory: categories[index]['name'] , description: description_for_category[index],),
                           ),
                         );
                       },
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(width*0.03),
                         child: Container(
-                          height: height * 0.2,
+                          height: height * 0.175,
                           width: width * 0.9,
                           decoration: BoxDecoration(
                             color: ColorConstant.primaryColor.withOpacity(0.8),
@@ -92,9 +103,8 @@ class _CategoryListState extends State<CategoryList> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: width * 0.45,
+                                width: width * 0.3,
                                 decoration: BoxDecoration(
-                                  color: Colors.white24,
                                   borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(width * 0.03),
                                     bottomLeft: Radius.circular(width * 0.03),
@@ -127,6 +137,91 @@ class _CategoryListState extends State<CategoryList> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class CustomCategorySearchDelegate extends SearchDelegate {
+  List<String> searchTerms = [
+    "Art & Craft" ,
+    "Craft Tools" ,
+    "Decorative Supplies" ,
+    "Gifting" ,
+    "Memory Keeping" ,
+    "Testing Products" ,
+    "tttttt"
+  ];
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.clear, color: ColorConstant.primaryColor),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        close(context, null);
+      },
+      icon: Icon(Icons.arrow_back, color: ColorConstant.primaryColor),
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    List<String> matchQuery = searchTerms
+        .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+    return Container(
+      child: ListView.builder(
+        itemCount: matchQuery.length,
+        itemBuilder: (context, index) {
+          var result = matchQuery[index];
+          return ListTile(
+            title: Text(result),
+          );
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    List<String> description_for_category = [
+      "description" ,
+      "description" ,
+      "description" ,
+      "description" ,
+      "description" ,
+      "description" ,
+      "description" ,
+    ];
+    List<String> matchQuery = searchTerms
+        .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+    return Container(
+      color: Colors.white,
+      child: ListView.builder(
+        itemCount: matchQuery.length,
+        itemBuilder: (context, index) {
+          var result = matchQuery[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => CatelogsNewUi(selectedCategory: searchTerms[index], description: description_for_category[index],), ));
+            },
+            child: ListTile(
+              title: Text(result),
+            ),
+          );
+        },
       ),
     );
   }

@@ -4,9 +4,11 @@ import 'package:elegantia_art/components/custom_drawer.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/services/search/search_products.dart';
 import 'package:elegantia_art/users_module/modules/customer/cart_c.dart';
 import 'package:elegantia_art/users_module/modules/customer/categories.dart';
 import 'package:elegantia_art/users_module/modules/customer/product_details.dart';
+import 'package:elegantia_art/users_module/modules/local_artist/jobs_home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +29,7 @@ class _HomePageState extends State<HomePage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String currentUserName = "";
   List<Map<String, dynamic>> products_ = [];
+  List<Map<String, dynamic>> MallProducts_ = [];
 
   List products=[
     ImageConstant.product1,
@@ -39,6 +42,16 @@ class _HomePageState extends State<HomePage> {
     ImageConstant.product1,
     ImageConstant.product2,
     ImageConstant.product1,
+  ];
+
+  List<String> description_for_category = [
+    "description" ,
+    "description" ,
+    "description" ,
+    "description" ,
+    "description" ,
+    "description" ,
+    "description" ,
   ];
 
   bool isLoading = false;
@@ -56,6 +69,29 @@ class _HomePageState extends State<HomePage> {
     _fetchCurrentUserName();
     _fetchCategories();
     _fetchProducts(currentUserName);
+    _get99MallProducts();
+  }
+
+  Future<void> _get99MallProducts() async {
+    try {
+      final productCollection = FirebaseFirestore.instance.collection('products');
+      final snapshot = await productCollection.where('price', isLessThanOrEqualTo: 99).get();
+
+      if (snapshot.docs.isNotEmpty) {
+        setState(() {
+          MallProducts_ = snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+        });
+      }
+    } catch (e) {
+      // Handle error (e.g., show a snackbar)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching products: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> _fetchCategories() async {
@@ -169,7 +205,7 @@ class _HomePageState extends State<HomePage> {
                               InkWell(
                                 onTap: () {
                                   setState(() {
-
+                                    showSearch(context: context, delegate: CustomSearchDelegate());
                                   });
                                 },
                                 child: CircleAvatar(
@@ -197,7 +233,7 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(width*0.03),
                         child: Stack(
                             children: [
                               Container(
@@ -211,13 +247,13 @@ class _HomePageState extends State<HomePage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     CarouselSlider.builder(
-                                      itemCount: 4,
+                                      itemCount: MallProducts_.length,
                                       itemBuilder: (BuildContext context, int index, int realIndex) {
                                         return Stack(
                                             children: [
                                               Container(
                                                 height: height*0.3,
-                                                width: width*0.88,
+                                                // width: width*1,
                                                 decoration: BoxDecoration(
                                                     borderRadius: BorderRadius.circular(width*0.03),
                                                     color: ColorConstant.primaryColor,
@@ -226,7 +262,7 @@ class _HomePageState extends State<HomePage> {
                                               ),
                                               Padding(
                                                 padding:EdgeInsets.only(top: height*0.15,left: width*0.05),
-                                                child: Text(products_[index]['name'],
+                                                child: Text(MallProducts_[index]['name'],
                                                   style: TextStyle(
                                                       fontSize: width*0.1,
                                                       color: Colors.white,
@@ -260,7 +296,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       AnimatedSmoothIndicator(
                         activeIndex: selectIndex,
-                        count: 5,
+                        count: MallProducts_.length,
                         effect: ColorTransitionEffect(
                             activeDotColor: ColorConstant.primaryColor,
                             dotHeight: height*0.015,
@@ -301,7 +337,7 @@ class _HomePageState extends State<HomePage> {
                             itemBuilder: (context, index) {
                               return GestureDetector(
                                 onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => CatelogsNewUi(selectedCategory: categories[index]['name'],),));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => CatelogsNewUi(selectedCategory: categories[index]['name'], description: description_for_category[index],),));
                                 },
                                 child: Padding(
                                   padding:  EdgeInsets.only(left:width*0.015,right:width*0.015),
@@ -428,53 +464,58 @@ class _HomePageState extends State<HomePage> {
                           ),
                           itemCount: products_.length,
                           itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              margin: EdgeInsets.all(width*0.005),
-                              decoration: BoxDecoration(
-                                color:ColorConstant.secondaryColor,
-                                borderRadius: BorderRadius.circular(width*0.02),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Stack(
-                                    children: [
-                                      Container(
-                                        height: height*0.2,
-                                        width: width*0.4,
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(width*0.03),
-                                            image: DecorationImage(image: AssetImage(products[index]),fit: BoxFit.fill)
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails(product: products_[index]),));
+                              },
+                              child: Container(
+                                margin: EdgeInsets.all(width*0.005),
+                                decoration: BoxDecoration(
+                                  color:ColorConstant.secondaryColor,
+                                  borderRadius: BorderRadius.circular(width*0.02),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Stack(
+                                      children: [
+                                        Container(
+                                          height: height*0.2,
+                                          width: width*0.4,
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(width*0.03),
+                                              image: DecorationImage(image: AssetImage(products[index]),fit: BoxFit.fill)
+                                          ),
                                         ),
-                                      ),
 
-                                      // Padding(
-                                      //   padding:  EdgeInsets.only(
-                                      //       left: width*0.253,
-                                      //       top: width*0.275
-                                      //   ),
-                                      //   child: Container(
-                                      //     height: height*0.045,
-                                      //     width: width*0.09,
-                                      //     decoration: BoxDecoration(
-                                      //       boxShadow: [
-                                      //         BoxShadow(
-                                      //             color: ColorConstant.primaryColor,
-                                      //             blurRadius: width*0.01,
-                                      //             spreadRadius: width*0.001
-                                      //         )
-                                      //       ],
-                                      //       borderRadius: BorderRadius.circular(width*0.1),
-                                      //       color: Colors.white,
-                                      //     ),
-                                      //     child: Icon(Icons.favorite_outline,color: ColorConstant.primaryColor,),
-                                      //   ),
-                                      // )
+                                        // Padding(
+                                        //   padding:  EdgeInsets.only(
+                                        //       left: width*0.253,
+                                        //       top: width*0.275
+                                        //   ),
+                                        //   child: Container(
+                                        //     height: height*0.045,
+                                        //     width: width*0.09,
+                                        //     decoration: BoxDecoration(
+                                        //       boxShadow: [
+                                        //         BoxShadow(
+                                        //             color: ColorConstant.primaryColor,
+                                        //             blurRadius: width*0.01,
+                                        //             spreadRadius: width*0.001
+                                        //         )
+                                        //       ],
+                                        //       borderRadius: BorderRadius.circular(width*0.1),
+                                        //       color: Colors.white,
+                                        //     ),
+                                        //     child: Icon(Icons.favorite_outline,color: ColorConstant.primaryColor,),
+                                        //   ),
+                                        // )
 
-                                    ],
-                                  ),
-                                  Text(products_[index]['name'],),
-                                ],
+                                      ],
+                                    ),
+                                    Text(products_[index]['name'],),
+                                  ],
+                                ),
                               ),
                             );
                           },

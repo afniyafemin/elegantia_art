@@ -41,7 +41,7 @@ class _BuyNowPageState extends State<BuyNowPage> {
             'userId': user.uid,
             'category': widget.product['category'],
             'productId': widget.product['productId'],
-            'productName': widget.product['productName'] ?? 'Unknown Product',
+            'productName': widget.product['name'] ?? 'unKnown product',
             'price': widget.product['price'] ?? 0.0,
             'address': address ?? 'No address provided',
             'phoneNumber': phoneNumber ?? 'No phone number provided',
@@ -92,7 +92,15 @@ class _BuyNowPageState extends State<BuyNowPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Buy Now"),
+        iconTheme: IconThemeData(
+          color: ColorConstant.secondaryColor
+        ),
+        title: Text("Buy Now",
+          style: TextStyle(
+            color: ColorConstant.secondaryColor,
+            fontWeight: FontWeight.w700
+          ),
+        ),
         backgroundColor: ColorConstant.primaryColor,
       ),
       backgroundColor: ColorConstant.secondaryColor,
@@ -106,32 +114,37 @@ class _BuyNowPageState extends State<BuyNowPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
             Center(
-            child: Text(
-            "Customize your needs",
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: width * 0.07,
-                color: ColorConstant.primaryColor.withOpacity(0.25),
-                decorationStyle: TextDecorationStyle.dashed,
-              ),
+            child: Column(
+              children: [
+                Text(
+                "Customize your needs",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: width * 0.07,
+                    color: ColorConstant.primaryColor.withOpacity(0.25),
+                    decorationStyle: TextDecorationStyle.dashed,
+                  ),
+                ),
+                SizedBox(height: height*0.025,),
+                Container(
+                  height: height * 0.08,
+                  width: width * 0.2,
+                  decoration: BoxDecoration(
+                    color: ColorConstant.primaryColor.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(width * 0.075),
+                  ),
+                  child: Center(child: Text("lottiee (if interested)")),
+                ),
+              ],
             ),
           ),
-          Container(
-            height: height * 0.08,
-            width: width * 0.2,
-            decoration: BoxDecoration(
-              color: ColorConstant.primaryColor.withOpacity(0.4),
-              borderRadius: BorderRadius.circular(width * 0.075),
-            ),
-            child: Center(child: Text("lottiee (if interested)")),
-          ),
-          SizedBox(height: height * 0.075),
+          SizedBox(height: height * 0.03),
           Column(
             crossAxisAlignment
             : CrossAxisAlignment.start,
             children: [
               Text(
-                widget.product['productName'] ?? 'Unknown Product',
+                widget.product['name'] ?? 'Unknown Product',
                 style: TextStyle(fontSize: width * 0.03, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: height * 0.01),
