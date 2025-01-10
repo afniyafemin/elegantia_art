@@ -30,6 +30,31 @@ class _JobPortalState extends State<JobPortal> {
     collaborationsFuture = fetchCollaborationData(); // Fetch collaboration data once
   }
 
+  String? currentUserName;
+
+  Future<void> _fetchCurrentUserName() async {
+    User? user = FirebaseAuth.instance.currentUser ;
+    if (user != null) {
+      try {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          setState(() {
+            currentUserName = userDoc['username']; // Assuming 'username' is a field in the user document
+          });
+        } else {
+          print("User  document does not exist.");
+        }
+      } catch (error) {
+        print("Error fetching user name: $error");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to load user name. Please try again.")),
+        );
+      }
+    } else {
+      print("No user is currently signed in.");
+    }
+  }
+
   Future<List<Map<String, dynamic>>> fetchCollaborationData() async {
     final collaborationDocs = await FirebaseFirestore.instance.collection('collaborations').get();
 
@@ -95,8 +120,7 @@ class _JobPortalState extends State<JobPortal> {
                   ),
                   SizedBox(width: width*0.03,),
                   Text(
-                    "John",
-                    textAlign: TextAlign.start,
+                    currentUserName ?? "User ",
                     style: TextStyle(
                       fontSize: width * 0.06,
                       fontWeight: FontWeight.w900,
@@ -295,13 +319,15 @@ class _JobPortalState extends State<JobPortal> {
                                         style: TextStyle(
                                           color: ColorConstant.primaryColor,
                                           fontWeight: FontWeight.w500,
+                                          fontSize: width*0.03
                                         ),
                                       ),
                                       Text(
                                         "Amount: \$${collaborationData['amount']?.toString() ?? 'N/A'}",
                                         style: TextStyle(
                                           color: ColorConstant.primaryColor,
-                                          fontWeight: FontWeight.w500,
+                                          fontWeight: FontWeight.w200,
+                                          fontSize: width*0.03
                                         ),
                                       ),
                                     ],
@@ -311,31 +337,44 @@ class _JobPortalState extends State<JobPortal> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     GestureDetector(
-                                      onTap: () {
-                                        String userId = FirebaseAuth.instance.currentUser !.uid; // Replace with actual user ID
-                                        String jobId = collaborationData['jobId'] ?? ''; // Ensure jobId is not null
-                                        double amount = collaborationData['amount'] ?? 0.0; // Get the amount
+                                      // onTap: () {
+                                      //   String userId = FirebaseAuth.instance.currentUser !.uid; // Replace with actual user ID
+                                      //   String jobId = collaborationData['jobId'] ?? ''; // Ensure jobId is not null
+                                      //   double amount = collaborationData['amount'] ?? 0.0; // Get the amount
+                                      //
+                                      //   if (jobId.isNotEmpty) {
+                                      //     applyForJob(userId, jobId, amount);
+                                      //     Navigator.push(
+                                      //       context,
+                                      //       MaterialPageRoute(
+                                      //         builder: (context) => JobInfo(
+                                      //           productName: orderData['productName'] ?? 'N/A',
+                                      //           category: orderData['category'] ?? 'N/A',
+                                      //           amount: collaborationData['amount'] ?? 0.0,
+                                      //           customizationText: orderData['customizationText'] ?? 'N/A',
+                                      //           customizationImage: orderData['customizationImage'] ?? '',
+                                      //           date: orderData['orderDate'] ?? 'N/A',
+                                      //           jobId: collaborationData['jobId'] ?? '',
+                                      //         ),
+                                      //       ),
+                                      //     );
+                                      //   } else {
+                                      //     print("Job ID is null or empty");
+                                      //   }
+                                      // },
 
-                                        if (jobId.isNotEmpty) {
-                                          applyForJob(userId, jobId, amount);
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => JobInfo(
-                                                productName: orderData['productName'] ?? 'N/A',
-                                                category: orderData['category'] ?? 'N/A',
-                                                amount: collaborationData['amount'] ?? 0.0,
-                                                customizationText: orderData['customizationText'] ?? 'N/A',
-                                                customizationImage: orderData['customizationImage'] ?? '',
-                                                date: orderData['orderDate'] ?? 'N/A',
-                                                jobId: collaborationData['jobId'] ?? '',
-                                              ),
-                                            ),
-                                          );
-                                        } else {
-                                          print("Job ID is null or empty");
-                                        }
+                                      onTap : (){
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => JobInfo(
+                                          productName: orderData['productName'] ?? 'N/A',
+                                          category: orderData['category'] ?? 'N/A',
+                                          amount: collaborationData['amount'] ?? 0.0,
+                                          customizationText: orderData['customizationText'] ?? 'N/A',
+                                          customizationImage: orderData['customizationImage'] ?? '',
+                                          date: orderData['orderDate'] ?? 'N/A',
+                                          jobId: collaborationData['jobId'] ?? '',
+                                        ),));
                                       },
+
                                       child: Container(
                                         height: height*0.03,
                                         width: width*0.15,
