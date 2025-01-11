@@ -16,7 +16,7 @@ class StreamPage extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return Splash();
+              return ModuleDivision();
             }else{
               return AuthPage();
             }

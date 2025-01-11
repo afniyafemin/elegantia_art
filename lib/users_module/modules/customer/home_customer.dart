@@ -136,16 +136,23 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchCurrentUserName() async {
-    User? user = FirebaseAuth.instance.currentUser ;
+    User? user = FirebaseAuth.instance.currentUser;
+
+    // Default to "User" if no user is signed in
+    setState(() {
+      currentUserName = "User";
+    });
+
     if (user != null) {
       try {
         DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
         if (userDoc.exists) {
           setState(() {
-            currentUserName = userDoc['username'] ?? "User "; // Assuming 'username' is a field in the user document
+            // If user document exists, set the username from the document, otherwise default to "User"
+            currentUserName = userDoc['username'] ?? "User";
           });
         } else {
-          print("User  document does not exist.");
+          print("User document does not exist.");
         }
       } catch (error) {
         print("Error fetching user name: $error");
@@ -157,6 +164,7 @@ class _HomePageState extends State<HomePage> {
       print("No user is currently signed in.");
     }
   }
+
 
 
   @override

@@ -4,9 +4,11 @@ import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/services/google_signup.dart';
 import 'package:elegantia_art/users_module/login_signup/otp_login.dart';
 import 'package:elegantia_art/users_module/modules/customer/customer_navbar.dart';
+import 'package:elegantia_art/users_module/modules/module.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+
+import 'forgot_password.dart';
 
 class Login extends StatefulWidget {
   final VoidCallback showRegisterPage;
@@ -26,15 +28,25 @@ class _LoginState extends State<Login> {
 
   bool isLoading = false; // To show loading indicator
 
-  Future<void> handleGoogleSignIn() async {
-    setState(() {
-      isLoading = true;
-    });
-    await SigninWithGoogle(context);
-    setState(() {
-      isLoading = false;
-    });
+  void handleGoogleSignIn(BuildContext context) async {
+    try {
+      User? user = await SigninWithGoogle(context);
+      if (user != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => ModuleDivision()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Google Sign-In failed or was canceled.")),
+        );
+      }
+    } catch (e) {
+      print("Error during Google Sign-In: $e");
+    }
   }
+
+
 
   Future<void> handleEmailPasswordSignIn() async {
     if (_formKey.currentState?.validate() ?? false) {
@@ -64,16 +76,16 @@ class _LoginState extends State<Login> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
             Container(
-              width: width*1,
-              height: height*1,
+              width: width * 1,
+              height: height * 1,
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage(ImageConstant.bg),
@@ -81,13 +93,14 @@ class _LoginState extends State<Login> {
                 ),
               ),
               child: Padding(
-                padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+                padding:
+                    EdgeInsets.all(width * 0.05),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
-                      height: MediaQuery.of(context).size.height * 0.2,
+                      height: height * 0.2,
                       width: MediaQuery.of(context).size.width * 0.75,
                       child: Text(
                         "Timeless beauty \n and \n cherished memories \n are both stitched \n with love \n and \n elegance",
@@ -107,15 +120,19 @@ class _LoginState extends State<Login> {
                             child: Column(
                               children: [
                                 Container(
-                                  height: MediaQuery.of(context).size.height * 0.075,
-                                  width: MediaQuery.of(context).size.width * 0.55,
+                                  height: MediaQuery.of(context).size.height *
+                                      0.075,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.55,
                                   decoration: BoxDecoration(
                                     border: Border(
                                       left: BorderSide(
-                                        color: ColorConstant.primaryColor.withOpacity(0.4),
+                                        color: ColorConstant.primaryColor
+                                            .withOpacity(0.4),
                                       ),
                                       bottom: BorderSide(
-                                        color: ColorConstant.primaryColor.withOpacity(0.4),
+                                        color: ColorConstant.primaryColor
+                                            .withOpacity(0.4),
                                       ),
                                     ),
                                   ),
@@ -131,25 +148,38 @@ class _LoginState extends State<Login> {
                                       suffixIcon: Icon(
                                         Icons.person,
                                         color: ColorConstant.primaryColor,
-                                        size: MediaQuery.of(context).size.height * 0.02,
+                                        size:
+                                            MediaQuery.of(context).size.height *
+                                                0.02,
                                       ),
                                       hintText: "Email",
-                                      hintStyle: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.03),
-                                      border: OutlineInputBorder(borderSide: BorderSide.none),
+                                      hintStyle: TextStyle(
+                                          fontSize: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.03),
+                                      border: OutlineInputBorder(
+                                          borderSide: BorderSide.none),
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: MediaQuery.of(context).size.height * 0.015),
+                                SizedBox(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.015),
                                 Container(
-                                  height: MediaQuery.of(context).size.height * 0.075,
-                                  width: MediaQuery.of(context).size.width * 0.55,
+                                  height: MediaQuery.of(context).size.height *
+                                      0.075,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.55,
                                   decoration: BoxDecoration(
                                     border: Border(
                                       left: BorderSide(
-                                        color: ColorConstant.primaryColor.withOpacity(0.4),
+                                        color: ColorConstant.primaryColor
+                                            .withOpacity(0.4),
                                       ),
                                       bottom: BorderSide(
-                                        color: ColorConstant.primaryColor.withOpacity(0.4),
+                                        color: ColorConstant.primaryColor
+                                            .withOpacity(0.4),
                                       ),
                                     ),
                                   ),
@@ -172,14 +202,24 @@ class _LoginState extends State<Login> {
                                           });
                                         },
                                         child: Icon(
-                                          pass ? Icons.visibility_off : Icons.visibility,
+                                          pass
+                                              ? Icons.visibility_off
+                                              : Icons.visibility,
                                           color: ColorConstant.primaryColor,
-                                          size: MediaQuery.of(context).size.height * 0.02,
+                                          size: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.02,
                                         ),
                                       ),
                                       hintText: "Password",
-                                      hintStyle: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.03),
-                                      border: OutlineInputBorder(borderSide: BorderSide.none),
+                                      hintStyle: TextStyle(
+                                          fontSize: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.03),
+                                      border: OutlineInputBorder(
+                                          borderSide: BorderSide.none),
                                     ),
                                   ),
                                 ),
@@ -191,22 +231,42 @@ class _LoginState extends State<Login> {
                             child: Container(
                               height: MediaQuery.of(context).size.height * 0.05,
                               width: MediaQuery.of(context).size.width * 0.55,
-                              color: ColorConstant.primaryColor.withOpacity(0.65),
+                              color:
+                                  ColorConstant.primaryColor.withOpacity(0.65),
                               child: Center(
                                 child: isLoading
-                                    ? CircularProgressIndicator(color: Colors.white)
+                                    ? CircularProgressIndicator(
+                                        color: Colors.white)
                                     : Text(
-                                  "LOGIN",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: MediaQuery.of(context).size.width * 0.03,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                                        "LOGIN",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.03,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                               ),
                             ),
                           ),
-                          Text("Forgot Password ?"),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => ForgotPassword()),
+                              );
+                            },
+                            child: Text(
+                              "Forgot Password?",
+                              style: TextStyle(
+                                color: Colors.blue,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+
                           Column(
                             children: [
                               Text("Sign in with", textAlign: TextAlign.center),
@@ -214,31 +274,49 @@ class _LoginState extends State<Login> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   GestureDetector(
-                                    onTap: handleGoogleSignIn,
+                                    onTap: () => handleGoogleSignIn(context),
                                     child: Container(
-                                      height: MediaQuery.of(context).size.height * 0.04,
-                                      width: MediaQuery.of(context).size.width * 0.075,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.04,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.075,
                                       decoration: BoxDecoration(
                                         color: ColorConstant.secondaryColor,
-                                        borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.03),
+                                        borderRadius: BorderRadius.circular(
+                                            MediaQuery.of(context).size.width *
+                                                0.03),
                                       ),
                                       child: Icon(
                                         Icons.g_mobiledata_sharp,
-                                        size: MediaQuery.of(context).size.width * 0.08,
+                                        size:
+                                            MediaQuery.of(context).size.width *
+                                                0.08,
                                       ),
                                     ),
                                   ),
-                                  SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.03),
                                   InkWell(
                                     onTap: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => OtpLogin(),));
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => OtpLogin(),
+                                          ));
                                     },
                                     child: Container(
-                                      height: MediaQuery.of(context).size.height * 0.04,
-                                      width: MediaQuery.of(context).size.width * 0.075,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.04,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.075,
                                       decoration: BoxDecoration(
                                         color: ColorConstant.secondaryColor,
-                                        borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.03),
+                                        borderRadius: BorderRadius.circular(
+                                            MediaQuery.of(context).size.width *
+                                                0.03),
                                       ),
                                       child: Icon(Icons.phone),
                                     ),
@@ -253,20 +331,22 @@ class _LoginState extends State<Login> {
                     GestureDetector(
                       onTap: widget.showRegisterPage,
                       child: Container(
-                        height: MediaQuery.of(context).size.height * 0.15,
-                        width: MediaQuery.of(context).size.width * 0.75,
+                        height:height * 0.15,
+                        width: width * 0.75,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
                               "Don't have an account?",
-                              style: TextStyle(color: ColorConstant.primaryColor),
+                              style:
+                                  TextStyle(color: ColorConstant.primaryColor),
                             ),
                             Text(
                               "Create New",
                               style: TextStyle(
                                 fontWeight: FontWeight.w800,
-                                fontSize: MediaQuery.of(context).size.width * 0.03,
+                                fontSize:
+                                    MediaQuery.of(context).size.width * 0.03,
                                 color: ColorConstant.primaryColor,
                               ),
                             ),

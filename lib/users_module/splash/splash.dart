@@ -1,4 +1,5 @@
 
+import 'package:elegantia_art/auth/stream.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/users_module/login_signup/login.dart';
@@ -15,7 +16,7 @@ class _SplashState extends State<Splash> {
   void initState(){
     Future.delayed(
         Duration(seconds: 4)
-    ).then((value)=>Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => Login(showRegisterPage: () {  },),)));
+    ).then((value)=>Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => StreamPage(),)));
   }
   @override
   Widget build(BuildContext context) {
