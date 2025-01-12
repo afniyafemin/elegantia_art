@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:elegantia_art/users_module/modules/customer/product_details.dart';
 import 'package:flutter/material.dart';
 import '../../../constants/color_constants/color_constant.dart';
 import '../../../main.dart';
@@ -104,6 +105,7 @@ class _MallMallState extends State<MallMall> {
                             ? Center(child: CircularProgressIndicator())
                             : products.isNotEmpty
                             ? GridView.builder(
+
                           shrinkWrap: true,
                           scrollDirection: Axis.vertical,
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -114,48 +116,53 @@ class _MallMallState extends State<MallMall> {
                           itemBuilder: (BuildContext context, int index) {
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: ColorConstant.secondaryColor,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: ColorConstant.primaryColor.withOpacity(0.1),
-                                      spreadRadius: 1,
-                                      blurRadius: 200,
-                                      offset: Offset(5, 5),
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  children: [
-                                    AspectRatio(
-                                      aspectRatio: 1,
-                                      child: Padding(
-                                        padding: EdgeInsets.all(width * 0.04),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                              image : AssetImage("asset/images/Product_1.jpg"),
-                                              fit: BoxFit.cover,
+                              child: GestureDetector(
+                                onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context)=> ProductDetails(product: products[index])));
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: ColorConstant.secondaryColor,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: ColorConstant.primaryColor.withOpacity(0.1),
+                                        spreadRadius: 1,
+                                        blurRadius: 200,
+                                        offset: Offset(5, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      AspectRatio(
+                                        aspectRatio: 1,
+                                        child: Padding(
+                                          padding: EdgeInsets.all(width * 0.04),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                image : AssetImage("asset/images/Product_1.jpg"),
+                                                fit: BoxFit.cover,
+                                              ),
+                                              borderRadius: BorderRadius.circular(12),
                                             ),
-                                            borderRadius: BorderRadius.circular(12),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    Text(
-                                      products[index]["name"] ?? '',
-                                      style: TextStyle(
-                                        color: ColorConstant.primaryColor,
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: height * 0.025,
+                                      Text(
+                                        products[index]["name"] ?? '',
+                                        style: TextStyle(
+                                          color: ColorConstant.primaryColor,
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: height * 0.025,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      'Rs. ${products[index]["price"] ?? '0.00'}',
-                                    ),
-                                  ],
+                                      Text(
+                                        'Rs. ${products[index]["price"] ?? '0.00'}',
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
