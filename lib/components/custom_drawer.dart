@@ -46,7 +46,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
         if (userDoc.exists) {
           setState(() {
             currentUserName = userDoc['username'] ?? "User";
@@ -77,13 +80,15 @@ class _CustomDrawerState extends State<CustomDrawer> {
               radius: width * 0.15,
             ),
           ),
-          Text(currentUserName,style: TextStyle(
-            color: ColorConstant.primaryColor,
-            fontSize: width*0.05,
-            fontWeight: FontWeight.w700
-          ),),
+          Text(
+            currentUserName,
+            style: TextStyle(
+                color: ColorConstant.primaryColor,
+                fontSize: width * 0.05,
+                fontWeight: FontWeight.w700),
+          ),
           SizedBox(
-            height: height*0.02,
+            height: height * 0.02,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -94,32 +99,39 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   onChanged: (value) {
                     toggleSwitch(value);
                     if (isSwitched) {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => LocalArtistNavbar()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LocalArtistNavbar()));
                     } else {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => CustomerNavbar()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CustomerNavbar()));
                     }
                   }),
               Text("Local Artist"),
-
             ],
           ),
 
           SizedBox(
-            height: height*0.02,
+            height: height * 0.02,
           ),
-          Row(mainAxisAlignment: MainAxisAlignment.center,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 "User Info",
                 style: TextStyle(
                     decoration: TextDecoration.underline,
-                    fontSize: width*0.04,
-                    fontWeight: FontWeight.w500
-                ),
+                    fontSize: width * 0.04,
+                    fontWeight: FontWeight.w500),
               ),
-              Icon(Icons.edit, size: height*0.015,color: ColorConstant.primaryColor,), // Add edit icon here
+              Icon(
+                Icons.edit,
+                size: height * 0.015,
+                color: ColorConstant.primaryColor,
+              ), // Add edit icon here
             ],
           ),
           // Editable User Details
@@ -160,7 +172,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => StreamPage()),
-                    (Route<dynamic> route) => false, // Remove all previous routes
+                (Route<dynamic> route) => false, // Remove all previous routes
               );
             },
             child: Container(

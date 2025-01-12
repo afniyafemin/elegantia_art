@@ -3,6 +3,9 @@ import 'package:collection/collection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../constants/color_constants/color_constant.dart';
+import '../../main.dart';
+
 class ChatPage extends StatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
 
@@ -117,8 +120,18 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorConstant.secondaryColor,
       appBar: AppBar(
-        title: Text('Chat with Admin'),
+        iconTheme: IconThemeData(
+          color: ColorConstant.secondaryColor,
+        ),
+        backgroundColor: ColorConstant.primaryColor,
+        title: Text('Chat with Admin',
+          style: TextStyle(
+            fontSize: width*0.04,
+            color: ColorConstant.secondaryColor,
+            fontWeight: FontWeight.w900
+        ),),
       ),
       body: Column(
         children: [
@@ -163,9 +176,9 @@ class _ChatPageState extends State<ChatPage> {
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: isMe
-                              ? Colors.blue[200]
-                              : Colors.grey[300],
-                          borderRadius: BorderRadius.circular(10),
+                              ? ColorConstant.primaryColor
+                              : ColorConstant.primaryColor.withOpacity(0.25),
+                          borderRadius: BorderRadius.circular(width*.03),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,6 +189,7 @@ class _ChatPageState extends State<ChatPage> {
                                 color: isMe
                                     ? Colors.white
                                     : Colors.black,
+                                  fontSize: width*0.03
                               ),
                             ),
                             SizedBox(height: 5),
@@ -197,24 +211,38 @@ class _ChatPageState extends State<ChatPage> {
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Row(
+            child:  Row(
               children: [
                 Expanded(
                   child: TextField(
+                    style: TextStyle(
+                        color: ColorConstant.secondaryColor
+                    ),
                     controller: _messageController,
+                    cursorColor: ColorConstant.secondaryColor,
                     decoration: InputDecoration(
+                      focusColor: ColorConstant.secondaryColor,
                       hintText: 'Type a message...',
+                      hintStyle: TextStyle(
+                        color: Colors.white.withOpacity(0.3),
+                        fontWeight: FontWeight.w900,
+                        fontSize: width*0.03,
+                      ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(width*0.025       ),
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: Colors.grey[200],
+                      fillColor: ColorConstant.primaryColor,
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send),
+                  icon: Icon(
+                    Icons.send,
+                    size: width*0.06,
+                    color: ColorConstant.primaryColor,
+                  ),
                   onPressed: _sendMessage,
                 ),
               ],

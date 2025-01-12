@@ -4,15 +4,18 @@ import 'package:elegantia_art/components/custom_drawer.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/services/chatting/chat_page.dart';
 import 'package:elegantia_art/services/search/search_products.dart';
 import 'package:elegantia_art/users_module/modules/customer/cart_c.dart';
 import 'package:elegantia_art/users_module/modules/customer/categories.dart';
+import 'package:elegantia_art/users_module/modules/customer/pins.dart';
 import 'package:elegantia_art/users_module/modules/customer/product_details.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/jobs_home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import '../local_artist/message_page.dart';
 import 'catelogs_new_ui.dart';
 
 
@@ -210,35 +213,111 @@ class _HomePageState extends State<HomePage> {
                           ),
                           Row(
                             children: [
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    showSearch(context: context, delegate: CustomSearchDelegate());
-                                  });
+                              // InkWell(
+                              //   onTap: () {
+                              //     setState(() {
+                              //       showSearch(context: context, delegate: CustomSearchDelegate());
+                              //     });
+                              //   },
+                              //   child: CircleAvatar(
+                              //     radius: width*0.04,
+                              //     backgroundColor: ColorConstant.primaryColor,
+                              //     child: Icon(Icons.search,color: ColorConstant.secondaryColor,),
+                              //   ),
+                              // ),
+                              // SizedBox(width: width*0.03,),
+                              // InkWell(
+                              //   onTap: () {
+                              //     setState(() {
+                              //       Navigator.push(context, MaterialPageRoute(builder: (context) => CartCustomer(),));
+                              //     });
+                              //   },
+                              //   child: CircleAvatar(
+                              //     radius: width*0.04,
+                              //     backgroundColor: ColorConstant.primaryColor,
+                              //     child: Icon(Icons.add_shopping_cart,color: ColorConstant.secondaryColor,),
+                              //   ),
+                              // ),
+                              GestureDetector(
+                                onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context)=> Pins()));
                                 },
                                 child: CircleAvatar(
                                   radius: width*0.04,
                                   backgroundColor: ColorConstant.primaryColor,
-                                  child: Icon(Icons.search,color: ColorConstant.secondaryColor,),
-                                ),
-                              ),
-                              SizedBox(width: width*0.03,),
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => CartCustomer(),));
-                                  });
-                                },
-                                child: CircleAvatar(
-                                  radius: width*0.04,
-                                  backgroundColor: ColorConstant.primaryColor,
-                                  child: Icon(Icons.add_shopping_cart,color: ColorConstant.secondaryColor,),
+                                  child: Icon(Icons.favorite,color: ColorConstant.secondaryColor,size: 20,),
                                 ),
                               ),
                               SizedBox(width: width*0.03,),
                             ],
                           )
                         ],
+                      ),
+                      SizedBox(height: height*0.02,),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(),));
+                        },
+                        child: Column(
+                          children: [
+                            Text('''Interact with us ''',
+                              style: TextStyle(
+                                  fontSize: width*0.075,
+                                  fontWeight: FontWeight.w900,
+                                  color: ColorConstant.primaryColor.withOpacity(0.5)
+                              ),
+                            ),
+                            Text(''' to know more about the crafts ''',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w900,
+                                  color: ColorConstant.primaryColor.withOpacity(0.25),
+                                  fontSize: width*0.03
+                              ),
+                            ),
+                            SizedBox(height: height*0.025,)
+                          ],
+                        ),
+                      ),
+
+                      TextField(
+                        onTap: () {
+                          showSearch(
+                            context: context,
+                            delegate: CustomSearchDelegate(),
+                          );
+                        },
+                        cursorColor: ColorConstant.primaryColor,
+                        decoration: InputDecoration(
+                          hintText: "Search for products",
+                          hintStyle: TextStyle(
+                            color: ColorConstant.primaryColor.withOpacity(0.3)
+                          ),
+                          prefixIcon: Icon(Icons.search, color: ColorConstant.primaryColor),
+                          filled: true,
+                          fillColor: ColorConstant.secondaryColor,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(width * 0.03),
+                            borderSide: BorderSide(
+                                color: ColorConstant.primaryColor
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(width * 0.03),
+                            borderSide: BorderSide(
+                                color: ColorConstant.primaryColor
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(width * 0.03),
+                            borderSide: BorderSide(
+                                color: ColorConstant.primaryColor
+                            ),
+                          ),
+
+                        ),
+                      ),
+                      SizedBox(
+                        height: height*0.02,
                       ),
                       Padding(
                         padding: EdgeInsets.all(width*0.03),
@@ -257,28 +336,36 @@ class _HomePageState extends State<HomePage> {
                                     CarouselSlider.builder(
                                       itemCount: MallProducts_.length,
                                       itemBuilder: (BuildContext context, int index, int realIndex) {
-                                        return Stack(
-                                            children: [
-                                              Container(
-                                                height: height*0.3,
-                                                // width: width*1,
-                                                decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(width*0.03),
-                                                    color: ColorConstant.primaryColor,
-                                                    image: DecorationImage(image: AssetImage(products[index]),fit: BoxFit.cover)
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding:EdgeInsets.only(top: height*0.15,left: width*0.05),
-                                                child: Text(MallProducts_[index]['name'],
-                                                  style: TextStyle(
-                                                      fontSize: width*0.1,
-                                                      color: Colors.white,
-                                                      fontWeight: FontWeight.w900
+                                        return Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: GestureDetector(
+                                            onTap: (){
+                                              Navigator.push(context, MaterialPageRoute(builder: (context)=> ProductDetails(product: MallProducts_[index])));
+                                            },
+                                            child: Stack(
+                                                children: [
+                                                  Container(
+                                                    height: height*0.3,
+                                                    width: width * 0.88,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(width*0.03),
+                                                        color: ColorConstant.primaryColor,
+                                                        image: DecorationImage(image: AssetImage(products[index]),fit: BoxFit.cover)
+                                                    ),
                                                   ),
-                                                ),
-                                              )
-                                            ]
+                                                  Padding(
+                                                    padding:EdgeInsets.only(top: height*0.15,left: width*0.05),
+                                                    child: Text(MallProducts_[index]['name'],
+                                                      style: TextStyle(
+                                                          fontSize: width*0.1,
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.w900
+                                                      ),
+                                                    ),
+                                                  )
+                                                ]
+                                            ),
+                                          ),
                                         );
                                       },
                                       options: CarouselOptions(
@@ -440,19 +527,19 @@ class _HomePageState extends State<HomePage> {
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           CustomText(text: "New Arrivals"),
-                          InkWell(
-                            onTap: () {
-                              // Navigator.push(context, MaterialPageRoute(builder: (context) => TrendingPage(),));
-                              setState(() {
-
-                              });
-                            },
-                            child: Text("See all",
-                              style: TextStyle(
-                                  fontSize: width*0.03
-                              ),
-                            ),
-                          )
+                          // InkWell(
+                          //   onTap: () {
+                          //     // Navigator.push(context, MaterialPageRoute(builder: (context) => TrendingPage(),));
+                          //     setState(() {
+                          //
+                          //     });
+                          //   },
+                          //   child: Text("See all",
+                          //     style: TextStyle(
+                          //         fontSize: width*0.03
+                          //     ),
+                          //   ),
+                          // )
                         ],
                       ),
                       SizedBox(height: height*0.01,),
@@ -492,7 +579,7 @@ class _HomePageState extends State<HomePage> {
                                           width: width*0.4,
                                           decoration: BoxDecoration(
                                               borderRadius: BorderRadius.circular(width*0.03),
-                                              image: DecorationImage(image: AssetImage(products[index]),fit: BoxFit.fill)
+                                              image: DecorationImage(image: AssetImage(products[index]),fit: BoxFit.cover)
                                           ),
                                         ),
 

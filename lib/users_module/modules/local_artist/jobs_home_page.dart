@@ -4,6 +4,7 @@ import 'package:elegantia_art/components/custom_drawer.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/services/chatting/chat_page.dart';
 import 'package:elegantia_art/services/search/search_products.dart';
 import 'package:elegantia_art/users_module/modules/customer/product_details.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/job_catelogs.dart';
@@ -133,17 +134,17 @@ class _JobPortalState extends State<JobPortal> {
 
           ],
         ),
-        actions: [
-          Padding(
-            padding:  EdgeInsets.only(right: width*0.03),
-            child: GestureDetector(
-              onTap: () {
-                showSearch(context: context, delegate: CustomSearchDelegate());
-              },
-                child: Icon(Icons.search,color: ColorConstant.primaryColor,size: width*0.075,)
-            ),
-          )
-        ],
+        // actions: [
+        //   Padding(
+        //     padding:  EdgeInsets.only(right: width*0.03),
+        //     child: GestureDetector(
+        //       onTap: () {
+        //         showSearch(context: context, delegate: CustomSearchDelegate());
+        //       },
+        //         child: Icon(Icons.search,color: ColorConstant.primaryColor,size: width*0.075,)
+        //     ),
+        //   )
+        // ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -152,7 +153,7 @@ class _JobPortalState extends State<JobPortal> {
             children: [
               GestureDetector(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => MessagePage(),));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(),));
                 },
                 child: Column(
                   children: [
@@ -182,17 +183,34 @@ class _JobPortalState extends State<JobPortal> {
                     delegate: CustomSearchDelegate(),
                   );
                 },
+                cursorColor: ColorConstant.primaryColor,
                 decoration: InputDecoration(
-                  hintText: "Search for jobs or products",
+                  hintText: "Search for jobs",
+                  hintStyle: TextStyle(
+                      color: ColorConstant.primaryColor.withOpacity(0.3)
+                  ),
                   prefixIcon: Icon(Icons.search, color: ColorConstant.primaryColor),
                   filled: true,
                   fillColor: ColorConstant.secondaryColor,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(width * 0.03),
                     borderSide: BorderSide(
-                      color: ColorConstant.primaryColor
+                        color: ColorConstant.primaryColor
                     ),
                   ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(width * 0.03),
+                    borderSide: BorderSide(
+                        color: ColorConstant.primaryColor
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(width * 0.03),
+                    borderSide: BorderSide(
+                        color: ColorConstant.primaryColor
+                    ),
+                  ),
+
                 ),
               ),
               SizedBox(

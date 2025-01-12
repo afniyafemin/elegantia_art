@@ -1,9 +1,7 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/main.dart';
-import 'package:elegantia_art/services/chatting/chat_page.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/job_category.dart';
-import 'package:elegantia_art/users_module/modules/local_artist/message_page.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/my_jobs_list/my_jobs.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/portfolio_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,7 +23,7 @@ class _LocalArtistNavbarState extends State<LocalArtistNavbar> {
     JobCategoryPage(),
     PortfolioPage(),
     MyJobs(),
-    ChatPage(),
+    //ChatPage(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -48,7 +46,7 @@ class _LocalArtistNavbarState extends State<LocalArtistNavbar> {
           Icon(Icons.category_outlined,color: ColorConstant.secondaryColor),
           Icon(Icons.credit_score,color: ColorConstant.secondaryColor),
           Icon(Icons.list_outlined,color: ColorConstant.secondaryColor),
-          Icon(Icons.message,color: ColorConstant.secondaryColor),
+         // Icon(Icons.message,color: ColorConstant.secondaryColor),
         ],
       ),
     );

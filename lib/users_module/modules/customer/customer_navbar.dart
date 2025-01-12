@@ -7,6 +7,8 @@ import 'package:elegantia_art/users_module/modules/customer/home_customer.dart';
 import 'package:elegantia_art/users_module/modules/customer/pins.dart';
 import 'package:flutter/material.dart';
 
+import 'cart_c.dart';
+
 class CustomerNavbar extends StatefulWidget {
   const CustomerNavbar({super.key});
 
@@ -20,7 +22,8 @@ class _CustomerNavbarState extends State<CustomerNavbar> {
     HomePage(),
     CategoryList(),
     MallMall(),
-    Pins(),
+    // Pins(),
+    CartCustomer()
   ];
 
   @override
@@ -43,7 +46,7 @@ class _CustomerNavbarState extends State<CustomerNavbar> {
           Icon(Icons.home,color: ColorConstant.secondaryColor,),
           Icon(Icons.category_outlined,color: ColorConstant.secondaryColor,),
           Icon(Icons.local_mall_outlined,color: ColorConstant.secondaryColor,),
-          Icon(Icons.favorite,color: ColorConstant.secondaryColor,),
+          Icon(Icons.add_shopping_cart,color: ColorConstant.secondaryColor,),
         ],
       ),
     );

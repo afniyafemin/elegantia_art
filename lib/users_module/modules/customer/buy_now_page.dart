@@ -41,7 +41,7 @@ class _BuyNowPageState extends State<BuyNowPage> {
             'userId': user.uid,
             'category': widget.product['category'],
             'productId': widget.product['productId'],
-            'productName': widget.product['name'] ?? 'unKnown product',
+            'productName': widget.product['productName'] ?? 'unKnown product',
             'price': widget.product['price'] ?? 0.0,
             'address': address ?? 'No address provided',
             'phoneNumber': phoneNumber ?? 'No phone number provided',
@@ -144,7 +144,7 @@ class _BuyNowPageState extends State<BuyNowPage> {
             : CrossAxisAlignment.start,
             children: [
               Text(
-                widget.product['name'] ?? 'Unknown Product',
+                widget.product['productName'] ?? 'Unknown Product',
                 style: TextStyle(fontSize: width * 0.03, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: height * 0.01),
