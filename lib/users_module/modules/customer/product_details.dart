@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/users_module/modules/customer/buy_now_page.dart';
+import 'package:elegantia_art/users_module/modules/customer/testimonials.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -232,16 +233,22 @@ class _ProductDetailsState extends State<ProductDetails> {
                                   ),
                                 ],
                               ),
-                              IconButton(
-                                onPressed: _toggleLike,
-                                icon: Icon(
-                                  isLiked
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
-                                  color: isLiked
-                                      ? Colors.red
-                                      : ColorConstant.primaryColor,
-                                ),
+
+                              Row(
+                                children: [
+                                  Icon(Icons.share,color: ColorConstant.primaryColor,),
+                                  IconButton(
+                                    onPressed: _toggleLike,
+                                    icon: Icon(
+                                      isLiked
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      color: isLiked
+                                          ? Colors.red
+                                          : ColorConstant.primaryColor,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -382,6 +389,34 @@ class _ProductDetailsState extends State<ProductDetails> {
                           ),
                           SizedBox(
                               height: MediaQuery.of(context).size.height * 0.1),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => Testimonials(),));
+                            },
+                            child: Center(
+                              child: Column(
+                                children: [
+                                  Text('''View the Reviews ''',
+                                    style: TextStyle(
+                                        fontSize: width*0.075,
+                                        fontWeight: FontWeight.w900,
+                                        color: ColorConstant.primaryColor.withOpacity(0.5)
+                                    ),
+                                  ),
+                                  Text(''' given by users ''',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w900,
+                                        color: ColorConstant.primaryColor.withOpacity(0.25),
+                                        fontSize: width*0.03
+                                    ),
+                                  ),
+                                  SizedBox(height: height*0.025,)
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: height*0.02,),
+
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [

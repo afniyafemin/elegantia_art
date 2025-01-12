@@ -63,7 +63,7 @@ class _CategoryListState extends State<CategoryList> {
         actions: [
           IconButton(
             onPressed: () {
-              showSearch(context: context, delegate: CustomCategorySearchDelegate());
+              showSearch(context: context, delegate: CustomCategorySearchDelegate(categories));
             },
             icon: Icon(
               Icons.search_sharp,
@@ -143,15 +143,26 @@ class _CategoryListState extends State<CategoryList> {
 }
 
 class CustomCategorySearchDelegate extends SearchDelegate {
-  List<String> searchTerms = [
-    "Art & Craft" ,
-    "Craft Tools" ,
-    "Decorative Supplies" ,
-    "Gifting" ,
-    "Memory Keeping" ,
-    "Testing Products" ,
-    "tttttt"
-  ];
+  final List<Map<String, dynamic>> categories;
+
+  CustomCategorySearchDelegate(this.categories);
+
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    return ThemeData(
+      appBarTheme: AppBarTheme(
+        backgroundColor: ColorConstant.secondaryColor,
+        iconTheme: IconThemeData(color: ColorConstant.primaryColor),
+        titleTextStyle: TextStyle(
+          color: ColorConstant.primaryColor,
+          fontSize: MediaQuery.of(context).size.height * 0.025,
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        border: InputBorder.none, // Remove the underline
+      ),
+    );
+  }
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -177,52 +188,80 @@ class CustomCategorySearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    List<String> matchQuery = searchTerms
-        .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+    List<Map<String, dynamic>> matchQuery = categories
+        .where((category) =>
+        category['name'].toString().toLowerCase().contains(query.toLowerCase()))
         .toList();
-    return Container(
-      child: ListView.builder(
-        itemCount: matchQuery.length,
-        itemBuilder: (context, index) {
-          var result = matchQuery[index];
-          return ListTile(
-            title: Text(result),
-          );
-        },
-      ),
-    );
+    return _buildCategoryList(matchQuery);
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    List<String> description_for_category = [
-      "description" ,
-      "description" ,
-      "description" ,
-      "description" ,
-      "description" ,
-      "description" ,
-      "description" ,
-    ];
-    List<String> matchQuery = searchTerms
-        .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+    List<Map<String, dynamic>> matchQuery = categories
+        .where((category) =>
+        category['name'].toString().toLowerCase().contains(query.toLowerCase()))
         .toList();
-    return Container(
-      color: Colors.white,
-      child: ListView.builder(
-        itemCount: matchQuery.length,
-        itemBuilder: (context, index) {
-          var result = matchQuery[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => CatelogsNewUi(selectedCategory: searchTerms[index], description: description_for_category[index],), ));
-            },
-            child: ListTile(
-              title: Text(result),
+    return _buildCategoryList(matchQuery);
+  }
+
+  // Helper method to build category list with custom UI
+  Widget _buildCategoryList(List<Map<String, dynamic>> matchQuery) {
+    return ListView.builder(
+      itemCount: matchQuery.length,
+      itemBuilder: (context, index) {
+        var result = matchQuery[index];
+        return InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CatelogsNewUi(
+                  selectedCategory: result['name'],
+                  description: "Description for ${result['name']}", // Modify as needed
+                ),
+              ),
+            );
+          },
+          child: Padding(
+            padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
+            child: Card(
+              margin: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.04,
+                vertical: MediaQuery.of(context).size.height * 0.005,
+              ),
+              elevation: 4, // Slight shadow for the card
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              shadowColor: Colors.grey.withOpacity(0.5),
+              child: ListTile(
+                tileColor: ColorConstant.secondaryColor, // Tile background color
+                leading: Icon(Icons.search, color: ColorConstant.primaryColor),
+                title: Text(
+                  result['name'],
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: ColorConstant.primaryColor, // Text color
+                    fontSize: MediaQuery.of(context).size.height * 0.02,
+                  ),
+                ),
+                trailing: Icon(Icons.arrow_forward_ios, color: ColorConstant.primaryColor),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CatelogsNewUi(
+                        selectedCategory: result['name'],
+                        description: "Description for ${result['name']}", // Modify as needed
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
