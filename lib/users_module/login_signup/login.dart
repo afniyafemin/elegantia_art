@@ -2,7 +2,6 @@ import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/services/google_signup.dart';
-import 'package:elegantia_art/users_module/login_signup/otp_login.dart';
 import 'package:elegantia_art/users_module/modules/customer/customer_navbar.dart';
 import 'package:elegantia_art/users_module/modules/module.dart';
 import 'package:flutter/material.dart';
@@ -298,29 +297,6 @@ class _LoginState extends State<Login> {
                                   SizedBox(
                                       width: MediaQuery.of(context).size.width *
                                           0.03),
-                                  InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => OtpLogin(),
-                                          ));
-                                    },
-                                    child: Container(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.04,
-                                      width: MediaQuery.of(context).size.width *
-                                          0.075,
-                                      decoration: BoxDecoration(
-                                        color: ColorConstant.secondaryColor,
-                                        borderRadius: BorderRadius.circular(
-                                            MediaQuery.of(context).size.width *
-                                                0.03),
-                                      ),
-                                      child: Icon(Icons.phone),
-                                    ),
-                                  ),
                                 ],
                               )
                             ],

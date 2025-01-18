@@ -23,12 +23,15 @@ class JobPortal extends StatefulWidget {
 
 class _JobPortalState extends State<JobPortal> {
   late Future<List<Map<String, dynamic>>> collaborationsFuture;
+  late Future<List<Map<String, dynamic>>> topCollaborationsFuture;
   int currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    topCollaborationsFuture = fetchTopJobs();
     collaborationsFuture = fetchCollaborationData(); // Fetch collaboration data once
+    _fetchCurrentUserName();
   }
 
   String? currentUserName;
@@ -55,6 +58,23 @@ class _JobPortalState extends State<JobPortal> {
       print("No user is currently signed in.");
     }
   }
+
+  Future<List<Map<String, dynamic>>> fetchTopJobs() async {
+    // Fetch all jobs and sort by amount in descending order, then take the top 5
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('collaborations')
+        .orderBy('amount', descending: true)
+        .limit(5)
+        .get();
+
+    return querySnapshot.docs.map((doc) {
+      return {
+        'jobId': doc['jobId'],
+        'amount': doc['amount'],
+      };
+    }).toList();
+  }
+
 
   Future<List<Map<String, dynamic>>> fetchCollaborationData() async {
     final collaborationDocs = await FirebaseFirestore.instance.collection('collaborations').get();
@@ -216,46 +236,124 @@ class _JobPortalState extends State<JobPortal> {
               SizedBox(
                 height: height*0.02,
               ),
-              Row(
-                children: [
-                  Text(
-                    "Featured Jobs",
-                    style: TextStyle(
-                      fontSize: width * 0.04,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-              CarouselSlider.builder(
-                itemCount: 4,
-                itemBuilder: (BuildContext context, int index, int realIndex) {
-                  return Stack(
-                    children: [
-                      Container(
-                        height: height * 0.3,
-                        width: width * 0.88,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(width * 0.03),
-                         color: ColorConstant.primaryColor,
-                          image: DecorationImage(image: AssetImage(ImageConstant.product2),fit: BoxFit.cover)
+              FutureBuilder<List<Map<String, dynamic>>>(
+                future: topCollaborationsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text("Error: ${snapshot.error}"));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text("No jobs available."));
+                  } else {
+                    final collaborations = snapshot.data!;
+                    return Column(
+                      children: [
+                        SizedBox(height: height * 0.02),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: width * 0.05),
+                              child: Text(
+                                "Featured Jobs",
+                                style: TextStyle(
+                                  fontSize: width * 0.05,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  );
+                        SizedBox(height: height * 0.02),
+                        CarouselSlider.builder(
+                          itemCount: collaborations.length,
+                          itemBuilder: (context, index, realIndex) {
+                            final job = collaborations[index];
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        JobInfo(jobId: job['jobId'], productName: '', category: '', amount: job['amount'], customizationText: '', customizationImage: '', date: '',),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                margin: EdgeInsets.symmetric(horizontal: width * 0.02),
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(image: AssetImage(ImageConstant.product2),fit: BoxFit.cover),
+                                  borderRadius: BorderRadius.circular(width * 0.03),
+                                  //color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.3),
+                                      blurRadius: 5,
+                                      spreadRadius: 2,
+                                    ),
+                                  ],
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(width * 0.04),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Job ID: ${job['jobId']}",
+                                        style: TextStyle(
+                                          shadows: [
+                                            Shadow(
+                                              color: ColorConstant.secondaryColor,
+                                              offset: Offset(0, 2),
+                                              blurRadius: 2,
+                                            )
+                                          ],
+                                          fontSize: width * 0.05,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      SizedBox(height: height * 0.01),
+                                      Text(
+                                        "Amount: ₹${job['amount']}",
+                                        style: TextStyle(
+                                          shadows: [
+                                            Shadow(
+                                              color: ColorConstant.primaryColor,
+                                              offset: Offset(0, 2),
+                                              blurRadius: 2,
+                                            )
+                                          ],
+                                          fontSize: width * 0.04,
+                                          color: ColorConstant.secondaryColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          options: CarouselOptions(
+                            enlargeCenterPage: true,
+                            enableInfiniteScroll: false,
+                            viewportFraction: 0.8,
+                            autoPlay: true,
+                            height: height * 0.25,
+                            autoPlayAnimationDuration: Duration(seconds: 2),
+                            onPageChanged: (index, reason) {
+                              setState(() {
+                                currentIndex = index;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  }
                 },
-                options: CarouselOptions(
-                  viewportFraction: 1,
-                  autoPlay: true,
-                  height: height * 0.3,
-                  autoPlayAnimationDuration: Duration(seconds: 4),
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      currentIndex = index;
-                    });
-                  },
-                ),
               ),
               Padding(
                 padding: EdgeInsets.all(8.0),

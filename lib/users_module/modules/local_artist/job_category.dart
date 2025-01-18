@@ -44,12 +44,9 @@ class _JobCategoryPageState extends State<JobCategoryPage> {
     return Scaffold(
       backgroundColor: ColorConstant.secondaryColor,
       appBar: AppBar(
-        leading: GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Icon(Icons.arrow_back_ios)),
+        automaticallyImplyLeading: false,
         backgroundColor: ColorConstant.secondaryColor,
+        centerTitle: true,
         title: Text(
           "Job Categories",
           style: TextStyle(
