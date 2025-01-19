@@ -1,3 +1,4 @@
+import 'package:elegantia_art/main.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
@@ -57,33 +58,24 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Title or description
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.2,
-                  width: MediaQuery.of(context).size.width * 0.75,
-                  child: Text(
-                    "Forgot Password?\nEnter your email to receive a password reset link.",
-                    style: TextStyle(
-                      color: ColorConstant.primaryColor,
-                      fontSize: MediaQuery.of(context).size.width * 0.04,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-
+                SizedBox(height: height*0.15,),
                 // Email input and reset button
                 Container(
                   height: MediaQuery.of(context).size.height * 0.4,
                   width: MediaQuery.of(context).size.width * 0.75,
-                  color: Colors.white.withOpacity(0.45),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.45),
+                    borderRadius: BorderRadius.circular(width*0.05)
+                  ),
+                  
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Form(
                         key: _formKey,
                         child: Container(
-                          height: MediaQuery.of(context).size.height * 0.075,
-                          width: MediaQuery.of(context).size.width * 0.55,
+                          height: height * 0.05,
+                          width: width * 0.6,
                           decoration: BoxDecoration(
                             border: Border(
                               left: BorderSide(
@@ -95,6 +87,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             ),
                           ),
                           child: TextFormField(
+                            cursorColor: ColorConstant.primaryColor,
+                            cursorHeight: height*0.02,
                             controller: emailController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -121,9 +115,12 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       InkWell(
                         onTap: handleForgotPassword,
                         child: Container(
-                          height: MediaQuery.of(context).size.height * 0.05,
-                          width: MediaQuery.of(context).size.width * 0.55,
-                          color: ColorConstant.primaryColor.withOpacity(0.65),
+                          height: height * 0.05,
+                          width: width * 0.55,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(width*0.05),
+                            color: ColorConstant.primaryColor,
+                          ),
                           child: Center(
                             child: isLoading
                                 ? CircularProgressIndicator(color: Colors.white)
@@ -142,14 +139,16 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   ),
                 ),
 
-                // Back to login
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: Container(
-                    height: MediaQuery.of(context).size.height * 0.1,
-                    width: MediaQuery.of(context).size.width * 0.75,
+                    height:height * 0.055,
+                    width: width * 0.5,
+                    decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.45),
+                        borderRadius: BorderRadius.circular(width*0.05)
+                    ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
                           "Remember your password?",
@@ -167,6 +166,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     ),
                   ),
                 ),
+
               ],
             ),
           ),

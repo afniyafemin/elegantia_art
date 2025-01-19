@@ -128,6 +128,8 @@ class _LoginState extends State<Login> {
                                     ),
                                   ),
                                   child: TextFormField(
+                                    cursorHeight: height*0.02,
+                                    cursorColor: ColorConstant.primaryColor,
                                     controller: emailController,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -172,6 +174,8 @@ class _LoginState extends State<Login> {
                                     ),
                                   ),
                                   child: TextFormField(
+                                    cursorHeight: height*0.02,
+                                    cursorColor: ColorConstant.primaryColor,
                                     controller: passwordController,
                                     obscureText: pass,
                                     validator: (value) {
@@ -288,35 +292,35 @@ class _LoginState extends State<Login> {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: height*0.015,),
-                              InkWell(
-                                child: Container(
-                                  height: height * 0.05,
-                                  width: width * 0.5,
-                                  decoration: BoxDecoration(
-                                      color: ColorConstant.primaryColor,
-                                      borderRadius: BorderRadius.circular(width*0.05)
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Icon(Icons.phone,color: ColorConstant.secondaryColor,),
-                                      isLoading
-                                          ? CircularProgressIndicator(
-                                          color: Colors.white)
-                                          : Text(
-                                        "sign in with OTP",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize:width * 0.03,
-                                          color: ColorConstant.secondaryColor,
-                                        ),
-                                      ),
-                                      SizedBox(width: width*0.05,)
-                                    ],
-                                  ),
-                                ),
-                              ),
+                              // SizedBox(height: height*0.015,),
+                              // InkWell(
+                              //   child: Container(
+                              //     height: height * 0.05,
+                              //     width: width * 0.5,
+                              //     decoration: BoxDecoration(
+                              //         color: ColorConstant.primaryColor,
+                              //         borderRadius: BorderRadius.circular(width*0.05)
+                              //     ),
+                              //     child: Row(
+                              //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              //       children: [
+                              //         Icon(Icons.phone,color: ColorConstant.secondaryColor,),
+                              //         isLoading
+                              //             ? CircularProgressIndicator(
+                              //             color: Colors.white)
+                              //             : Text(
+                              //           "sign in with OTP",
+                              //           style: TextStyle(
+                              //             fontWeight: FontWeight.w600,
+                              //             fontSize:width * 0.03,
+                              //             color: ColorConstant.secondaryColor,
+                              //           ),
+                              //         ),
+                              //         SizedBox(width: width*0.05,)
+                              //       ],
+                              //     ),
+                              //   ),
+                              // ),
                             ],
                           ),
                         ],
