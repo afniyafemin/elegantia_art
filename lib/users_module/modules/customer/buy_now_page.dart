@@ -29,7 +29,7 @@ class _BuyNowPageState extends State<BuyNowPage> {
 
         try {
           // Check if product data is valid
-          if (widget.product['productId'] == null || widget.product['price'] == null) {
+          if (widget.product['price'] == null) {
             throw Exception("Product data is incomplete.");
           }
 
@@ -144,7 +144,7 @@ class _BuyNowPageState extends State<BuyNowPage> {
             : CrossAxisAlignment.start,
             children: [
               Text(
-                widget.product['productName'] ?? 'Unknown Product',
+                widget.product['name'] ?? 'Unknown Product',
                 style: TextStyle(fontSize: width * 0.03, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: height * 0.01),

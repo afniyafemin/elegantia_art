@@ -87,12 +87,13 @@ class _MyOrdersState extends State<MyOrders> {
         ),
       ),
       body: orders.isEmpty
-          ? Center(child: CircularProgressIndicator()) // Show loading indicator while fetching
+          ? Center(child: CircularProgressIndicator(color: ColorConstant.primaryColor,)) // Show loading indicator while fetching
           : ListView.builder(
         itemCount: orders.length,
         itemBuilder: (context, index) {
           final order = orders[index];
           return Card(
+            color: ColorConstant.primaryColor.withOpacity(0.75),
             margin: EdgeInsets.only(top : width*0.03, left: width*0.03, right: width*0.03),
             child: ListTile(
               titleTextStyle: TextStyle(
