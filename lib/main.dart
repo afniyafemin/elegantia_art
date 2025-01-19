@@ -1,4 +1,7 @@
 import 'package:elegantia_art/firebase_options.dart';
+import 'package:elegantia_art/users_module/modules/customer/customer_navbar.dart';
+import 'package:elegantia_art/users_module/modules/customer/home_customer.dart';
+import 'package:elegantia_art/users_module/modules/customer/testimonials.dart';
 import 'package:elegantia_art/users_module/splash/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,7 +27,7 @@ class MyApp extends StatelessWidget {
     width=MediaQuery.of(context).size.width;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Splash(),
+      home: CustomerNavbar()
     );
   }
 }

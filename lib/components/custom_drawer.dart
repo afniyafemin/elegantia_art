@@ -2,6 +2,7 @@ import 'package:elegantia_art/auth/stream.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/services/fetch_address.dart';
 import 'package:elegantia_art/users_module/login_signup/login.dart';
 import 'package:elegantia_art/users_module/modules/customer/customer_navbar.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/la_navbar.dart';
@@ -21,8 +22,8 @@ class CustomDrawer extends StatefulWidget {
 
 class _CustomDrawerState extends State<CustomDrawer> {
   static bool _isSwitched = false;
-  String currentUserName = "User";
-  String email = "Unknown";
+  String currentUserName = 'user';
+  String? email;
   String address = "Unknown";
   String phoneNumber = "Unknown";
   int points = 0; // Assuming points are stored in Firestore as an integer
@@ -40,6 +41,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
     super.initState();
     _fetchUserDetails();
   }
+
+  String userId = FirebaseAuth.instance.currentUser!.uid;
 
   // Fetch user details from Firestore
   Future<void> _fetchUserDetails() async {
@@ -127,9 +130,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     fontSize: width * 0.04,
                     fontWeight: FontWeight.w500),
               ),
+              SizedBox(width: width*0.03,),
               Icon(
                 Icons.edit,
-                size: height * 0.015,
+                size: height * 0.02,
                 color: ColorConstant.primaryColor,
               ), // Add edit icon here
             ],
@@ -142,15 +146,59 @@ class _CustomDrawerState extends State<CustomDrawer> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Email: $email"),
-                SizedBox(height: height * 0.015),
-                Text("Address: $address"),
-                SizedBox(height: height * 0.015),
-                Text("Phone Number: $phoneNumber"),
-                SizedBox(height: height * 0.02),
+                SizedBox(height: height * 0.01),
+                FutureBuilder<List<Map<String, dynamic>>>(
+                  future: fetchAddresses(userId),
+                  builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                      List<Map<String, dynamic>> addrs = snapshot.data!;
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Address:",
+                            style: TextStyle(
+                                color: ColorConstant.primaryColor,
+                                fontWeight: FontWeight.w900,
+                                decoration: TextDecoration.underline,
+                                decorationThickness: width*0.005,
+                                decorationColor: ColorConstant.primaryColor
+                            ),
+                          ),
+                          Text("post : ${addrs[0]['post'] ?? ''}",
+                            style: TextStyle(
+                                color: ColorConstant.primaryColor
+                            ),
+                          ),
+                          Text("pin no : ${addrs[0]['pin'] ?? ''}",
+                            style: TextStyle(
+                                color: ColorConstant.primaryColor
+                            ),
+                          ),
+                          Text("landmark : ${addrs[0]['landmark'] ?? ''}",
+                            style: TextStyle(
+                                color: ColorConstant.primaryColor
+                            ),
+                          ),
+                          Text("phone : ${addrs[0]['phone'] ?? ''}",
+                            style: TextStyle(
+                                color: ColorConstant.primaryColor
+                            ),
+                          ),
+                        ],
+                      );
+                    } else {
+                      return Text('No addresses found.');
+                    }
+                  },
+                ),
               ],
             ),
           ),
-          SizedBox(),
+          SizedBox(height: height*0.015,),
           Text("CREDITS"),
           Container(
             height: height * 0.06,

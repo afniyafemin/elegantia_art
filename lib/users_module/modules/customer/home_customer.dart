@@ -45,6 +45,7 @@ class _HomePageState extends State<HomePage> {
     ImageConstant.product1,
     ImageConstant.product2,
     ImageConstant.product1,
+    ImageConstant.product2,
   ];
 
   List<String> description_for_category = [
@@ -524,24 +525,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       SizedBox(height: height*0.015,),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          CustomText(text: "New Arrivals"),
-                          // InkWell(
-                          //   onTap: () {
-                          //     // Navigator.push(context, MaterialPageRoute(builder: (context) => TrendingPage(),));
-                          //     setState(() {
-                          //
-                          //     });
-                          //   },
-                          //   child: Text("See all",
-                          //     style: TextStyle(
-                          //         fontSize: width*0.03
-                          //     ),
-                          //   ),
-                          // )
-                        ],
-                      ),
+                      CustomText(text: "New Arrivals"),
                       SizedBox(height: height*0.01,),
                       Container(
                         padding: EdgeInsets.all(width*0.005),

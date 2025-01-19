@@ -191,12 +191,54 @@ class _CartCustomerState extends State<CartCustomer> {
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("Deliver to: ${addrs[0]['name'] ?? 'Unknown'}"),
-                                  Text("Address:"),
-                                  Text("${addrs[0]['post'] ?? ''}"),
-                                  Text("${addrs[0]['pin'] ?? ''}"),
-                                  Text("${addrs[0]['landmark'] ?? ''}"),
-                                  Text("${addrs[0]['phone'] ?? ''}"),
+                                  Row(
+                                    children: [
+                                      Text("Deliver to: ",
+                                        style: TextStyle(
+                                          color: ColorConstant.primaryColor,
+                                          fontWeight: FontWeight.w500
+                                        ),
+                                      ),
+                                      Text("${addrs[0]['name'] ?? 'Unknown'}",
+                                        style: TextStyle(
+                                          color: ColorConstant.primaryColor,
+                                          fontWeight: FontWeight.w900
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(width*0.015),
+                                    child: Text("Address:",
+                                      style: TextStyle(
+                                        color: ColorConstant.primaryColor,
+                                        fontWeight: FontWeight.w900,
+                                        decoration: TextDecoration.underline,
+                                        decorationThickness: width*0.005,
+                                        decorationColor: ColorConstant.primaryColor
+                                      ),
+                                    ),
+                                  ),
+                                  Text("${addrs[0]['post'] ?? ''}",
+                                    style: TextStyle(
+                                      color: ColorConstant.primaryColor
+                                    ),
+                                  ),
+                                  Text("${addrs[0]['pin'] ?? ''}",
+                                    style: TextStyle(
+                                        color: ColorConstant.primaryColor
+                                    ),
+                                  ),
+                                  Text("${addrs[0]['landmark'] ?? ''}",
+                                    style: TextStyle(
+                                        color: ColorConstant.primaryColor
+                                    ),
+                                  ),
+                                  Text("${addrs[0]['phone'] ?? ''}",
+                                    style: TextStyle(
+                                        color: ColorConstant.primaryColor
+                                    ),
+                                  ),
                                 ],
                               );
                             } else {

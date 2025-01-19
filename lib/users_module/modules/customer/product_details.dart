@@ -391,7 +391,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                               height: MediaQuery.of(context).size.height * 0.1),
                           GestureDetector(
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => Testimonials(),));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => Testimonials(productId : widget.product['id']),));
                             },
                             child: Center(
                               child: Column(

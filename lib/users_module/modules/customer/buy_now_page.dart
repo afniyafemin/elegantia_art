@@ -41,7 +41,7 @@ class _BuyNowPageState extends State<BuyNowPage> {
             'userId': user.uid,
             'category': widget.product['category'],
             'productId': widget.product['productId'],
-            'productName': widget.product['productName'] ?? 'unKnown product',
+            'productName': widget.product['name'] ?? 'unKnown product',
             'price': widget.product['price'] ?? 0.0,
             'address': address ?? 'No address provided',
             'phoneNumber': phoneNumber ?? 'No phone number provided',
