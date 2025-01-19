@@ -1,6 +1,4 @@
-import 'package:elegantia_art/auth/stream.dart';
 import 'package:elegantia_art/firebase_options.dart';
-import 'package:elegantia_art/users_module/modules/module.dart';
 import 'package:elegantia_art/users_module/splash/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';

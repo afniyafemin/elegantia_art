@@ -3,6 +3,7 @@ import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/services/google_signup.dart';
 import 'package:elegantia_art/users_module/modules/customer/customer_navbar.dart';
+//import 'package:elegantia_art/users_module/modules/customer/customer_navbar.dart';
 import 'package:elegantia_art/users_module/modules/module.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -98,19 +99,14 @@ class _LoginState extends State<Login> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      height: height * 0.2,
-                      width: MediaQuery.of(context).size.width * 0.75,
-                      child: Text(
-                        "Timeless beauty \n and \n cherished memories \n are both stitched \n with love \n and \n elegance",
-                        style: TextStyle(color: ColorConstant.primaryColor),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
+                    SizedBox(height: height*0.15,),
                     Container(
                       height: MediaQuery.of(context).size.height * 0.5,
                       width: MediaQuery.of(context).size.width * 0.75,
-                      color: Colors.white.withOpacity(0.45),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(width*0.05),
+                        color: Colors.white.withOpacity(0.45),
+                      ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -119,23 +115,21 @@ class _LoginState extends State<Login> {
                             child: Column(
                               children: [
                                 Container(
-                                  height: MediaQuery.of(context).size.height *
-                                      0.075,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.55,
+                                  height: height * 0.05,
+                                  width: width * 0.6,
                                   decoration: BoxDecoration(
                                     border: Border(
                                       left: BorderSide(
-                                        color: ColorConstant.primaryColor
-                                            .withOpacity(0.4),
+                                        color: ColorConstant.primaryColor.withOpacity(0.4),
                                       ),
                                       bottom: BorderSide(
-                                        color: ColorConstant.primaryColor
-                                            .withOpacity(0.4),
+                                        color: ColorConstant.primaryColor.withOpacity(0.4),
                                       ),
                                     ),
                                   ),
                                   child: TextFormField(
+                                    cursorHeight: height*0.02,
+                                    cursorColor: ColorConstant.primaryColor,
                                     controller: emailController,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -163,13 +157,10 @@ class _LoginState extends State<Login> {
                                   ),
                                 ),
                                 SizedBox(
-                                    height: MediaQuery.of(context).size.height *
-                                        0.015),
+                                    height: height * 0.015),
                                 Container(
-                                  height: MediaQuery.of(context).size.height *
-                                      0.075,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.55,
+                                  height: height * 0.05,
+                                  width: width * 0.6,
                                   decoration: BoxDecoration(
                                     border: Border(
                                       left: BorderSide(
@@ -183,6 +174,8 @@ class _LoginState extends State<Login> {
                                     ),
                                   ),
                                   child: TextFormField(
+                                    cursorHeight: height*0.02,
+                                    cursorColor: ColorConstant.primaryColor,
                                     controller: passwordController,
                                     obscureText: pass,
                                     validator: (value) {
@@ -230,8 +223,10 @@ class _LoginState extends State<Login> {
                             child: Container(
                               height: MediaQuery.of(context).size.height * 0.05,
                               width: MediaQuery.of(context).size.width * 0.55,
-                              color:
-                                  ColorConstant.primaryColor.withOpacity(0.65),
+                              decoration: BoxDecoration(
+                                color: ColorConstant.primaryColor,
+                                borderRadius: BorderRadius.circular(width*0.05)
+                              ),
                               child: Center(
                                 child: isLoading
                                     ? CircularProgressIndicator(
@@ -260,7 +255,6 @@ class _LoginState extends State<Login> {
                             child: Text(
                               "Forgot Password?",
                               style: TextStyle(
-                                color: Colors.blue,
                                 decoration: TextDecoration.underline,
                               ),
                             ),
@@ -268,37 +262,65 @@ class _LoginState extends State<Login> {
 
                           Column(
                             children: [
-                              Text("Sign in with", textAlign: TextAlign.center),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () => handleGoogleSignIn(context),
-                                    child: Container(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.04,
-                                      width: MediaQuery.of(context).size.width *
-                                          0.075,
-                                      decoration: BoxDecoration(
-                                        color: ColorConstant.secondaryColor,
-                                        borderRadius: BorderRadius.circular(
-                                            MediaQuery.of(context).size.width *
-                                                0.03),
-                                      ),
-                                      child: Icon(
-                                        Icons.g_mobiledata_sharp,
-                                        size:
-                                            MediaQuery.of(context).size.width *
-                                                0.08,
-                                      ),
-                                    ),
+                              // Text("Sign in with", textAlign: TextAlign.center),
+                              InkWell(
+                                onTap: () => handleGoogleSignIn(context),
+                                child: Container(
+                                  height: height * 0.05,
+                                  width: width * 0.5,
+                                  decoration: BoxDecoration(
+                                      color: ColorConstant.primaryColor,
+                                      borderRadius: BorderRadius.circular(width*0.05)
                                   ),
-                                  SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.03),
-                                ],
-                              )
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Icon(Icons.g_mobiledata_rounded,size: width*0.1 ,color: ColorConstant.secondaryColor,),
+                                      isLoading
+                                          ? CircularProgressIndicator(
+                                          color: Colors.white)
+                                          : Text(
+                                        "sign in with GOOGLE",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: width * 0.03,
+                                          color: ColorConstant.secondaryColor,
+                                        ),
+                                      ),
+                                      SizedBox(width: width*0.05,)
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              // SizedBox(height: height*0.015,),
+                              // InkWell(
+                              //   child: Container(
+                              //     height: height * 0.05,
+                              //     width: width * 0.5,
+                              //     decoration: BoxDecoration(
+                              //         color: ColorConstant.primaryColor,
+                              //         borderRadius: BorderRadius.circular(width*0.05)
+                              //     ),
+                              //     child: Row(
+                              //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              //       children: [
+                              //         Icon(Icons.phone,color: ColorConstant.secondaryColor,),
+                              //         isLoading
+                              //             ? CircularProgressIndicator(
+                              //             color: Colors.white)
+                              //             : Text(
+                              //           "sign in with OTP",
+                              //           style: TextStyle(
+                              //             fontWeight: FontWeight.w600,
+                              //             fontSize:width * 0.03,
+                              //             color: ColorConstant.secondaryColor,
+                              //           ),
+                              //         ),
+                              //         SizedBox(width: width*0.05,)
+                              //       ],
+                              //     ),
+                              //   ),
+                              // ),
                             ],
                           ),
                         ],
@@ -307,22 +329,24 @@ class _LoginState extends State<Login> {
                     GestureDetector(
                       onTap: widget.showRegisterPage,
                       child: Container(
-                        height:height * 0.15,
-                        width: width * 0.75,
+                        height:height * 0.055,
+                        width: width * 0.5,
+                        decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.45),
+                            borderRadius: BorderRadius.circular(width*0.05)
+                        ),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
                               "Don't have an account?",
                               style:
-                                  TextStyle(color: ColorConstant.primaryColor),
+                              TextStyle(color: ColorConstant.primaryColor),
                             ),
                             Text(
                               "Create New",
                               style: TextStyle(
                                 fontWeight: FontWeight.w800,
-                                fontSize:
-                                    MediaQuery.of(context).size.width * 0.03,
+                                fontSize: width * 0.03,
                                 color: ColorConstant.primaryColor,
                               ),
                             ),

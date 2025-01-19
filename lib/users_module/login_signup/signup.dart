@@ -45,18 +45,14 @@ class _SignUpState extends State<SignUp> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    height: height*0.2,
-                    width: width*0.75,
-                    child: Text("Timeless beauty \n and \n cherished memories \n are both stitched \n with love \n and \n elegance",style: TextStyle(
-                      color: ColorConstant.primaryColor
-                    ),textAlign: TextAlign.center,),
-                  ),
+                  SizedBox(height: height*0.15,),
                   Container(
                     height: height*0.5,
                     width: width*0.75,
-                    color: Colors.white.withOpacity(0.45),
-                    child: Column(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(width*0.05),
+                      color: Colors.white.withOpacity(0.45),
+                    ),                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Container(),
@@ -244,8 +240,10 @@ class _SignUpState extends State<SignUp> {
                           child: Container(
                             height: height*0.05,
                             width: width*0.55,
-                            color: ColorConstant.primaryColor.withOpacity(0.65),
-                            child: Center(
+                            decoration: BoxDecoration(
+                                color: ColorConstant.primaryColor,
+                                borderRadius: BorderRadius.circular(width*0.05)
+                            ),                            child: Center(
                               child: Text("SIGN UP",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
@@ -261,34 +259,34 @@ class _SignUpState extends State<SignUp> {
 
                     ),
                   ),
-                  Container(
-                    height: height*0.15,
-                    width: width*0.75,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text("Already have an account ?"),
-                        GestureDetector(
-                          onTap: widget.showLoginPage,
-                          child: Container(
-                            height: height*0.03,
-                            width: width*0.3,
-                            color: ColorConstant.primaryColor.withOpacity(0.65),
-                            child: Center(
-                              child: Text(
-                                "LOGIN",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: width*0.03,
-                                  color: Colors.white
-                              ),
-                              ),
+                  GestureDetector(
+                    onTap: widget.showLoginPage,
+                    child: Container(
+                      height:height * 0.055,
+                      width: width * 0.5,
+                      decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.45),
+                          borderRadius: BorderRadius.circular(width*0.05)
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            "Already have an account?",
+                            style:
+                            TextStyle(color: ColorConstant.primaryColor),
+                          ),
+                          Text(
+                            "Login",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: width * 0.03,
+                              color: ColorConstant.primaryColor,
                             ),
                           ),
-                        )
-                      ],
+                        ],
+                      ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
