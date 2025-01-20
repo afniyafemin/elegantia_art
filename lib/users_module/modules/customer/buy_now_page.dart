@@ -144,7 +144,7 @@ class _BuyNowPageState extends State<BuyNowPage> {
             : CrossAxisAlignment.start,
             children: [
               Text(
-                widget.product['name'] ?? 'Unknown Product',
+                widget.product['name'] ?? widget.product['productName'] ?? "unknown",
                 style: TextStyle(fontSize: width * 0.03, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: height * 0.01),

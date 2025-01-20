@@ -12,7 +12,7 @@ class Testimonials extends StatefulWidget {
 }
 
 class _TestimonialsState extends State<Testimonials> {
-  Future<List<String>> fetchReviews(String productId) async {
+  Future<List<Map<String, dynamic>>> fetchReviews(String productId) async {
     try {
       // Reference to the specific product document
       final productRef = FirebaseFirestore.instance.collection('products').doc(productId);
@@ -27,20 +27,70 @@ class _TestimonialsState extends State<Testimonials> {
 
       // Retrieve data from the document
       final data = productSnapshot.data();
-      if (data == null || !data.containsKey('feedbacks')) {
-        print("No feedbacks found for product with ID $productId.");
+      if (data == null || !data.containsKey('ratings')) {
+        print("No ratings found for product with ID $productId.");
         return [];
       }
 
-      // Extract feedbacks from the 'feedbacks' field and sanitize
-      final feedbacks = data['feedbacks'] as List<dynamic>;
-      return feedbacks
-          .where((feedback) => feedback != null && feedback is String) // Filter out invalid entries
-          .map((feedback) => feedback as String) // Safely cast to String
-          .toList();
+      // Extract ratings from the 'ratings' field
+      final ratings = data['ratings'];
+
+      // Check if ratings is a List
+      if (ratings is! List) {
+        print("Expected ratings to be a List, but got: ${ratings.runtimeType}");
+        return [];
+      }
+
+      List<Map<String, dynamic>> reviewsWithUsernames = [];
+
+      for (var rating in ratings) {
+        if (rating != null && rating is Map<String, dynamic>) {
+          // Fetch the username for each rating
+          String userId = rating['userId'];
+          String feedback;
+
+          // Handle feedback as an array of dynamic
+          if (rating['feedback'] is List) {
+            // Join the feedback array into a single string
+            feedback = (rating['feedback'] as List<dynamic>).join(', ');
+          } else if (rating['feedback'] is String) {
+            feedback = rating['feedback'];
+          } else {
+            feedback = 'No feedback provided';
+          }
+
+          double ratingValue = rating['rating'] ?? 0.0;
+
+          String username = await fetchUsername(userId);
+          reviewsWithUsernames.add({
+            'username': username,
+            'feedback': feedback,
+            'rating': ratingValue,
+          });
+        }
+      }
+
+      return reviewsWithUsernames;
     } catch (error) {
-      print("Error fetching feedbacks for product $productId: $error");
+      print("Error fetching ratings for product $productId: $error");
       return [];
+    }
+  }
+
+  Future<String> fetchUsername(String userId) async {
+    try {
+      final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+      final userSnapshot = await userRef.get();
+
+      if (userSnapshot.exists) {
+        final userData = userSnapshot.data();
+        return userData?['username'] ?? 'Unknown User'; // Adjust the key based on your Firestore structure
+      } else {
+        return 'Unknown User';
+      }
+    } catch (error) {
+      print("Error fetching username for user $userId: $error");
+      return 'Unknown User';
     }
   }
 
@@ -49,18 +99,19 @@ class _TestimonialsState extends State<Testimonials> {
     return Scaffold(
       backgroundColor: ColorConstant.secondaryColor,
       appBar: AppBar(
-        title: Text("Testimonials",
+        title: Text(
+          "Testimonials",
           style: TextStyle(
             color: ColorConstant.secondaryColor,
             fontWeight: FontWeight.w900,
-            fontSize: width*0.04
+            fontSize: width * 0.04,
           ),
         ),
         backgroundColor: ColorConstant.primaryColor,
       ),
       body: Padding(
-        padding:  EdgeInsets.all(width*0.025),
-        child: FutureBuilder<List<String>>(
+        padding: EdgeInsets.all(width * 0.025),
+        child: FutureBuilder<List<Map<String, dynamic>>>(
           future: fetchReviews(widget.productId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -92,14 +143,23 @@ class _TestimonialsState extends State<Testimonials> {
             return ListView.builder(
               itemCount: reviews.length,
               itemBuilder: (context, index) {
+                final review = reviews[index];
                 return Card(
                   color: ColorConstant.secondaryColor.withOpacity(0.75),
                   child: ListTile(
-                    title: Text('''${reviews[index]}''',
+                    title: Text(
+                      '''${review['feedback']}''',
                       style: TextStyle(
                         color: ColorConstant.primaryColor,
                         fontWeight: FontWeight.w900,
-                        fontSize: width*0.03
+                        fontSize: width * 0.03,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'Rating: ${review['rating']} by ${review['username']}',
+                      style: TextStyle(
+                        color: ColorConstant.primaryColor.withOpacity(0.7),
+                        fontSize: width * 0.025,
                       ),
                     ),
                   ),

@@ -170,7 +170,7 @@ class _CartCustomerState extends State<CartCustomer> {
               children: [
                 Container(
                   padding: EdgeInsets.all(width * 0.05),
-                  height: height * 0.2,
+                  height: height * 0.23,
                   decoration: BoxDecoration(
                       color: ColorConstant.primaryColor.withOpacity(0.4),
                       borderRadius: BorderRadius.circular(width * 0.05)),
