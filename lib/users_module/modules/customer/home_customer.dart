@@ -199,7 +199,7 @@ class _HomePageState extends State<HomePage> {
                                   _scaffoldKey.currentState?.openDrawer();
                                 },
                                 child: CircleAvatar(
-                                  backgroundImage: AssetImage(ImageConstant.user_profile),
+                                  backgroundImage: AssetImage(ImageConstant.aesthetic_userprofile),
                                 ),
                               ),
                               SizedBox(width: width*0.03,),

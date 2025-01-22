@@ -1,3 +1,4 @@
+import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,9 +18,70 @@ class BuyNowPage extends StatefulWidget {
 class _BuyNowPageState extends State<BuyNowPage> {
   String formattedDate = DateFormat('yyyy-MM-dd').format(Timestamp.now().toDate());
   final _formKey = GlobalKey<FormState>();
-  String? address;
-  String? phoneNumber;
+
+  // TextEditingControllers for address fields
+  final nameController = TextEditingController();
+  final postController = TextEditingController();
+  final pinController = TextEditingController();
+  final landmarkController = TextEditingController();
+  final phoneController = TextEditingController();
+
   String? customizationText;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData(); // Load user address data
+  }
+
+  /// Load user data from Firestore and auto-fill the text fields
+  Future<void> _loadUserData() async {
+    User? user = FirebaseAuth.instance.currentUser ;
+    if (user != null) {
+      try {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('address')
+            .doc('currentAddress') // Assuming you have a document named 'currentAddress'
+            .get();
+
+        if (userDoc.exists) {
+          var data = userDoc.data() as Map<String, dynamic>;
+          setState(() {
+            nameController.text = data['name'] ?? '';
+            postController.text = data['post'] ?? '';
+            pinController.text = data['pin'] ?? '';
+            landmarkController.text = data['landmark'] ?? '';
+            phoneController.text = data['phone'] ?? '';
+          });
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load user data: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _removeFromCart(String productId) async {
+    final user = FirebaseAuth.instance.currentUser ;
+    if (user != null) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('cart')
+            .doc(productId) // Use the product ID to remove the specific item
+            .delete();
+      } catch (e) {
+        print('Error removing item from cart: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to remove item from cart: $e')),
+        );
+      }
+    }
+  }
 
   Future<void> _confirmPurchase() async {
     if (_formKey.currentState!.validate()) {
@@ -40,17 +102,24 @@ class _BuyNowPageState extends State<BuyNowPage> {
             'orderId': orderId,
             'userId': user.uid,
             'category': widget.product['category'],
-            'productId': widget.product['productId'],
-            'productName': widget.product['name'] ?? 'unKnown product',
+            'productId': widget.product['id'] ?? widget.product["productId"],
+            'productName': widget.product['name'] ?? widget.product["productName"],
             'price': widget.product['price'] ?? 0.0,
-            'address': address ?? 'No address provided',
-            'phoneNumber': phoneNumber ?? 'No phone number provided',
+            'address': {
+              'name': nameController.text.trim().isNotEmpty ? nameController.text.trim() : null,
+              'post': postController.text.trim().isNotEmpty ? postController.text.trim() : null,
+              'pin': pinController.text.trim().isNotEmpty ? pinController.text.trim() : null,
+              'landmark': landmarkController.text.trim().isNotEmpty ? landmarkController.text.trim() : null,
+              'phone': phoneController.text.trim().isNotEmpty ? phoneController.text.trim() : null,
+            },
             'orderDate': formattedDate,
             'status': 'Pending',
-            'customizationText': customizationText ?? 'No customizations', // Add customization text
-            // If you have customization images, add them here
+            'customizationText': customizationText ?? 'No customizations',
             'customizationImages': [], // Replace with actual images if available
           });
+
+          // Remove the item from the cart
+          await _removeFromCart(widget.product['productId']??widget.product['id']);
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -58,7 +127,7 @@ class _BuyNowPageState extends State<BuyNowPage> {
             ),
           );
 
-          // Optionally navigate back or to another page
+          // Navigate back to the previous page
           Navigator.pop(context);
         } catch (e) {
           print('Error adding order to Firestore: $e'); // Debugging
@@ -80,26 +149,16 @@ class _BuyNowPageState extends State<BuyNowPage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    print("Product data: ${widget.product}"); // Debugging line
-  }
-
-  @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width; // Get screen width
-    var height = MediaQuery.of(context).size.height; // Get screen height
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: ColorConstant.secondaryColor
-        ),
-        title: Text("Buy Now",
-          style: TextStyle(
-            color: ColorConstant.secondaryColor,
-            fontWeight: FontWeight.w700
-          ),
+        iconTheme: IconThemeData(color: ColorConstant.secondaryColor),
+        title: Text(
+          "Buy Now",
+          style: TextStyle(color: ColorConstant.secondaryColor, fontWeight: FontWeight.w700),
         ),
         backgroundColor: ColorConstant.primaryColor,
       ),
@@ -111,190 +170,156 @@ class _BuyNowPageState extends State<BuyNowPage> {
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-            Center(
-            child: Column(
-              children: [
-                Text(
-                "Customize your needs",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: width * 0.07,
-                    color: ColorConstant.primaryColor.withOpacity(0.25),
-                    decorationStyle: TextDecorationStyle.dashed,
+                Center(
+                  child: Column(
+                    children: [
+                      Text(
+                        "Customize your needs",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: width * 0.07,
+                          color: ColorConstant.primaryColor.withOpacity(0.25),
+                          decorationStyle: TextDecorationStyle.dashed,
+                        ),
+                      ),
+                      SizedBox(height: height * 0.03),
+                      Container(
+                        height: height * 0.2,
+                        width: width * 0.4,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(image: AssetImage(ImageConstant.resin_art), fit: BoxFit.cover),
+                          borderRadius: BorderRadius.circular(width * 0.065),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                SizedBox(height: height*0.025,),
-                Container(
-                  height: height * 0.08,
-                  width: width * 0.2,
-                  decoration: BoxDecoration(
-                    color: ColorConstant.primaryColor.withOpacity(0.4),
-                    borderRadius: BorderRadius.circular(width * 0.075),
+                SizedBox(height: height * 0.03),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          widget.product['name'] ?? widget.product['productName'] ?? "unknown",
+                          style: TextStyle(fontSize: width * 0.05, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          "Price: ₹${widget.product['price']?.toString() ?? '0.0'}",
+                          style: TextStyle(fontSize: width * 0.04, fontWeight: FontWeight.w400),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      widget.product['category'] ?? 'Unknown',
+                      style: TextStyle(fontSize: width * 0.03, fontWeight: FontWeight.bold, color: ColorConstant.primaryColor),
+                    ),
+                  ],
+                ),
+                SizedBox(height: height * 0.025),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.product['description'] ?? "No description available.",
+                      style: TextStyle(fontSize: 14, color: ColorConstant.primaryColor),
+                    ),
+                    SizedBox(height: height * 0.04),
+                    TextField(
+                      cursorColor: ColorConstant.primaryColor,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: ColorConstant.primaryColor.withOpacity(0.1),
+                        labelText: 'Add Customization Text',
+                        labelStyle: TextStyle(color: ColorConstant.primaryColor),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(width * 0.2),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(width * 0.2),
+                          borderSide: BorderSide(color: ColorConstant.primaryColor),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(width * 0.2),
+                          borderSide: BorderSide(color: ColorConstant.primaryColor),
+                        ),
+                      ),
+                      style: TextStyle(color: ColorConstant.primaryColor),
+                      onChanged: (value) {
+                        setState(() {
+                          customizationText = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                SizedBox(height: height * 0.05),
+                // Address fields
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextFormField(
+                      controller: nameController,
+                      decoration: InputDecoration(labelText: 'Name'),
+                      validator: (value) => value!.isEmpty ? 'Please enter your name' : null,
+                    ),
+                    SizedBox(height: height * 0.02),
+                    TextFormField(
+                      controller: postController,
+                      decoration: InputDecoration(labelText: 'Post'),
+                      validator: (value) => value!.isEmpty ? 'Please enter your post' : null,
+                    ),
+                    SizedBox(height: height * 0.02),
+                    TextFormField(
+                      controller: pinController,
+                      decoration: InputDecoration(labelText: 'Pin'),
+                      validator: (value) => value!.isEmpty ? 'Please enter your pin' : null,
+                    ),
+                    SizedBox(height: height * 0.02),
+                    TextFormField(
+                      controller: landmarkController,
+                      decoration: InputDecoration(labelText: 'Landmark'),
+                      validator: (value) => value!.isEmpty ? 'Please enter a landmark' : null,
+                    ),
+                    SizedBox(height: height * 0.02),
+                    TextFormField(
+                      controller: phoneController,
+                      decoration: InputDecoration(labelText: 'Phone'),
+                      validator: (value) => value!.isEmpty ? 'Please enter your phone number' : null,
+                    ),
+                  ],
+                ),
+                SizedBox(height: height * 0.1),
+                Center(
+                  child: GestureDetector(
+                    onTap: _confirmPurchase,
+                    child: Container(
+                      height: height * 0.05,
+                      width: width * 0.3,
+                      decoration: BoxDecoration(
+                        color: ColorConstant.primaryColor,
+                        borderRadius: BorderRadius.circular(width * 0.05),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Confirm order",
+                          style: TextStyle(
+                            color: ColorConstant.secondaryColor,
+                            fontSize: width * 0.03,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  child: Center(child: Text("lottiee (if interested)")),
                 ),
               ],
             ),
           ),
-          SizedBox(height: height * 0.03),
-          Column(
-            crossAxisAlignment
-            : CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.product['name'] ?? widget.product['productName'] ?? "unknown",
-                style: TextStyle(fontSize: width * 0.03, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: height * 0.01),
-              Text(
-                widget.product['category'] ?? 'Unknown',
-                style: TextStyle(fontSize: width * 0.03, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: height * 0.01),
-              Text(
-                "Price: ₹${widget.product['price']?.toString() ?? '0.0'}",
-                style: TextStyle(fontSize: width * 0.0275),
-              ),
-            ],
-          ),
-          SizedBox(height: height * 0.025),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Description:",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: height * 0.005),
-              Text(
-                widget.product['description'] ?? "No description available.",
-                style: TextStyle(fontSize: 14),
-              ),
-              SizedBox(height: height * 0.005),
-              TextField(
-                cursorColor: ColorConstant.primaryColor,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: ColorConstant.primaryColor.withOpacity(0.1),
-                  labelText: 'Add Customization Text',
-                  labelStyle: TextStyle(color: ColorConstant.primaryColor),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(width * 0.2),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(width * 0.2),
-                    borderSide: BorderSide(color: ColorConstant.primaryColor),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(width * 0.2),
-                    borderSide: BorderSide(color: ColorConstant.primaryColor),
-                  ),
-                ),
-                style: TextStyle(color: ColorConstant.primaryColor),
-                onChanged: (value) {
-                  setState(() {
-                    customizationText = value;
-                  });
-                },
-              ),
-            ],
-          ),
-          SizedBox(height: height * 0.05),
-          Column(
-            children: [
-              TextFormField(
-                cursorColor: ColorConstant.primaryColor,
-                decoration: InputDecoration(
-                  labelText: 'Address',
-                  labelStyle: TextStyle(color: ColorConstant.primaryColor),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: ColorConstant.primaryColor,
-                      width: width * 0.003,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: ColorConstant.primaryColor,
-                      width: width * 0.003,
-                    ),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your address';
-                  }
-                  return null;
-                },
-                onChanged: (value) {
-                  address = value;
-                },
-              ),
-              SizedBox(height: height * 0.02),
-              TextFormField(
-                cursorColor: ColorConstant.primaryColor,
-                decoration: InputDecoration(
-                  labelText: 'Phone Number',
-                  labelStyle: TextStyle(color: ColorConstant.primaryColor),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: ColorConstant.primaryColor,
-                      width: width * 0.003,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: ColorConstant.primaryColor,
-                      width: width * 0.003,
-                    ),
-                  ),
-                ),
-                keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your phone number';
-                  }
-                  return null;
-                },
-                onChanged: (value) {
-                  phoneNumber = value;
-                },
-              ),
-            ],
-          ),
-          SizedBox(height: height * 0.1),
-          Center(
-            child: GestureDetector(
-              onTap: _confirmPurchase,
-              child: Container(
-                height: height * 0.05,
-                width: width * 0.3,
-                decoration: BoxDecoration(
-                  color: ColorConstant.primaryColor,
-                  borderRadius: BorderRadius.circular(width * 0.05),
-                ),
-                child: Center(
-                  child: Text(
-                    "Confirm order",
-                    style: TextStyle(
-                      color: ColorConstant.secondaryColor,
-                      fontSize: width * 0.03,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          )],
-          ),
         ),
       ),
-    ),
     );
   }
 }

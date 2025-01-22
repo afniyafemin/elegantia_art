@@ -11,6 +11,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../services/sign_out_method.dart';
+import '../users_module/modules/customer/change_address.dart';
 
 class CustomDrawer extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -42,24 +43,38 @@ class _CustomDrawerState extends State<CustomDrawer> {
     _fetchUserDetails();
   }
 
-  String userId = FirebaseAuth.instance.currentUser!.uid;
+  String userId = FirebaseAuth.instance.currentUser !.uid;
 
   // Fetch user details from Firestore
   Future<void> _fetchUserDetails() async {
-    User? user = FirebaseAuth.instance.currentUser;
+    User? user = FirebaseAuth.instance.currentUser ;
     if (user != null) {
       try {
+        // Fetch user document
         DocumentSnapshot userDoc = await FirebaseFirestore.instance
             .collection('users')
             .doc(user.uid)
             .get();
+
         if (userDoc.exists) {
           setState(() {
-            currentUserName = userDoc['username'] ?? "User";
+            currentUserName = userDoc['username'] ?? "User ";
             email = userDoc['email'] ?? "Unknown";
-            address = userDoc['address'] ?? "Unknown";
-            phoneNumber = userDoc['phoneNumber'] ?? "Unknown";
-            points = userDoc['points'] ?? 0;
+          });
+        }
+
+        // Fetch address from the subcollection
+        DocumentSnapshot addressDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('address')
+            .doc('currentAddress') // Assuming you have a document named 'currentAddress'
+            .get();
+
+        if (addressDoc.exists) {
+          setState(() {
+            address = addressDoc['landmark'] ?? "Unknown";
+            phoneNumber = addressDoc['phone'] ?? "Unknown";
           });
         }
       } catch (error) {
@@ -70,6 +85,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -79,7 +96,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
           Padding(
             padding: EdgeInsets.only(top: height * 0.05),
             child: CircleAvatar(
-              backgroundImage: AssetImage(ImageConstant.user_profile),
+              backgroundImage: AssetImage(ImageConstant.aesthetic_userprofile),
               radius: width * 0.15,
             ),
           ),
@@ -131,11 +148,20 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     fontWeight: FontWeight.w500),
               ),
               SizedBox(width: width*0.03,),
-              Icon(
-                Icons.edit,
-                size: height * 0.02,
-                color: ColorConstant.primaryColor,
-              ), // Add edit icon here
+              GestureDetector(
+                onTap: () {
+                  // Navigate to ChangeAddress page when the edit icon is clicked
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ChangeAddress()),
+                  );
+                },
+                child: Icon(
+                  Icons.edit,
+                  size: height * 0.02,
+                  color: ColorConstant.primaryColor,
+                ),
+              ),// Add edit icon here
             ],
           ),
           // Editable User Details
@@ -147,54 +173,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
               children: [
                 Text("Email: $email"),
                 SizedBox(height: height * 0.01),
-                FutureBuilder<List<Map<String, dynamic>>>(
-                  future: fetchAddresses(userId),
-                  builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                      List<Map<String, dynamic>> addrs = snapshot.data!;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Address:",
-                            style: TextStyle(
-                                color: ColorConstant.primaryColor,
-                                fontWeight: FontWeight.w900,
-                                decoration: TextDecoration.underline,
-                                decorationThickness: width*0.005,
-                                decorationColor: ColorConstant.primaryColor
-                            ),
-                          ),
-                          Text("post : ${addrs[0]['post'] ?? ''}",
-                            style: TextStyle(
-                                color: ColorConstant.primaryColor
-                            ),
-                          ),
-                          Text("pin no : ${addrs[0]['pin'] ?? ''}",
-                            style: TextStyle(
-                                color: ColorConstant.primaryColor
-                            ),
-                          ),
-                          Text("landmark : ${addrs[0]['landmark'] ?? ''}",
-                            style: TextStyle(
-                                color: ColorConstant.primaryColor
-                            ),
-                          ),
-                          Text("phone : ${addrs[0]['phone'] ?? ''}",
-                            style: TextStyle(
-                                color: ColorConstant.primaryColor
-                            ),
-                          ),
-                        ],
-                      );
-                    } else {
-                      return Text('No addresses found.');
-                    }
-                  },
-                ),
+                Text("Address: $address"),
+                SizedBox(height: height * 0.01),
+                Text("Phone: $phoneNumber"),
+                SizedBox(height: height * 0.01),
+                Text("Points: $points"),
               ],
             ),
           ),

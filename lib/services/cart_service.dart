@@ -20,6 +20,7 @@ class CartService {
         'customizationImage': productData['customizationImage'],
         'isLiked': productData['isLiked'], // Store the like status
         'category': productData['category'], // Add the category here
+        'description':productData['description']
       });
     } else {
       // Handle user not logged in

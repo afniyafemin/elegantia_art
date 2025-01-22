@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../../constants/color_constants/color_constant.dart';
 import '../../../constants/image_constants/image_constant.dart';
 import '../../../main.dart';
+import '../../../services/address_fetcher.dart';
 import '../../../services/favorites_method.dart';
 import 'change_address.dart';
 
@@ -177,75 +178,9 @@ class _CartCustomerState extends State<CartCustomer> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Check if user is not null before fetching addresses
+                      // Use AddressFetcher widget here
                       if (user != null)
-                        FutureBuilder<List<Map<String, dynamic>>>(
-                          future: fetchAddresses(user.uid),
-                          builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
-                            } else if (snapshot.hasError) {
-                              return Center(child: Text('Error: ${snapshot.error}'));
-                            } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                              List<Map<String, dynamic>> addrs = snapshot.data!;
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text("Deliver to: ",
-                                        style: TextStyle(
-                                          color: ColorConstant.primaryColor,
-                                          fontWeight: FontWeight.w500
-                                        ),
-                                      ),
-                                      Text("${addrs[0]['name'] ?? 'Unknown'}",
-                                        style: TextStyle(
-                                          color: ColorConstant.primaryColor,
-                                          fontWeight: FontWeight.w900
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.all(width*0.015),
-                                    child: Text("Address:",
-                                      style: TextStyle(
-                                        color: ColorConstant.primaryColor,
-                                        fontWeight: FontWeight.w900,
-                                        decoration: TextDecoration.underline,
-                                        decorationThickness: width*0.005,
-                                        decorationColor: ColorConstant.primaryColor
-                                      ),
-                                    ),
-                                  ),
-                                  Text("${addrs[0]['post'] ?? ''}",
-                                    style: TextStyle(
-                                      color: ColorConstant.primaryColor
-                                    ),
-                                  ),
-                                  Text("${addrs[0]['pin'] ?? ''}",
-                                    style: TextStyle(
-                                        color: ColorConstant.primaryColor
-                                    ),
-                                  ),
-                                  Text("${addrs[0]['landmark'] ?? ''}",
-                                    style: TextStyle(
-                                        color: ColorConstant.primaryColor
-                                    ),
-                                  ),
-                                  Text("${addrs[0]['phone'] ?? ''}",
-                                    style: TextStyle(
-                                        color: ColorConstant.primaryColor
-                                    ),
-                                  ),
-                                ],
-                              );
-                            } else {
-                              return Text('No addresses found.');
-                            }
-                          },
-                        )
+                        AddressFetcher(userId: user.uid)
                       else
                         Text('User  not logged in.'),
                       InkWell(
@@ -326,11 +261,13 @@ class _CartCustomerState extends State<CartCustomer> {
                               ],
                             ),
                             Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Text(
-                                  "${productName ?? 'Unknown Product'} \n ₹${price ?? '0'} \n ${category ?? ''}",
-                                  style: TextStyle(color: Colors.black),
+                                  "${productName ?? 'Unknown Product'} \n${category ?? ''}\n₹${price ?? '0'}",
+                                  style: TextStyle(color: Colors.black,
+                                  fontWeight: FontWeight.w500),
                                 ),
                                 Row(
                                   children: [
@@ -387,47 +324,47 @@ class _CartCustomerState extends State<CartCustomer> {
             ),
           ),
         ),
-        Positioned(
-          bottom: 0,
-          child: Container(
-            width: width * 1,
-            height: height * 0.08,
-            decoration: BoxDecoration(
-                color: ColorConstant.secondaryColor,
-                borderRadius: BorderRadius.circular(width * 0.05)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(
-                  "TOTAL \nRs. ${totalAmount.toStringAsFixed(2)}",
-                  style: TextStyle(
-                      fontSize: width * 0.03,
-                      color: ColorConstant.primaryColor),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => BuyNowAllPage(allCartItems: allCartItems, totalAmount: totalAmount,),));
-                  },
-                  child: Container(
-                    height: height * 0.05,
-                    width: width * 0.4,
-                    decoration: BoxDecoration(
-                        color: ColorConstant.primaryColor,
-                        borderRadius: BorderRadius.circular(width * 0.03)),
-                    child: Center(
-                      child: Text(
-                        "Buy Now",
-                        style: TextStyle(
-                            color: ColorConstant.secondaryColor,
-                            fontSize: width * 0.03),
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-        )
+        // Positioned(
+        //   bottom: 0,
+        //   child: Container(
+        //     width: width * 1,
+        //     height: height * 0.08,
+        //     decoration: BoxDecoration(
+        //         color: ColorConstant.secondaryColor,
+        //         borderRadius: BorderRadius.circular(width * 0.05)),
+        //     child: Row(
+        //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //       children: [
+        //         Text(
+        //           "TOTAL \nRs. ${totalAmount.toStringAsFixed(2)}",
+        //           style: TextStyle(
+        //               fontSize: width * 0.03,
+        //               color: ColorConstant.primaryColor),
+        //         ),
+        //         GestureDetector(
+        //           onTap: () {
+        //             Navigator.push(context, MaterialPageRoute(builder: (context) => BuyNowAllPage(allCartItems: allCartItems, totalAmount: totalAmount,),));
+        //           },
+        //           child: Container(
+        //             height: height * 0.05,
+        //             width: width * 0.4,
+        //             decoration: BoxDecoration(
+        //                 color: ColorConstant.primaryColor,
+        //                 borderRadius: BorderRadius.circular(width * 0.03)),
+        //             child: Center(
+        //               child: Text(
+        //                 "Buy Now",
+        //                 style: TextStyle(
+        //                     color: ColorConstant.secondaryColor,
+        //                     fontSize: width * 0.03),
+        //               ),
+        //             ),
+        //           ),
+        //         )
+        //       ],
+        //     ),
+        //   ),
+        // )
       ],
     );
   }

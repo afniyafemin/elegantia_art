@@ -234,21 +234,16 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 ],
                               ),
 
-                              Row(
-                                children: [
-                                  Icon(Icons.share,color: ColorConstant.primaryColor,),
-                                  IconButton(
-                                    onPressed: _toggleLike,
-                                    icon: Icon(
-                                      isLiked
-                                          ? Icons.favorite
-                                          : Icons.favorite_border,
-                                      color: isLiked
-                                          ? Colors.red
-                                          : ColorConstant.primaryColor,
-                                    ),
-                                  ),
-                                ],
+                              IconButton(
+                                onPressed: _toggleLike,
+                                icon: Icon(
+                                  isLiked
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: isLiked
+                                      ? Colors.red
+                                      : ColorConstant.primaryColor,
+                                ),
                               ),
                             ],
                           ),
@@ -433,6 +428,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                         'customizationImage':
                                             customizationImageURL,
                                         'isLiked': isLiked,
+                                        'description': widget.product['description']
                                       },
                                       quantity,
                                     );

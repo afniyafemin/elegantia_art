@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:elegantia_art/users_module/modules/customer/categories.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -34,12 +35,16 @@ class _MyOrdersState extends State<MyOrders> {
 
         // Map the fetched documents to a list of orders
         setState(() {
-          orders = orderSnapshot.docs.map((doc) => {
-            'orderId': doc['orderId'],
-            'productName': doc['productName'],
-            'price': doc['price'],
-            'orderDate': doc['orderDate'],
-            'status': doc['status'],
+          orders = orderSnapshot.docs.map((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            return {
+              'docId': doc.id, // Firestore document ID
+              'orderId': data['orderId'],
+              'productName': data['productName'],
+              'price': data['price'],
+              'orderDate': data['orderDate'],
+              'status': data['status'],
+            };
           }).toList();
         });
       } catch (e) {
@@ -52,12 +57,12 @@ class _MyOrdersState extends State<MyOrders> {
     }
   }
 
-  Future<void> cancelOrder(String orderId) async {
+  Future<void> cancelOrder(String docId) async {
     try {
-      await _firestore.collection('orders').doc(orderId).delete();
+      await _firestore.collection('orders').doc(docId).delete();
       // Remove the order from the local list
       setState(() {
-        orders.removeWhere((order) => order['orderId'] == orderId);
+        orders.removeWhere((order) => order['docId'] == docId);
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Order canceled successfully!')),
@@ -87,90 +92,106 @@ class _MyOrdersState extends State<MyOrders> {
         ),
       ),
       body: orders.isEmpty
-          ? Center(child: CircularProgressIndicator(color: ColorConstant.primaryColor,)) // Show loading indicator while fetching
+          ? Center(
+        child: Column(mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'No orders',
+              style: TextStyle(
+                fontSize: width * 0.05,
+                fontWeight: FontWeight.w600,
+                color: ColorConstant.primaryColor,
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> CategoryList()));
+              },
+                child: Container(
+                  height: height*0.05,
+                  width: width*0.25,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(width*0.02),
+                    color: ColorConstant.primaryColor
+                  ),
+                  child: Center(
+                    child: Text("ShopNow",style: TextStyle(
+                      color: ColorConstant.secondaryColor
+                    ),),
+                  ),))
+          ],
+        ),
+      ) // Show "No orders" message if the list is empty
           : ListView.builder(
         itemCount: orders.length,
         itemBuilder: (context, index) {
           final order = orders[index];
           return Card(
             color: ColorConstant.primaryColor.withOpacity(0.75),
-            margin: EdgeInsets.only(top : width*0.03, left: width*0.03, right: width*0.03),
+            margin: EdgeInsets.only(top: width * 0.03, left: width * 0.03, right: width * 0.03),
             child: ListTile(
               titleTextStyle: TextStyle(
-                fontWeight: FontWeight.w900,
-                color: ColorConstant.primaryColor
+                  fontWeight: FontWeight.w900,
+                  color: ColorConstant.primaryColor
               ),
               subtitleTextStyle: TextStyle(
-                color: ColorConstant.primaryColor.withOpacity(0.4)
+                  color: ColorConstant.primaryColor.withOpacity(0.4)
               ),
               title: Text(order['productName']),
               subtitle: Text('Order ID: ${order['orderId']}\nPrice: ₹${order['price']}\nDate: ${order['orderDate']}\nStatus: ${order['status']}'),
               isThreeLine: true,
               tileColor: ColorConstant.secondaryColor.withOpacity(0.8),
-              onLongPress: () {
-                showDialog(context: context, builder: (context) {
-                  return AlertDialog(
-                    backgroundColor: ColorConstant.primaryColor,
-                    title: Text("Cancel Order?",
-                      style:
-                      TextStyle(
-                          color: ColorConstant.secondaryColor,
-                          fontWeight: FontWeight.w900,
-                          fontSize: width*0.05
-                      ),
-                    ),
-                    actions: [
-                      GestureDetector(
-                        onTap: () {
-                          cancelOrder(order['orderId']);
-                          Navigator.pop(context);
-                        },
-                          child: Container(
-                            height: height*0.03,
-                            width: width*0.1,
-                            decoration: BoxDecoration(
-                                color: ColorConstant.secondaryColor,
-                                borderRadius: BorderRadius.circular(width*0.025)
-                            ),
-                            child: Center(
-                              child: Text("yes",
-                                style:
-                                TextStyle(
+              trailing: ElevatedButton(
+                onPressed: () {
+                  // Show confirmation dialog before canceling
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        backgroundColor: ColorConstant.secondaryColor,
+                        title: Text("Cancel Order?",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w900,
+                              fontSize: width * 0.05
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              cancelOrder(order['docId']); // Use the document ID to cancel the order
+                              Navigator.pop(context);
+                            },
+                            child: Text("Yes",
+                              style: TextStyle(
                                   color: Colors.red,
                                   fontWeight: FontWeight.w900,
-                                  fontSize: width*0.03
-                                ),
+                                  fontSize: width * 0.03
                               ),
                             ),
-                          )
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                          child: Container(
-                            height: height*0.03,
-                            width: width*0.1,
-                            decoration: BoxDecoration(
-                              color: ColorConstant.secondaryColor,
-                              borderRadius: BorderRadius.circular(width*0.025)
-                            ),
-                            child: Center(
-                              child: Text("No",
-                                style:
-                                TextStyle(
-                                    color: ColorConstant.primaryColor,
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: width*0.03
-                                ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text("No",
+                              style: TextStyle(
+                                  color: ColorConstant.primaryColor,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: width * 0.03
                               ),
                             ),
-                          )
-                      ),
-                    ],
+                          ),
+                        ],
+                      );
+                    },
                   );
-                },);
-              },
+                },
+                child: Text("Cancel"),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: ColorConstant.primaryColor, backgroundColor: ColorConstant.secondaryColor,
+                ),
+              ),
             ),
           );
         },

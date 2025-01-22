@@ -41,18 +41,18 @@ class _PinsState extends State<Pins> {
     }
   }
 
-  Future<void> _toggleLike(int index) async {
-    final product = favoriteProducts[index];
-    final productId = product['id'];
-
-    // Update Firestore
-    await _addToFav.toggleLike(productId, product);
-
-    // Update local state
-    setState(() {
-      favoriteProducts[index]['isLiked'] = !favoriteProducts[index]['isLiked'];
-    });
-  }
+  // Future<void> _toggleLike(int index) async {
+  //   final product = favoriteProducts[index];
+  //   final productId = product['id'];
+  //
+  //   // Update Firestore
+  //   await _addToFav.toggleLike(productId, product);
+  //
+  //   // Update local state
+  //   setState(() {
+  //     favoriteProducts[index]['isLiked'] = !favoriteProducts[index]['isLiked'];
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -187,21 +187,21 @@ class _PinsState extends State<Pins> {
                                       ),
                                     ),
                                   ),
-                                  Positioned(
-                                    top: height * 0.01,
-                                    right: width * 0.05,
-                                    child: IconButton(
-                                      onPressed: () => _toggleLike(index),
-                                      icon: Icon(
-                                        product['isLiked'] == true
-                                            ? Icons.favorite
-                                            : Icons.favorite_border,
-                                        color: product['isLiked'] == true
-                                            ? Colors.red
-                                            : ColorConstant.primaryColor,
-                                      ),
-                                    ),
-                                  ),
+                                  // Positioned(
+                                  //   top: height * 0.01,
+                                  //   right: width * 0.05,
+                                  //   child: IconButton(
+                                  //     onPressed: () => _toggleLike(index),
+                                  //     icon: Icon(
+                                  //       product['isLiked'] == true
+                                  //           ? Icons.favorite
+                                  //           : Icons.favorite_border,
+                                  //       color: product['isLiked'] == true
+                                  //           ? Colors.red
+                                  //           : ColorConstant.primaryColor,
+                                  //     ),
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             );
