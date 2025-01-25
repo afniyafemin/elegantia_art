@@ -96,7 +96,7 @@ class _AcceptedJobsState extends State<AcceptedJobs> {
                         ),
                         child: Center(
                           child: Text(
-                            "Accepted",
+                            "Finished",
                             style: TextStyle(
                               color: ColorConstant.secondaryColor,
                             ),
