@@ -41,6 +41,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   void initState() {
     super.initState();
     _fetchUserDetails();
+    _calculatePoints();
   }
 
   String userId = FirebaseAuth.instance.currentUser !.uid;
@@ -85,6 +86,37 @@ class _CustomDrawerState extends State<CustomDrawer> {
     }
   }
 
+  /// Calculate points based on totalSpent
+  Future<void> _calculatePoints() async {
+    try {
+      // Fetch revenue data for the current user
+      QuerySnapshot revenueSnapshot = await FirebaseFirestore.instance
+          .collection('revenue')
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      // Calculate the total revenue
+      double totalSpent = revenueSnapshot.docs.fold(0.0, (sum, doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return sum + (data['price'] ?? 0.0);
+      });
+
+      // Calculate points (1 point for every ₹100 spent)
+      int calculatedPoints = (totalSpent / 100).floor();
+
+      // Update the points in the user's document in the 'users' collection
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'points': calculatedPoints,
+      });
+
+      // Update the local state
+      setState(() {
+        points = calculatedPoints;
+      });
+    } catch (e) {
+      print('Error calculating points: $e');
+    }
+  }
 
 
   @override
@@ -178,21 +210,18 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 Text("Phone: $phoneNumber"),
                 SizedBox(height: height * 0.01),
                 Text("Points: $points"),
+
               ],
             ),
           ),
           SizedBox(height: height*0.015,),
-          Text("CREDITS"),
-          Container(
-            height: height * 0.06,
-            width: width * 0.4,
-            color: ColorConstant.primaryColor,
-          ),
-          Text("Current points: $points/100 "),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-                "The more you buy products from us, your points increase, which will be useful for your next purchase and reduce the cost. Happy shopping!"),
+              "Earn more points by purchasing more products! 1 point = ₹100 spent. Happy shopping!",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
           ),
           SizedBox(height: height * 0.02),
 
