@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> products_ = [];
   // List<Map<String, dynamic>> MallProducts_ = [];
   List<Map<String, dynamic>> offerProducts_ = [];
-  int userPoints = 0; // Variable to store user points
+  int userTier = 0; // Variable to store user points
 
   List products = [
     ImageConstant.product1,
@@ -67,53 +67,37 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _fetchCurrentUserName();
-    _fetchUserPointsAndOfferProducts(); // Fetch user points and offer products
+    _fetchUserTierAndOfferProducts(); // Fetch user points and offer products
     _fetchCategories();
     _fetchProducts(currentUserName);
   }
 
-  Future<void> _fetchUserPointsAndOfferProducts() async {
+  Future<void> _fetchUserTierAndOfferProducts() async {
     User? user = FirebaseAuth.instance.currentUser ;
     if (user != null) {
       try {
-        // Fetch user points
+        // Fetch user tier
         DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
         if (userDoc.exists) {
-          userPoints = userDoc['points'] ?? 0; // Assuming 'points' is the field name in Firestore
+          userTier = userDoc['tier'] ?? 0; // Assuming 'tier' is the field name in Firestore
         }
 
-        // Fetch offer products based on user points
-        List<String> offerProductIds = [];
-        if (userPoints == 0) {
-          // Fetch products priced below 99 from the 'products' collection
-          final productCollection = _firestore.collection('products');
-          final snapshot = await productCollection.where('price', isLessThanOrEqualTo: 99).get();
-          offerProducts_ = snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
-        } else {
-          // Fetch products from the 'offers' collection where pointsRequired equals userPoints
-          final offerCollection = _firestore.collection('offers');
-          final snapshot = await offerCollection.where('pointsRequired', isEqualTo: userPoints).get();
-          offerProductIds = snapshot.docs.map((doc) => doc['productId'] as String).toList(); // Assuming 'productId' is the field name
-        }
-
-        // Fetch product details for each offer product ID
-        for (String productId in offerProductIds) {
-          DocumentSnapshot productDoc = await _firestore.collection('products').doc(productId).get();
-          if (productDoc.exists) {
-            offerProducts_.add(productDoc.data() as Map<String, dynamic>);
-          }
-        }
+        // Fetch offer products
+        final productCollection = _firestore.collection('products');
+        final snapshot = await productCollection.get();
+        offerProducts_ = snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
 
         // Update the state to reflect the fetched offer products
         setState(() {});
       } catch (error) {
-        print("Error fetching user points or offer products: $error");
+        print("Error fetching user tier or offer products: $error");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error fetching products: $error')),
         );
       }
     }
   }
+
   // Future<void> _get99MallProducts() async {
   //   try {
   //     final productCollection = FirebaseFirestore.instance.collection('products');
@@ -215,8 +199,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> displayProducts =
-        userPoints == 0 ? offerProducts_ : offerProducts_;
     return Scaffold(
       //this key is needed , when the userprofile is clicked th key will get
       //enabled and the drawer will come up
@@ -385,7 +367,7 @@ class _HomePageState extends State<HomePage> {
                     child: Stack(
                       children: [
                         Container(
-                          height: 200.0,
+                          height: height*0.3,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: ColorConstant.secondaryColor,
@@ -410,26 +392,57 @@ class _HomePageState extends State<HomePage> {
                                   child: Stack(
                                     children: [
                                       Container(
-                                        height: 200.0,
+                                        height: height*0.4,
                                         width: double.infinity,
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(8.0),
                                           color: ColorConstant.primaryColor,
                                           image: DecorationImage(
-                                            image: AssetImage(ImageConstant.gift_hamper), // Assuming 'image' is the field name
+                                            image: AssetImage(ImageConstant.journals), // Assuming 'image' is the field name
                                             fit: BoxFit.cover,
                                           ),
                                         ),
                                       ),
                                       Padding(
                                         padding: EdgeInsets.only(top: 100.0, left: 16.0),
-                                        child: Text(
-                                          offerProducts_[index]['name'],
-                                          style: TextStyle(
-                                            fontSize: 24.0,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w900,
-                                          ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              offerProducts_[index]['name'],
+                                              style: TextStyle(
+                                                fontSize: 24.0,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w900,
+                                              ),
+                                            ),
+                                            SizedBox(height: 8.0),
+                                            if(userTier > 0 ) ...[
+                                              Text(
+                                                ' ₹${offerProducts_[index]['price']}',
+                                                style: TextStyle(
+                                                  fontSize: 16.0,
+                                                  color: Colors.white,
+                                                  decoration: TextDecoration.lineThrough,
+                                                ),
+                                              ),
+                                              Text(
+                                                'Offer Price: ₹${offerProducts_[index]['offerPrices'][userTier]}', // Accessing the offer price based on user tier
+                                                style: TextStyle(
+                                                  fontSize: 16.0,
+                                                  color: Colors.yellowAccent,
+                                                ),
+                                              ),
+                                            ]else ...[
+                                              Text(
+                                                ' ₹${offerProducts_[index]['price']}',
+                                                style: TextStyle(
+                                                  fontSize: 16.0,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ]
+                                          ],
                                         ),
                                       ),
                                     ],
@@ -440,7 +453,7 @@ class _HomePageState extends State<HomePage> {
                             options: CarouselOptions(
                               viewportFraction: 1,
                               autoPlay: true,
-                              height: 200.0,
+                              height: height*0.3,
                               autoPlayAnimationDuration: Duration(seconds: 4),
                               onPageChanged: (index, reason) {
                                 setState(() {

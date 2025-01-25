@@ -31,6 +31,8 @@ class _ProductDetailsState extends State<ProductDetails> {
   double _productRating = 0.0;
   double _avgRating = 0.0;
   final TextEditingController _feedbackController = TextEditingController();
+  int userTier = 0; // Variable to store user tier
+
 
   @override
   void initState() {
@@ -38,6 +40,7 @@ class _ProductDetailsState extends State<ProductDetails> {
     _checkIfLiked();
     _getProductRating();
     _getUserRating();
+    _getUserTier();
   }
 
   Future<void> _checkIfLiked() async {
@@ -72,6 +75,26 @@ class _ProductDetailsState extends State<ProductDetails> {
       }
     } catch (e) {
       print('Error fetching product rating: $e');
+    }
+  }
+
+  Future<void> _getUserTier() async {
+    User? user = FirebaseAuth.instance.currentUser ;
+    if (user != null) {
+      try {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (userDoc.exists) {
+          setState(() {
+            userTier = userDoc['tier'] ?? 0; // Assuming 'tier' is the field name in Firestore
+          });
+        }
+      } catch (e) {
+        print('Error fetching user tier: $e');
+      }
     }
   }
 
@@ -222,15 +245,33 @@ class _ProductDetailsState extends State<ProductDetails> {
                                       height:
                                           MediaQuery.of(context).size.height *
                                               0.015),
-                                  Text(
-                                    "₹${widget.product['price']}",
-                                    style: TextStyle(
-                                      fontSize:
-                                          MediaQuery.of(context).size.width *
-                                              0.05,
-                                      fontWeight: FontWeight.w600,
+                                  if (userTier > 0) ...[
+                                    Text(
+                                      "₹${widget.product['price']}",
+                                      style: TextStyle(
+                                        fontSize: MediaQuery.of(context).size.width * 0.05,
+                                        fontWeight: FontWeight.w600,
+                                        decoration: TextDecoration.lineThrough, // Strikethrough effect
+                                      ),
                                     ),
-                                  ),
+                                    Text(
+                                      "Offer Price: ₹${widget.product['offerPrices'][userTier]}", // Accessing the offer price based on user tier
+                                      style: TextStyle(
+                                        fontSize: MediaQuery.of(context).size.width * 0.05,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.red, // Highlight the offer price
+                                      ),
+                                    ),
+                                  ]else ...[
+                                    Text(
+                                      "₹${widget.product['price']}",
+                                      style: TextStyle(
+                                        fontSize: MediaQuery.of(context).size.width * 0.05,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ]
+
                                 ],
                               ),
 
@@ -422,7 +463,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                       widget.product['id'],
                                       {
                                         'name': widget.product['name'],
-                                        'price': widget.product['price'],
+                                        'price': widget.product['offerPrices'][userTier],
                                         'category': widget.product['category'],
                                         'customizationText': customizationText,
                                         'customizationImage':

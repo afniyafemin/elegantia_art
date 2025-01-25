@@ -27,7 +27,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   String? email;
   String address = "Unknown";
   String phoneNumber = "Unknown";
-  int points = 0; // Assuming points are stored in Firestore as an integer
+  int tier = 0; // Renamed from 'points' to 'tier'
 
   bool get isSwitched => _isSwitched;
 
@@ -41,14 +41,14 @@ class _CustomDrawerState extends State<CustomDrawer> {
   void initState() {
     super.initState();
     _fetchUserDetails();
-    _calculatePoints();
+    _calculateTier();
   }
 
-  String userId = FirebaseAuth.instance.currentUser !.uid;
+  String userId = FirebaseAuth.instance.currentUser!.uid;
 
   // Fetch user details from Firestore
   Future<void> _fetchUserDetails() async {
-    User? user = FirebaseAuth.instance.currentUser ;
+    User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
         // Fetch user document
@@ -59,7 +59,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
         if (userDoc.exists) {
           setState(() {
-            currentUserName = userDoc['username'] ?? "User ";
+            currentUserName = userDoc['username'] ?? "User";
             email = userDoc['email'] ?? "Unknown";
           });
         }
@@ -69,7 +69,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             .collection('users')
             .doc(user.uid)
             .collection('address')
-            .doc('currentAddress') // Assuming you have a document named 'currentAddress'
+            .doc('currentAddress')
             .get();
 
         if (addressDoc.exists) {
@@ -86,8 +86,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
     }
   }
 
-  /// Calculate points based on totalSpent
-  Future<void> _calculatePoints() async {
+  // Calculate tier based on totalSpent
+  Future<void> _calculateTier() async {
     try {
       // Fetch revenue data for the current user
       QuerySnapshot revenueSnapshot = await FirebaseFirestore.instance
@@ -101,23 +101,22 @@ class _CustomDrawerState extends State<CustomDrawer> {
         return sum + (data['price'] ?? 0.0);
       });
 
-      // Calculate points (1 point for every ₹100 spent)
-      int calculatedPoints = (totalSpent / 100).floor();
+      // Calculate tier (1 tier for every ₹100 spent)
+      int calculatedTier = (totalSpent / 100).floor();
 
-      // Update the points in the user's document in the 'users' collection
+      // Update the tier in the user's document in the 'users' collection
       await FirebaseFirestore.instance.collection('users').doc(userId).update({
-        'points': calculatedPoints,
+        'tier': calculatedTier,
       });
 
       // Update the local state
       setState(() {
-        points = calculatedPoints;
+        tier = calculatedTier;
       });
     } catch (e) {
-      print('Error calculating points: $e');
+      print('Error calculating tier: $e');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +164,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
               Text("Local Artist"),
             ],
           ),
-
           SizedBox(
             height: height * 0.02,
           ),
@@ -179,10 +177,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     fontSize: width * 0.04,
                     fontWeight: FontWeight.w500),
               ),
-              SizedBox(width: width*0.03,),
+              SizedBox(width: width * 0.03),
               GestureDetector(
                 onTap: () {
-                  // Navigate to ChangeAddress page when the edit icon is clicked
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => ChangeAddress()),
@@ -193,11 +190,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   size: height * 0.02,
                   color: ColorConstant.primaryColor,
                 ),
-              ),// Add edit icon here
+              ),
             ],
           ),
-          // Editable User Details
-
           Padding(
             padding: EdgeInsets.symmetric(horizontal: width * 0.05),
             child: Column(
@@ -209,30 +204,27 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 SizedBox(height: height * 0.01),
                 Text("Phone: $phoneNumber"),
                 SizedBox(height: height * 0.01),
-                Text("Points: $points"),
-
+                Text("Tier: $tier"),
               ],
             ),
           ),
-          SizedBox(height: height*0.015,),
+          SizedBox(height: height * 0.015),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              "Earn more points by purchasing more products! 1 point = ₹100 spent. Happy shopping!",
+              "Earn more tiers by purchasing more products! 1 tier = ₹100 spent. Happy shopping!",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16),
             ),
           ),
           SizedBox(height: height * 0.02),
-
-          // LogOut button
           GestureDetector(
             onTap: () async {
-              await signOut(); // Call the signOut function
+              await signOut();
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => StreamPage()),
-                (Route<dynamic> route) => false, // Remove all previous routes
+                    (Route<dynamic> route) => false,
               );
             },
             child: Container(
