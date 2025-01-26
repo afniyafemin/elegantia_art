@@ -44,12 +44,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
     _calculateTier();
   }
 
-  String userId = FirebaseAuth.instance.currentUser!.uid;
+  String? userId; // Make userId nullable
 
   // Fetch user details from Firestore
   Future<void> _fetchUserDetails() async {
-    User? user = FirebaseAuth.instance.currentUser;
+    User? user = FirebaseAuth.instance.currentUser ;
     if (user != null) {
+      userId = user.uid; // Assign userId only if user is not null
       try {
         // Fetch user document
         DocumentSnapshot userDoc = await FirebaseFirestore.instance
@@ -59,7 +60,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
         if (userDoc.exists) {
           setState(() {
-            currentUserName = userDoc['username'] ?? "User";
+            currentUserName = userDoc['username'] ?? "User ";
             email = userDoc['email'] ?? "Unknown";
           });
         }

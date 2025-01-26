@@ -98,28 +98,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // Future<void> _get99MallProducts() async {
-  //   try {
-  //     final productCollection = FirebaseFirestore.instance.collection('products');
-  //     final snapshot = await productCollection.where('price', isLessThanOrEqualTo: 99).get();
-  //
-  //     if (snapshot.docs.isNotEmpty) {
-  //       setState(() {
-  //         MallProducts_ = snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
-  //       });
-  //     }
-  //   } catch (e) {
-  //     // Handle error (e.g., show a snackbar)
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Error fetching products: $e')),
-  //     );
-  //   } finally {
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //   }
-  // }
-
   Future<void> _fetchCategories() async {
     try {
       final categoriesRef = _firestore.collection('categories');
@@ -367,7 +345,7 @@ class _HomePageState extends State<HomePage> {
                     child: Stack(
                       children: [
                         Container(
-                          height: height*0.3,
+                          height: height * 0.3,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: ColorConstant.secondaryColor,
@@ -376,8 +354,10 @@ class _HomePageState extends State<HomePage> {
                           child: offerProducts_.isEmpty
                               ? Center(child: Text('No offer products available.'))
                               : CarouselSlider.builder(
-                            itemCount: offerProducts_.length,
+                            itemCount: offerProducts_.length, // Ensure this is set to offerProducts_.length
                             itemBuilder: (BuildContext context, int index, int realIndex) {
+                              // Check if index is within bounds
+                              if (index < 0 || index >= offerProducts_.length) return Container(); // Prevent out of bounds
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: GestureDetector(
@@ -392,13 +372,13 @@ class _HomePageState extends State<HomePage> {
                                   child: Stack(
                                     children: [
                                       Container(
-                                        height: height*0.4,
+                                        height: height * 0.4,
                                         width: double.infinity,
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(8.0),
                                           color: ColorConstant.primaryColor,
                                           image: DecorationImage(
-                                            image: AssetImage(ImageConstant.journals), // Assuming 'image' is the field name
+                                            image: AssetImage(ImageConstant.journals), // Assuming this is a placeholder
                                             fit: BoxFit.cover,
                                           ),
                                         ),
@@ -417,7 +397,7 @@ class _HomePageState extends State<HomePage> {
                                               ),
                                             ),
                                             SizedBox(height: 8.0),
-                                            if(userTier > 0 ) ...[
+                                            if (userTier > 0) ...[
                                               Text(
                                                 ' ₹${offerProducts_[index]['price']}',
                                                 style: TextStyle(
@@ -433,7 +413,7 @@ class _HomePageState extends State<HomePage> {
                                                   color: Colors.yellowAccent,
                                                 ),
                                               ),
-                                            ]else ...[
+                                            ] else ...[
                                               Text(
                                                 ' ₹${offerProducts_[index]['price']}',
                                                 style: TextStyle(
@@ -453,7 +433,7 @@ class _HomePageState extends State<HomePage> {
                             options: CarouselOptions(
                               viewportFraction: 1,
                               autoPlay: true,
-                              height: height*0.3,
+                              height: height * 0.3,
                               autoPlayAnimationDuration: Duration(seconds: 4),
                               onPageChanged: (index, reason) {
                                 setState(() {
@@ -561,6 +541,7 @@ class _HomePageState extends State<HomePage> {
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
+                          if (index >= products_.length) return Container();
                           return GestureDetector(
                             onTap: () {
                               Navigator.push(
