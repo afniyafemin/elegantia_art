@@ -13,6 +13,7 @@ class JobInfo extends StatefulWidget {
   final String customizationImage;
   final String date; // Changed from Date to date to avoid conflict with Dart's Date class
   final String jobId; // Add jobId to the constructor
+  final dynamic address; // Fix: Use dynamic to accept both Map and List
 
   const JobInfo({
     Key? key,
@@ -22,7 +23,8 @@ class JobInfo extends StatefulWidget {
     required this.customizationText,
     required this.customizationImage,
     required this.date,
-    required this.jobId, // Include jobId
+    required this.jobId,
+    required this.address, // Use dynamic for address
   }) : super(key: key);
 
   @override
@@ -31,52 +33,109 @@ class JobInfo extends StatefulWidget {
 
 class _JobInfoState extends State<JobInfo> {
   bool isRequested = false; // Track if the job has been requested
-
-  // Firestore instance
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  void requestJob() async {
-    String userId = FirebaseAuth.instance.currentUser !.uid; // Get the current user ID
+  @override
+  void initState() {
+    super.initState();
+    _checkIfRequested(); // Check request status on page load
+  }
 
-    // Add the request to Firestore
+  Future<void> _checkIfRequested() async {
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+
     try {
-      await _firestore.collection('users').doc(userId).collection('jobs').doc(widget.jobId).set({
+      DocumentSnapshot jobDoc = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('jobs')
+          .doc(widget.jobId)
+          .get();
+
+      if (jobDoc.exists && jobDoc['isRequested'] == true) {
+        setState(() {
+          isRequested = true;
+        });
+      }
+    } catch (e) {
+      print("Error checking request status: $e");
+    }
+  }
+
+  void requestJob() async {
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('jobs')
+          .doc(widget.jobId)
+          .set({
         'status': 'requested',
+        'isRequested': true,
         'productName': widget.productName,
         'category': widget.category,
         'amount': widget.amount,
         'customizationText': widget.customizationText,
         'customizationImage': widget.customizationImage,
         'date': widget.date,
-        'orderId': widget.jobId
-
+        'orderId': widget.jobId,
       });
       setState(() {
-        isRequested = true; // Change the state to requested
+        isRequested = true;
       });
-      print("Job requested");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Job requested successfully!"),
+          backgroundColor: Colors.green,
+        ),
+      );
     } catch (e) {
-      print("Error requesting job: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error requesting job: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
   void cancelRequest() async {
-    String userId = FirebaseAuth.instance.currentUser !.uid; // Get the current user ID
+    String userId = FirebaseAuth.instance.currentUser!.uid;
 
-    // Remove the request from Firestore
     try {
-      await _firestore.collection('users').doc(userId).collection('jobs').doc(widget.jobId).delete();
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('jobs')
+          .doc(widget.jobId)
+          .update({'isRequested': false, 'status': 'canceled'});
       setState(() {
-        isRequested = false; // Change the state back to not requested
+        isRequested = false;
       });
-      print("Job request canceled");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Job request canceled successfully!"),
+          backgroundColor: Colors.green,
+        ),
+      );
     } catch (e) {
-      print("Error canceling job request: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error canceling job request: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Use MediaQuery for responsive design
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -132,6 +191,25 @@ class _JobInfoState extends State<JobInfo> {
                           SizedBox(height: 8),
                           Text("Ordered Date: ${widget.date}"),
                           SizedBox(height: 16),
+                          // Displaying address details
+                          Text("Address:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          SizedBox(height: 10),
+                          widget.address != null
+                              ? Padding(
+                            padding: EdgeInsets.only(bottom: 10.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("Name: ${widget.address['name'] ?? 'N/A'}", style: TextStyle(fontSize: 16)),
+                                Text("Landmark: ${widget.address['landmark'] ?? 'N/A'}", style: TextStyle(fontSize: 16)),
+                                Text("Phone: ${widget.address['phone'] ?? 'N/A'}", style: TextStyle(fontSize: 16)),
+                                Text("Pin: ${widget.address['pin'] ?? 'N/A'}", style: TextStyle(fontSize: 16)),
+                                Text("Post: ${widget.address['post'] ?? 'N/A'}", style: TextStyle(fontSize: 16)),
+                                Divider(),
+                              ],
+                            ),
+                          )
+                              : Text("No address available", style: TextStyle(fontSize: 16)),
                         ],
                       ),
                     ),
@@ -142,20 +220,32 @@ class _JobInfoState extends State<JobInfo> {
           ),
         ],
       ),
-      floatingActionButton: Container(
-        width: 200, // Set the desired width
-        child: FloatingActionButton(
-          backgroundColor: ColorConstant.primaryColor,
-          onPressed: () {
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40.0),
+        child: InkWell(
+          onTap: () {
             if (!isRequested) {
-              requestJob(); // Request the job
+              requestJob();
             } else {
-              cancelRequest(); // Cancel the job request
+              cancelRequest();
             }
           },
-          child: Text(
-            isRequested ? "Cancel Request" : "Request",
-            style: TextStyle(fontSize: 16, color: ColorConstant.secondaryColor), // Optional: Increase font size
+          child: Container(
+            height: 50,
+            decoration: BoxDecoration(
+              color: isRequested ? Colors.red : ColorConstant.primaryColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Text(
+                isRequested ? "Cancel Request" : "Request",
+                style: TextStyle(
+                  color: ColorConstant.secondaryColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
           ),
         ),
       ),

@@ -67,13 +67,32 @@ class _JobPortalState extends State<JobPortal> {
         .limit(5)
         .get();
 
-    return querySnapshot.docs.map((doc) {
-      return {
-        'jobId': doc['jobId'],
-        'amount': doc['amount'],
-      };
-    }).toList();
+    List<Map<String, dynamic>> topJobs = [];
+
+    for (var doc in querySnapshot.docs) {
+      final jobId = doc.get('jobId'); // Get jobId from the collaboration document
+
+      // Fetch the corresponding order document based on the jobId
+      final orderDoc = await FirebaseFirestore.instance.collection('orders').where('orderId', isEqualTo: jobId).get();
+
+      if (orderDoc.docs.isNotEmpty) {
+        // If an order exists for the jobId, add the collaboration and order data
+        topJobs.add({
+          'collaboration': doc.data(),
+          'order': orderDoc.docs.first.data(), // Get the first matching order
+        });
+      } else {
+        // Handle case when no order data is found, add empty order data
+        topJobs.add({
+          'collaboration': doc.data(),
+          'order': {}, // Empty order data when no matching order is found
+        });
+      }
+    }
+
+    return topJobs;
   }
+
 
 
   Future<List<Map<String, dynamic>>> fetchCollaborationData() async {
@@ -89,6 +108,12 @@ class _JobPortalState extends State<JobPortal> {
         collaborations.add({
           'collaboration': doc.data(),
           'order': orderDoc.docs.first.data(), // Get the first matching order
+        });
+      } else {
+        // Handle case when no order data is found
+        collaborations.add({
+          'collaboration': doc.data(),
+          'order': {}, // Empty order data when no matching order is found
         });
       }
     }
@@ -270,23 +295,40 @@ class _JobPortalState extends State<JobPortal> {
                         CarouselSlider.builder(
                           itemCount: collaborations.length,
                           itemBuilder: (context, index, realIndex) {
-                            final job = collaborations[index];
+                            // Null checks before accessing the data
+                            final collaboration = collaborations[index]['collaboration'];
+                            final orderData = collaborations[index]['order'];
+
+                            if (collaboration == null || orderData == null) {
+                              return Container();  // If data is null, return an empty container (or some placeholder)
+                            }
+
+                            final job = collaboration;  // Safely access 'collaboration' data
+                            final order = orderData;    // Safely access 'order' data
+
                             return GestureDetector(
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        JobInfo(jobId: job['jobId'], productName: '', category: '', amount: job['amount'], customizationText: '', customizationImage: '', date: '',),
+                                    builder: (context) => JobInfo(
+                                      jobId: job['jobId'] ?? '', // Safely pass jobId
+                                      productName: order['productName'] ?? 'N/A', // Safely access productName
+                                      category: order['category'] ?? 'N/A', // Safely access category
+                                      amount: job['amount'] ?? 0.0, // Safely access amount
+                                      customizationText: order['customizationText'] ?? 'N/A', // Safely access customizationText
+                                      customizationImage: order['customizationImage'] ?? '', // Safely access customizationImage
+                                      date: order['orderDate'] ?? 'N/A', // Safely access orderDate
+                                      address: orderData['address'] ?? [],
+                                    ),
                                   ),
                                 );
                               },
                               child: Container(
                                 margin: EdgeInsets.symmetric(horizontal: width * 0.02),
                                 decoration: BoxDecoration(
-                                  image: DecorationImage(image: AssetImage(ImageConstant.product2),fit: BoxFit.cover),
+                                  image: DecorationImage(image: AssetImage(ImageConstant.product2), fit: BoxFit.cover),
                                   borderRadius: BorderRadius.circular(width * 0.03),
-                                  //color: Colors.white,
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.grey.withOpacity(0.3),
@@ -302,14 +344,14 @@ class _JobPortalState extends State<JobPortal> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        "Job ID: ${job['jobId']}",
+                                        "Job ID: ${job['jobId'] ?? 'N/A'}", // Safely access jobId
                                         style: TextStyle(
                                           shadows: [
                                             Shadow(
                                               color: ColorConstant.secondaryColor,
                                               offset: Offset(0, 2),
                                               blurRadius: 2,
-                                            )
+                                            ),
                                           ],
                                           fontSize: width * 0.05,
                                           fontWeight: FontWeight.bold,
@@ -317,14 +359,14 @@ class _JobPortalState extends State<JobPortal> {
                                       ),
                                       SizedBox(height: height * 0.01),
                                       Text(
-                                        "Amount: ₹${job['amount']}",
+                                        "Amount: ₹${job['amount']?.toString() ?? 'N/A'}", // Safely handle amount display
                                         style: TextStyle(
                                           shadows: [
                                             Shadow(
                                               color: ColorConstant.primaryColor,
                                               offset: Offset(0, 2),
                                               blurRadius: 2,
-                                            )
+                                            ),
                                           ],
                                           fontSize: width * 0.04,
                                           color: ColorConstant.secondaryColor,
@@ -350,6 +392,7 @@ class _JobPortalState extends State<JobPortal> {
                             },
                           ),
                         ),
+
                       ],
                     );
                   }
@@ -453,32 +496,6 @@ class _JobPortalState extends State<JobPortal> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     GestureDetector(
-                                      // onTap: () {
-                                      //   String userId = FirebaseAuth.instance.currentUser !.uid; // Replace with actual user ID
-                                      //   String jobId = collaborationData['jobId'] ?? ''; // Ensure jobId is not null
-                                      //   double amount = collaborationData['amount'] ?? 0.0; // Get the amount
-                                      //
-                                      //   if (jobId.isNotEmpty) {
-                                      //     applyForJob(userId, jobId, amount);
-                                      //     Navigator.push(
-                                      //       context,
-                                      //       MaterialPageRoute(
-                                      //         builder: (context) => JobInfo(
-                                      //           productName: orderData['productName'] ?? 'N/A',
-                                      //           category: orderData['category'] ?? 'N/A',
-                                      //           amount: collaborationData['amount'] ?? 0.0,
-                                      //           customizationText: orderData['customizationText'] ?? 'N/A',
-                                      //           customizationImage: orderData['customizationImage'] ?? '',
-                                      //           date: orderData['orderDate'] ?? 'N/A',
-                                      //           jobId: collaborationData['jobId'] ?? '',
-                                      //         ),
-                                      //       ),
-                                      //     );
-                                      //   } else {
-                                      //     print("Job ID is null or empty");
-                                      //   }
-                                      // },
-
                                       onTap : (){
                                         Navigator.push(context, MaterialPageRoute(builder: (context) => JobInfo(
                                           productName: orderData['productName'] ?? 'N/A',
@@ -488,6 +505,7 @@ class _JobPortalState extends State<JobPortal> {
                                           customizationImage: orderData['customizationImage'] ?? '',
                                           date: orderData['orderDate'] ?? 'N/A',
                                           jobId: collaborationData['jobId'] ?? '',
+                                          address: orderData['address'] ?? [],
                                         ),));
                                       },
 

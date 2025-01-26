@@ -92,7 +92,7 @@ class _RequestedJobsState extends State<RequestedJobs> {
                         ),
                         child: InkWell(
                           onTap: () {
-                            _showCancelRequestAlert(context);
+                            _showCancelRequestAlert(context, jobIds[index]);
                           },
                           child: Center(
                             child: Text(
@@ -115,7 +115,7 @@ class _RequestedJobsState extends State<RequestedJobs> {
     );
   }
 
-  void _showCancelRequestAlert(BuildContext context) {
+  void _showCancelRequestAlert(BuildContext context, String jobId) {
     showDialog(
       context: context,
       builder: (context) {
@@ -134,8 +134,40 @@ class _RequestedJobsState extends State<RequestedJobs> {
               ),
             ),
             TextButton(
-              onPressed: () {
-                // Add your cancel request logic here
+              onPressed: () async {
+                try {
+                  // Delete the document with the jobId from the jobs subcollection
+                  await _firestore
+                      .collection('users')
+                      .doc(currentUserId)
+                      .collection('jobs')
+                      .doc(jobId)
+                      .delete();
+
+                  // Show success message
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Request cancelled successfully!'),
+                      backgroundColor: ColorConstant.primaryColor,
+                    ),
+                  );
+
+                  // Refresh the list by re-fetching requested jobs
+                  setState(() {
+                    _requestedJobIds = _fetchRequestedJobs();
+                  });
+                } catch (e) {
+                  // Handle error
+                  print('Error canceling request: $e');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to cancel the request.'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+
+                // Close the dialog
                 Navigator.of(context).pop();
               },
               child: const Text(
@@ -148,4 +180,5 @@ class _RequestedJobsState extends State<RequestedJobs> {
       },
     );
   }
+
 }

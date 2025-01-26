@@ -1,221 +1,191 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
-import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:flutter/material.dart';
 
-class JobCatelogs extends StatefulWidget {
+class JobCatelogs extends StatelessWidget {
   final String category;
 
   const JobCatelogs({Key? key, required this.category}) : super(key: key);
 
   @override
-  State<JobCatelogs> createState() => _JobCatelogsState();
-}
-
-class _JobCatelogsState extends State<JobCatelogs> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  bool isGridView = true;
-
-  Future<List<Map<String, dynamic>>> _fetchJobs(String category) async {
-    List<Map<String, dynamic>> jobs = [];
-    try {
-      // Get collaborations based on the category
-      Query<Map<String, dynamic>> query = _firestore.collection('collaborations');
-      if (category.isNotEmpty) {
-        query = query.where('category', isEqualTo: category);
-      }
-      final collaborationsSnapshot = await query.get();
-
-      for (var doc in collaborationsSnapshot.docs) {
-        final jobId = doc.get('jobId'); // Get jobId from the collaboration document
-
-        // Fetch the corresponding job details from the 'orders' collection
-        final orderSnapshot = await _firestore
-            .collection('orders')
-            .where('orderId', isEqualTo: jobId)
-            .get();
-
-        if (orderSnapshot.docs.isNotEmpty) {
-          jobs.add({
-            'collaboration': doc.data(), // Add collaboration data
-            'order': orderSnapshot.docs.first.data(), // Add the corresponding order data
-          });
-        }
-      }
-    } catch (error) {
-      print("Error fetching jobs: $error");
-    }
-
-    return jobs; // Return the combined list of jobs and collaboration data
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
     return Scaffold(
       backgroundColor: ColorConstant.secondaryColor,
-      body: Stack(
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height * 0.35,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              color: ColorConstant.primaryColor,
-              borderRadius: BorderRadius.only(
-                bottomRight: Radius.circular(MediaQuery.of(context).size.width * 0.35),
+      appBar: AppBar(
+        backgroundColor: ColorConstant.secondaryColor,
+        centerTitle: true,
+        title: Text(
+          "$category Jobs",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: ColorConstant.primaryColor,
+          ),
+        ),
+        iconTheme: IconThemeData(
+          color: ColorConstant.primaryColor,
+        ),
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: firestore.collection('collaborations').snapshots(),
+        builder: (context, collaborationsSnapshot) {
+          if (collaborationsSnapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(
+                color: ColorConstant.primaryColor,
               ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () => Navigator.pop(context),
+            );
+          }
+
+          if (collaborationsSnapshot.hasError) {
+            return Center(
+              child: Text(
+                "Error loading jobs. Please try again.",
+                style: TextStyle(color: ColorConstant.primaryColor),
+              ),
+            );
+          }
+
+          if (!collaborationsSnapshot.hasData || collaborationsSnapshot.data!.docs.isEmpty) {
+            return Center(
+              child: Text(
+                "No collaborations found.",
+                style: TextStyle(color: ColorConstant.primaryColor),
+              ),
+            );
+          }
+
+          final collaborations = collaborationsSnapshot.data!.docs;
+
+          return StreamBuilder<QuerySnapshot>(
+            stream: firestore.collection('orders').snapshots(),
+            builder: (context, ordersSnapshot) {
+              if (ordersSnapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: ColorConstant.primaryColor,
+                  ),
+                );
+              }
+
+              if (ordersSnapshot.hasError) {
+                return Center(
                   child: Text(
-                    widget.category,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: MediaQuery.of(context).size.height * 0.04,
-                      color: Colors.white,
+                    "Error loading orders. Please try again.",
+                    style: TextStyle(color: ColorConstant.primaryColor),
+                  ),
+                );
+              }
+
+              if (!ordersSnapshot.hasData || ordersSnapshot.data!.docs.isEmpty) {
+                return Center(
+                  child: Text(
+                    "No orders found.",
+                    style: TextStyle(color: ColorConstant.primaryColor),
+                  ),
+                );
+              }
+
+              final orders = ordersSnapshot.data!.docs;
+              final filteredJobs = collaborations.where((collab) {
+                final jobId = collab['jobId'];
+                return orders.any((order) {
+                  final orderId = order.id;
+                  final orderCategory = order['category'];
+                  return orderId == jobId && orderCategory == category;
+                });
+              }).toList();
+
+              if (filteredJobs.isEmpty) {
+                return Center(
+                  child: Text(
+                    "No jobs found in this category.",
+                    style: TextStyle(color: ColorConstant.primaryColor),
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: filteredJobs.length,
+                itemBuilder: (context, index) {
+                  final job = filteredJobs[index].data() as Map<String, dynamic>;
+                  final orderId = job['jobId'];
+                  final order = orders.firstWhere((order) => order.id == orderId);
+
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.width * 0.1,
-                    left: MediaQuery.of(context).size.width * 0.03,
-                    right: MediaQuery.of(context).size.width * 0.07,
-                  ),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: InkWell(
-                      onTap: () {
-                        setState(() {
-                          isGridView = !isGridView;
-                        });
-                      },
-                      child: Icon(
-                        isGridView ? Icons.list : Icons.grid_view_sharp,
-                        color: ColorConstant.secondaryColor,
+                    color: ColorConstant.primaryColor,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            order['title'] ?? 'No Title',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: ColorConstant.secondaryColor,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            order['description'] ?? 'No Description',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: ColorConstant.secondaryColor.withOpacity(0.8),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Pay: ${order['pay'] ?? 'N/A'}",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: ColorConstant.secondaryColor,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Posted by: ${order['postedBy'] ?? 'Unknown'}",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: ColorConstant.secondaryColor.withOpacity(0.6),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    "Applied for ${order['title'] ?? 'this job'}!",
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: ColorConstant.secondaryColor,
+                              foregroundColor: ColorConstant.primaryColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Text("Apply Now"),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).size.height * 0.25,
-            ),
-            child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: _fetchJobs(widget.category),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text("Error: ${snapshot.error}"));
-                }
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text("No jobs available."));
-                }
-
-                final jobs = snapshot.data!;
-                return isGridView
-                    ? GridView.builder(
-                  padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.7,
-                    crossAxisSpacing: MediaQuery.of(context).size.width * 0.03,
-                  ),
-                  itemCount: jobs.length,
-                  itemBuilder: (context, index) {
-                    final job = jobs[index];
-                    return _buildJobCard(job);
-                  },
-                )
-                    : ListView.builder(
-                  padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
-                  itemCount: jobs.length,
-                  itemBuilder: (context, index) {
-                    final job = jobs[index];
-                    return _buildJobListTile(job);
-                  },
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildJobCard(Map<String, dynamic> job) {
-    return GestureDetector(
-      onTap: () {
-        // Navigate to job details
-      },
-      child: Container(
-        margin: EdgeInsets.all(MediaQuery.of(context).size.width * 0.02),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: ColorConstant.secondaryColor,
-          boxShadow: [
-            BoxShadow(
-              color: ColorConstant.primaryColor.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 200,
-              offset: Offset(5, 5),
-            )
-          ],
-        ),
-        child: Column(
-          children: [
-            AspectRatio(
-              aspectRatio: 1,
-              child: Padding(
-                padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.04),
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(ImageConstant.product2),
-                      fit: BoxFit.cover,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ),
-            Text(
-              job['name'],
-              style: TextStyle(
-                color: ColorConstant.primaryColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            Text(
-              "₹${job['price']}",
-              style: TextStyle(color: ColorConstant.primaryColor),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildJobListTile(Map<String, dynamic> job) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.width * 0.015),
-      decoration: BoxDecoration(
-        color: ColorConstant.secondaryColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: ListTile(
-        leading: Image(image: AssetImage(ImageConstant.product2)),
-        title: Text(job['name']),
-        subtitle: Text("₹${job['price']}"),
-        onTap: () {
-          // Navigate to job details
+                  );
+                },
+              );
+            },
+          );
         },
       ),
     );
