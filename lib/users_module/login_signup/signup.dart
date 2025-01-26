@@ -60,7 +60,7 @@ class _SignUpState extends State<SignUp> {
                           children: [
                             Container(
                               height: height*0.05,
-                              width: width*0.55,
+                              width: width*0.7,
                               decoration: BoxDecoration(
                                 border: Border(
                                   left: BorderSide(
@@ -72,6 +72,8 @@ class _SignUpState extends State<SignUp> {
                                 )
                               ),
                               child: TextFormField(
+                                cursorColor: ColorConstant.primaryColor,
+                                cursorHeight: height*0.02,
                                 controller: nameController,
                                 decoration: InputDecoration(
                                   suffixIcon: Icon(Icons.person,color: ColorConstant.primaryColor,size: height*0.02,),
@@ -88,7 +90,7 @@ class _SignUpState extends State<SignUp> {
                             SizedBox(height: height*0.015,),
                             Container(
                               height: height*0.05,
-                              width: width*0.55,
+                              width: width*0.7,
                               decoration: BoxDecoration(
                                   border: Border(
                                       left: BorderSide(
@@ -100,6 +102,9 @@ class _SignUpState extends State<SignUp> {
                                   )
                               ),
                               child: TextFormField(
+                                cursorColor: ColorConstant.primaryColor,
+                                keyboardType: TextInputType.emailAddress,
+                                cursorHeight: height*0.02,
                                 controller: emailController,
                                 decoration: InputDecoration(
                                   suffixIcon: Icon(Icons.mail,color: ColorConstant.primaryColor,size: height*0.02,),
@@ -116,7 +121,7 @@ class _SignUpState extends State<SignUp> {
                             SizedBox(height: height*0.015,),
                             Container(
                               height: height*0.05,
-                              width: width*0.55,
+                              width: width*0.7,
                               decoration: BoxDecoration(
                                   border: Border(
                                       left: BorderSide(
@@ -128,6 +133,8 @@ class _SignUpState extends State<SignUp> {
                                   )
                               ),
                               child: TextFormField(
+                                cursorColor: ColorConstant.primaryColor,
+                                cursorHeight: height*0.02,
                                 controller: passwordController,
                                 obscureText: pass?true:false,
                                 decoration: InputDecoration(
@@ -152,7 +159,7 @@ class _SignUpState extends State<SignUp> {
                             SizedBox(height: height*0.015,),
                             Container(
                               height: height*0.05,
-                              width: width*0.55,
+                              width: width*0.7,
                               decoration: BoxDecoration(
                                   border: Border(
                                       left: BorderSide(
@@ -164,6 +171,8 @@ class _SignUpState extends State<SignUp> {
                                   )
                               ),
                               child: TextFormField(
+                                cursorColor: ColorConstant.primaryColor,
+                                cursorHeight: height*0.02,
                                 controller: confirmPasswordController,
                                 decoration: InputDecoration(
                                     suffixIcon: InkWell(
@@ -187,7 +196,7 @@ class _SignUpState extends State<SignUp> {
                             SizedBox(height: height*0.015,),
                             Container(
                               height: height*0.05,
-                              width: width*0.55,
+                              width: width*0.7,
                               decoration: BoxDecoration(
                                   border: Border(
                                       left: BorderSide(
@@ -199,6 +208,8 @@ class _SignUpState extends State<SignUp> {
                                   )
                               ),
                               child: TextFormField(
+                                cursorColor: ColorConstant.primaryColor,
+                                cursorHeight: height*0.02,
                                 validator: (value) {
                                   if (value!.isEmpty) {
                                     return "phone number required";
