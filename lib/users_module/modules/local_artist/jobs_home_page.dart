@@ -6,12 +6,11 @@ import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/services/chatting/chat_page.dart';
 import 'package:elegantia_art/services/search/search_products.dart';
-import 'package:elegantia_art/users_module/modules/customer/product_details.dart';
-import 'package:elegantia_art/users_module/modules/local_artist/job_catelogs.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/job_detail.dart';
-import 'package:elegantia_art/users_module/modules/local_artist/message_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../../../services/fetch_jobs.dart';
 
 
 class JobPortal extends StatefulWidget {
@@ -59,39 +58,6 @@ class _JobPortalState extends State<JobPortal> {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchTopJobs() async {
-    // Fetch all jobs and sort by amount in descending order, then take the top 5
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('collaborations')
-        .orderBy('amount', descending: true)
-        .limit(5)
-        .get();
-
-    List<Map<String, dynamic>> topJobs = [];
-
-    for (var doc in querySnapshot.docs) {
-      final jobId = doc.get('jobId'); // Get jobId from the collaboration document
-
-      // Fetch the corresponding order document based on the jobId
-      final orderDoc = await FirebaseFirestore.instance.collection('orders').where('orderId', isEqualTo: jobId).get();
-
-      if (orderDoc.docs.isNotEmpty) {
-        // If an order exists for the jobId, add the collaboration and order data
-        topJobs.add({
-          'collaboration': doc.data(),
-          'order': orderDoc.docs.first.data(), // Get the first matching order
-        });
-      } else {
-        // Handle case when no order data is found, add empty order data
-        topJobs.add({
-          'collaboration': doc.data(),
-          'order': {}, // Empty order data when no matching order is found
-        });
-      }
-    }
-
-    return topJobs;
-  }
 
 
 

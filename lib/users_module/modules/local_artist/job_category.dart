@@ -80,7 +80,7 @@ class _JobCategoryPageState extends State<JobCategoryPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => JobCatelogs(category: categories[index],),
+                          builder: (context) => JobCatalogs(category: categories[index],),
                         ),
                       );
                       setState(() {});
