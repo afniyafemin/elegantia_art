@@ -434,7 +434,7 @@ class _HomePageState extends State<HomePage> {
                               viewportFraction: 1,
                               autoPlay: true,
                               height: height * 0.3,
-                              autoPlayAnimationDuration: Duration(seconds: 4),
+                              autoPlayAnimationDuration: Duration(seconds: 2),
                               onPageChanged: (index, reason) {
                                 setState(() {
                                   selectIndex = index;

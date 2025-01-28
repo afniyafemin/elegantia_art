@@ -56,6 +56,7 @@ class _AcceptedJobsState extends State<AcceptedJobs> {
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: ColorConstant.secondaryColor,
           title: Text("Job Details"),
           content: SingleChildScrollView(
             child: ListBody(
@@ -78,7 +79,7 @@ class _AcceptedJobsState extends State<AcceptedJobs> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text("Close"),
+              child: Text("Close",style: TextStyle(color: ColorConstant.primaryColor),),
               onPressed: () {
                 Navigator.of(context).pop();
               },

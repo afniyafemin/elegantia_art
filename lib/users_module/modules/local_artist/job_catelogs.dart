@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:elegantia_art/constants/image_constants/image_constant.dart';
+import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/job_detail.dart';
 import 'package:flutter/material.dart';
 
@@ -80,58 +82,70 @@ class JobCatalogs extends StatelessWidget {
                 color: ColorConstant.primaryColor,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        job['jobId'] ?? 'No Id',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: ColorConstant.secondaryColor,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "Pay: ${job['amount'] ?? 'N/A'}",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: ColorConstant.secondaryColor,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () async {
-                          // Fetch the order details using the jobId
-                          String jobId = job['jobId'];
-                          Map<String, dynamic> orderDetails = await fetchOrderDetails(jobId);
-
-                          // Navigate to JobInfo page with the fetched details
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => JobInfo(
-                                productName: orderDetails['productName'] ?? 'N/A',
-                                category: category,
-                                amount: job['amount'] ?? 0.0,
-                                customizationText: orderDetails['customizationText'] ?? 'N/A',
-                                customizationImage: orderDetails['customizationImage'] ?? '',
-                                date: orderDetails['orderDate'] ?? 'N/A',
-                                jobId: jobId,
-                                address: orderDetails['address'] ?? {}, // Pass the address
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            job['jobId'] ?? 'No Id',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: ColorConstant.secondaryColor,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Pay: ${job['amount'] ?? 'N/A'}",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: ColorConstant.secondaryColor,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () async {
+                              // Fetch the order details using the jobId
+                              String jobId = job['jobId'];
+                              Map<String, dynamic> orderDetails = await fetchOrderDetails(jobId);
+                      
+                              // Navigate to JobInfo page with the fetched details
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => JobInfo(
+                                    productName: orderDetails['productName'] ?? 'N/A',
+                                    category: category,
+                                    amount: job['amount'] ?? 0.0,
+                                    customizationText: orderDetails['customizationText'] ?? 'N/A',
+                                    customizationImage: orderDetails['customizationImage'] ?? '',
+                                    date: orderDetails['orderDate'] ?? 'N/A',
+                                    jobId: jobId,
+                                    address: orderDetails['address'] ?? {}, // Pass the address
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: ColorConstant.secondaryColor,
+                              foregroundColor: ColorConstant.primaryColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorConstant.secondaryColor,
-                          foregroundColor: ColorConstant.primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            child: const Text("Apply Now"),
                           ),
+                        ],
+                      ),
+                      Container(
+                        height: height*0.15,
+                        width: width*0.3,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(width*0.02),
+                          image: DecorationImage(image: AssetImage(ImageConstant.resin_art),fit: BoxFit.cover)
                         ),
-                        child: const Text("Apply Now"),
                       ),
                     ],
                   ),

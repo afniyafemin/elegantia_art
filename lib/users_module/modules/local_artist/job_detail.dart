@@ -191,6 +191,7 @@ class _JobInfoState extends State<JobInfo> {
                           SizedBox(height: 8),
                           Text("Ordered Date: ${widget.date}"),
                           SizedBox(height: 16),
+                          Divider(color: ColorConstant.primaryColor,),
                           // Displaying address details
                           Text("Address:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                           SizedBox(height: 10),
@@ -205,7 +206,6 @@ class _JobInfoState extends State<JobInfo> {
                                 Text("Phone: ${widget.address['phone'] ?? 'N/A'}", style: TextStyle(fontSize: 16)),
                                 Text("Pin: ${widget.address['pin'] ?? 'N/A'}", style: TextStyle(fontSize: 16)),
                                 Text("Post: ${widget.address['post'] ?? 'N/A'}", style: TextStyle(fontSize: 16)),
-                                Divider(),
                               ],
                             ),
                           )

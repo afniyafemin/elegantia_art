@@ -54,19 +54,6 @@ class _JobCategoryPageState extends State<JobCategoryPage> {
               color: ColorConstant.primaryColor),
         ),
         // centerTitle: true,
-        actions: [
-          Icon(
-            Icons.search_sharp,
-            size: width * 0.06,
-            color: ColorConstant.primaryColor,
-          ),
-          SizedBox(
-            width: width*0.05,
-          )
-        ],
-        iconTheme: IconThemeData(
-          color: ColorConstant.primaryColor
-        ),
       ),
       body: Center(
         child: Column(
@@ -98,22 +85,12 @@ class _JobCategoryPageState extends State<JobCategoryPage> {
                           ),
                         ),
                         child: Center(
-                          child: Container(
-                            width: width*0.35,
-                            height: height*0.04,
-                            decoration: BoxDecoration(
-                              color: ColorConstant.primaryColor,
-                              borderRadius: BorderRadius.circular(width*0.05)
-                            ),
-                            child: Center(
-                              child: Text(
-                                categories[index],
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: width * 0.03,
-                                  color: ColorConstant.secondaryColor,
-                                ),
-                              ),
+                          child: Text(
+                            categories[index],
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: width * 0.03,
+                              color: Colors.black87,
                             ),
                           ),
                         ),

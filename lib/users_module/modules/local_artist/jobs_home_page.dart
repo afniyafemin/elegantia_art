@@ -5,6 +5,7 @@ import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/services/chatting/chat_page.dart';
+import 'package:elegantia_art/services/search/search_jobs.dart';
 import 'package:elegantia_art/services/search/search_products.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/job_detail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -111,6 +112,7 @@ class _JobPortalState extends State<JobPortal> {
       drawer: CustomDrawer(scaffoldKey: scaffoldKey),
       backgroundColor: ColorConstant.secondaryColor,
       appBar: AppBar(
+        scrolledUnderElevation: 0.0,
         leadingWidth: width * 0.8,
         backgroundColor: ColorConstant.secondaryColor,
        // toolbarHeight: height * 0.1,
@@ -191,7 +193,7 @@ class _JobPortalState extends State<JobPortal> {
                 onTap: () {
                   showSearch(
                     context: context,
-                    delegate: CustomSearchDelegate(),
+                    delegate: JobSearchDelegate(),
                   );
                 },
                 cursorColor: ColorConstant.primaryColor,
@@ -225,7 +227,7 @@ class _JobPortalState extends State<JobPortal> {
                 ),
               ),
               SizedBox(
-                height: height*0.02,
+                height: height*0.01,
               ),
               FutureBuilder<List<Map<String, dynamic>>>(
                 future: topCollaborationsFuture,
@@ -239,23 +241,19 @@ class _JobPortalState extends State<JobPortal> {
                   } else {
                     final collaborations = snapshot.data!;
                     return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: height * 0.02),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(left: width * 0.05),
-                              child: Text(
-                                "Featured Jobs",
-                                style: TextStyle(
-                                  fontSize: width * 0.05,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
+                        SizedBox(height: height * 0.01),
+                        Padding(
+                          padding: EdgeInsets.only(left: width*0.015),
+                          child: Text(
+                            "Featured Jobs",
+                            style: TextStyle(
+                              fontSize: width * 0.04,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black,
                             ),
-                          ],
+                          ),
                         ),
                         SizedBox(height: height * 0.02),
                         CarouselSlider.builder(
@@ -303,27 +301,29 @@ class _JobPortalState extends State<JobPortal> {
                                     ),
                                   ],
                                 ),
+                                  width: double.infinity,
                                 child: Padding(
                                   padding: EdgeInsets.all(width * 0.04),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       Text(
-                                        "Job ID: ${job['jobId'] ?? 'N/A'}", // Safely access jobId
+                                        "${order['productName'] ?? 'N/A'}", // Safely access jobId
                                         style: TextStyle(
+                                          color: ColorConstant.secondaryColor,
                                           shadows: [
                                             Shadow(
-                                              color: ColorConstant.secondaryColor,
+                                              color: Colors.black87,
                                               offset: Offset(0, 2),
                                               blurRadius: 2,
                                             ),
                                           ],
-                                          fontSize: width * 0.05,
+                                          fontSize: width * 0.07,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      SizedBox(height: height * 0.01),
+                                      //SizedBox(height: height * 0.01),
                                       Text(
                                         "Amount: ₹${job['amount']?.toString() ?? 'N/A'}", // Safely handle amount display
                                         style: TextStyle(
@@ -347,9 +347,9 @@ class _JobPortalState extends State<JobPortal> {
                           options: CarouselOptions(
                             enlargeCenterPage: true,
                             enableInfiniteScroll: false,
-                            viewportFraction: 0.8,
+                            viewportFraction: 1,
                             autoPlay: true,
-                            height: height * 0.25,
+                            height: height * 0.3,
                             autoPlayAnimationDuration: Duration(seconds: 2),
                             onPageChanged: (index, reason) {
                               setState(() {
@@ -364,20 +364,8 @@ class _JobPortalState extends State<JobPortal> {
                   }
                 },
               ),
-              Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Text(
-                      "Recommended Jobs",
-                      style: TextStyle(
-                        fontSize: width * 0.04,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
+              SizedBox(
+                height: height*0.02,
               ),
               FutureBuilder<List<Map<String, dynamic>>>(
                 future: collaborationsFuture,
@@ -392,121 +380,134 @@ class _JobPortalState extends State<JobPortal> {
 
                   final collaborations = snapshot.data!;
 
-                  return Container(
-                    height: (height * 0.15) * (collaborations.length) + (height * 0.05),
-                    width: width * 0.9,
-                    child: ListView.separated(
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Recommended Jobs",
+                        style: TextStyle(
+                          fontSize: width * 0.04,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Container(
+                        height: (height * 0.15) * (collaborations.length) + (height * 0.05),
+                        width: width * 0.9,
+                        child: ListView.separated(
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
 
-                        final collaborationData = collaborations[index]['collaboration'];
-                        final orderData = collaborations[index]['order'];
+                            final collaborationData = collaborations[index]['collaboration'];
+                            final orderData = collaborations[index]['order'];
 
-                        return Container(
-                          height: height * 0.15,
-                          width: width * 0.3,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(width * 0.03),
-                            color: ColorConstant.primaryColor.withOpacity(0.2),
-                            border: Border.all(
-                              color: ColorConstant.primaryColor.withOpacity(0.2),
-                              width: 1,
-                             
-                            ),
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.all(width * 0.03),
-                            child: Row(
-                              children: [
-                                Container(
-                                  height: height * 0.12,
-                                  width: width * 0.25,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(width * 0.02),
-                                    image: DecorationImage(image: AssetImage(ImageConstant.product1), fit: BoxFit.cover),
-                                  ),
+                            return Container(
+                              height: height * 0.15,
+                              width: width * 0.3,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(width * 0.03),
+                                color: ColorConstant.primaryColor.withOpacity(0.2),
+                                border: Border.all(
+                                  color: ColorConstant.primaryColor.withOpacity(0.2),
+                                  width: 1,
+
                                 ),
-                                SizedBox(width: width * 0.025),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Product Name: ${orderData['productName'] ?? 'N/A'}", // Fetch product name from order data
-                                        style: TextStyle(
-                                          color: ColorConstant.primaryColor,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      Text(
-                                        "Category: ${orderData['category'] ?? 'N/A'}", // Fetch category from order data
-                                        style: TextStyle(
-                                          color: ColorConstant.primaryColor,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: width*0.03
-                                        ),
-                                      ),
-                                      Text(
-                                        "Amount: \$${collaborationData['amount']?.toString() ?? 'N/A'}",
-                                        style: TextStyle(
-                                          color: ColorConstant.primaryColor,
-                                          fontWeight: FontWeight.w200,
-                                          fontSize: width*0.03
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.all(width * 0.03),
+                                child: Row(
                                   children: [
-                                    GestureDetector(
-                                      onTap : (){
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => JobInfo(
-                                          productName: orderData['productName'] ?? 'N/A',
-                                          category: orderData['category'] ?? 'N/A',
-                                          amount: collaborationData['amount'] ?? 0.0,
-                                          customizationText: orderData['customizationText'] ?? 'N/A',
-                                          customizationImage: orderData['customizationImage'] ?? '',
-                                          date: orderData['orderDate'] ?? 'N/A',
-                                          jobId: collaborationData['jobId'] ?? '',
-                                          address: orderData['address'] ?? [],
-                                        ),));
-                                      },
-
-                                      child: Container(
-                                        height: height*0.03,
-                                        width: width*0.15,
-                                        decoration: BoxDecoration(
-                                          color: ColorConstant.primaryColor,
-                                          borderRadius: BorderRadius.circular(8.0),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            "Apply",
+                                    Container(
+                                      height: height * 0.12,
+                                      width: width * 0.25,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(width * 0.02),
+                                        image: DecorationImage(image: AssetImage(ImageConstant.product1), fit: BoxFit.cover),
+                                      ),
+                                    ),
+                                    SizedBox(width: width * 0.025),
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Product Name: ${orderData['productName'] ?? 'N/A'}", // Fetch product name from order data
                                             style: TextStyle(
-                                                color: ColorConstant.secondaryColor,
-                                                fontWeight: FontWeight.w900,
-                                                fontSize: 10
+                                              color: ColorConstant.primaryColor,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          Text(
+                                            "Category: ${orderData['category'] ?? 'N/A'}", // Fetch category from order data
+                                            style: TextStyle(
+                                              color: ColorConstant.primaryColor,
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: width*0.03
+                                            ),
+                                          ),
+                                          Text(
+                                            "Amount: \$${collaborationData['amount']?.toString() ?? 'N/A'}",
+                                            style: TextStyle(
+                                              color: ColorConstant.primaryColor,
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: width*0.03
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        GestureDetector(
+                                          onTap : (){
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) => JobInfo(
+                                              productName: orderData['productName'] ?? 'N/A',
+                                              category: orderData['category'] ?? 'N/A',
+                                              amount: collaborationData['amount'] ?? 0.0,
+                                              customizationText: orderData['customizationText'] ?? 'N/A',
+                                              customizationImage: orderData['customizationImage'] ?? '',
+                                              date: orderData['orderDate'] ?? 'N/A',
+                                              jobId: collaborationData['jobId'] ?? '',
+                                              address: orderData['address'] ?? [],
+                                            ),));
+                                          },
+
+                                          child: Container(
+                                            height: height*0.03,
+                                            width: width*0.15,
+                                            decoration: BoxDecoration(
+                                              color: ColorConstant.primaryColor,
+                                              borderRadius: BorderRadius.circular(8.0),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                "Apply",
+                                                style: TextStyle(
+                                                    color: ColorConstant.secondaryColor,
+                                                    fontWeight: FontWeight.w900,
+                                                    fontSize: 10
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
+                                      ],
                                     ),
+
                                   ],
                                 ),
-
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return SizedBox(height: height * 0.01);
-                      },
-                      itemCount: collaborations.length,
-                    ),
+                              ),
+                            );
+                          },
+                          separatorBuilder: (context, index) {
+                            return SizedBox(height: height * 0.01);
+                          },
+                          itemCount: collaborations.length,
+                        ),
+                      ),
+                    ],
                   );
                 },
               ),
