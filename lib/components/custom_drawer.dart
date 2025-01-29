@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:elegantia_art/auth/stream.dart';
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/constants/image_constants/image_constant.dart';
@@ -8,7 +10,9 @@ import 'package:elegantia_art/users_module/modules/customer/customer_navbar.dart
 import 'package:elegantia_art/users_module/modules/local_artist/la_navbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../services/sign_out_method.dart';
 import '../users_module/modules/customer/change_address.dart';
@@ -28,6 +32,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   String address = "Unknown";
   String phoneNumber = "Unknown";
   int tier = 0; // Renamed from 'points' to 'tier'
+  String profileImageUrl = ImageConstant.aesthetic_userprofile;
 
   bool get isSwitched => _isSwitched;
 
@@ -62,6 +67,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
           setState(() {
             currentUserName = userDoc['username'] ?? "User ";
             email = userDoc['email'] ?? "Unknown";
+            profileImageUrl = userDoc['profileImage'] ?? ImageConstant.aesthetic_userprofile; // Fetch profile image URL
           });
         }
 
@@ -119,6 +125,55 @@ class _CustomDrawerState extends State<CustomDrawer> {
     }
   }
 
+  // Method to pick an image
+  Future<void> _pickImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      // Upload the image to Firebase Storage
+      await _uploadImageToFirebase(image);
+    }
+  }
+
+  // Method to upload image to Firebase Storage
+  Future<void> _uploadImageToFirebase(XFile image) async {
+    try {
+      // Create a reference to the Firebase Storage
+      FirebaseStorage storage = FirebaseStorage.instance;
+      String filePath = 'profile_images/${userId}/${DateTime.now().millisecondsSinceEpoch}.png';
+      Reference ref = storage.ref().child(filePath);
+
+      // Upload the file
+      await ref.putFile(File(image.path));
+
+      // Get the download URL
+      String downloadUrl = await ref.getDownloadURL();
+
+      // Update the user's document in Firestore with the new profile image URL
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'profileImage': downloadUrl,
+      });
+
+      // Update the local state to reflect the new image
+      setState(() {
+        profileImageUrl = downloadUrl; // Update the profile image URL
+      });
+    } catch (e) {
+      print('Error uploading image: $e');
+
+      // If the upload fails, set the default image from ImageConstant
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'profileImage': ImageConstant.aesthetic_userprofile, // Default image URL
+      });
+
+      // Optionally, you can update the local state to reflect the default image
+      setState(() {
+        profileImageUrl = ImageConstant.aesthetic_userprofile; // Update to default image
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -127,9 +182,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
         children: [
           Padding(
             padding: EdgeInsets.only(top: height * 0.05),
-            child: CircleAvatar(
-              backgroundImage: AssetImage(ImageConstant.aesthetic_userprofile),
-              radius: width * 0.15,
+            child: GestureDetector(
+              onTap: _pickImage, // Open image picker on tap
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(profileImageUrl),
+                radius: width * 0.15,
+              ),
             ),
           ),
           Text(

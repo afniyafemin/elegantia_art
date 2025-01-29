@@ -25,6 +25,7 @@ class _JobPortalState extends State<JobPortal> {
   late Future<List<Map<String, dynamic>>> collaborationsFuture;
   late Future<List<Map<String, dynamic>>> topCollaborationsFuture;
   int currentIndex = 0;
+  String profileImageUrl = ImageConstant.aesthetic_userprofile;
 
   @override
   void initState() {
@@ -44,6 +45,7 @@ class _JobPortalState extends State<JobPortal> {
         if (userDoc.exists) {
           setState(() {
             currentUserName = userDoc['username']; // Assuming 'username' is a field in the user document
+            profileImageUrl = userDoc['profileImage'] ?? "";
           });
         } else {
           print("User  document does not exist.");
@@ -128,8 +130,9 @@ class _JobPortalState extends State<JobPortal> {
                       scaffoldKey.currentState?.openDrawer();
                     },
                     child: CircleAvatar(
-                      radius: width * 0.04,
-                      backgroundImage: AssetImage(ImageConstant.user_profile),
+                      backgroundImage: profileImageUrl.isNotEmpty
+                          ? NetworkImage(profileImageUrl)
+                          : AssetImage(ImageConstant.aesthetic_userprofile) as ImageProvider,
                     ),
                   ),
                   SizedBox(width: width*0.03,),
@@ -281,9 +284,10 @@ class _JobPortalState extends State<JobPortal> {
                                       category: order['category'] ?? 'N/A', // Safely access category
                                       amount: job['amount'] ?? 0.0, // Safely access amount
                                       customizationText: order['customizationText'] ?? 'N/A', // Safely access customizationText
-                                      customizationImage: order['customizationImage'] ?? '', // Safely access customizationImage
+                                      customizationImages: order['customizationImages'] ?? '', // Safely access customizationImage
                                       date: order['orderDate'] ?? 'N/A', // Safely access orderDate
                                       address: orderData['address'] ?? [],
+                                        imageUrl: orderData['imageUrl'] ?? 'N/A'
                                     ),
                                   ),
                                 );
@@ -291,7 +295,7 @@ class _JobPortalState extends State<JobPortal> {
                               child: Container(
                                 margin: EdgeInsets.symmetric(horizontal: width * 0.02),
                                 decoration: BoxDecoration(
-                                  image: DecorationImage(image: AssetImage(ImageConstant.product2), fit: BoxFit.cover),
+                                  image: DecorationImage(image: NetworkImage(order['imageUrl']), fit: BoxFit.cover),
                                   borderRadius: BorderRadius.circular(width * 0.03),
                                   boxShadow: [
                                     BoxShadow(
@@ -422,7 +426,7 @@ class _JobPortalState extends State<JobPortal> {
                                       width: width * 0.25,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(width * 0.02),
-                                        image: DecorationImage(image: AssetImage(ImageConstant.product1), fit: BoxFit.cover),
+                                        image: DecorationImage(image: NetworkImage(orderData['imageUrl']), fit: BoxFit.cover),
                                       ),
                                     ),
                                     SizedBox(width: width * 0.025),
@@ -467,10 +471,11 @@ class _JobPortalState extends State<JobPortal> {
                                               category: orderData['category'] ?? 'N/A',
                                               amount: collaborationData['amount'] ?? 0.0,
                                               customizationText: orderData['customizationText'] ?? 'N/A',
-                                              customizationImage: orderData['customizationImage'] ?? '',
+                                              customizationImages: orderData['customizationImages'] ?? '',
                                               date: orderData['orderDate'] ?? 'N/A',
                                               jobId: collaborationData['jobId'] ?? '',
                                               address: orderData['address'] ?? [],
+                                              imageUrl: orderData['imageUrl'] ?? 'N/A'
                                             ),));
                                           },
 

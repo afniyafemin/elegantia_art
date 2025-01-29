@@ -27,34 +27,11 @@ int selectIndex = 0;
 class _HomePageState extends State<HomePage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String currentUserName = "";
+  String profileImageUrl = ImageConstant.aesthetic_userprofile;
   List<Map<String, dynamic>> products_ = [];
   // List<Map<String, dynamic>> MallProducts_ = [];
   List<Map<String, dynamic>> offerProducts_ = [];
   int userTier = 0; // Variable to store user points
-
-  List products = [
-    ImageConstant.product1,
-    ImageConstant.product2,
-    ImageConstant.product1,
-    ImageConstant.product2,
-    ImageConstant.product1,
-    ImageConstant.product1,
-    ImageConstant.product2,
-    ImageConstant.product1,
-    ImageConstant.product2,
-    ImageConstant.product1,
-    ImageConstant.product2,
-  ];
-
-  List<String> description_for_category = [
-    "description",
-    "description",
-    "description",
-    "description",
-    "description",
-    "description",
-    "description",
-  ];
 
   bool isLoading = false;
 
@@ -80,6 +57,7 @@ class _HomePageState extends State<HomePage> {
         DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
         if (userDoc.exists) {
           userTier = userDoc['tier'] ?? 0; // Assuming 'tier' is the field name in Firestore
+          profileImageUrl = userDoc['profileImage'] ?? "";
         }
 
         // Fetch offer products
@@ -157,8 +135,8 @@ class _HomePageState extends State<HomePage> {
             await _firestore.collection('users').doc(user.uid).get();
         if (userDoc.exists) {
           setState(() {
-            // If user document exists, set the username from the document, otherwise default to "User"
-            currentUserName = userDoc['username'] ?? "User";
+            currentUserName = userDoc['username'] ?? "User ";
+            profileImageUrl = userDoc['profileImage'] ?? ImageConstant.aesthetic_userprofile; // Fetch profile image
           });
         } else {
           print("User document does not exist.");
@@ -202,8 +180,9 @@ class _HomePageState extends State<HomePage> {
                               _scaffoldKey.currentState?.openDrawer();
                             },
                             child: CircleAvatar(
-                              backgroundImage: AssetImage(
-                                  ImageConstant.aesthetic_userprofile),
+                              backgroundImage: profileImageUrl.isNotEmpty
+                                  ? NetworkImage(profileImageUrl)
+                                  : AssetImage(ImageConstant.aesthetic_userprofile) as ImageProvider,
                             ),
                           ),
                           SizedBox(
@@ -378,7 +357,7 @@ class _HomePageState extends State<HomePage> {
                                           borderRadius: BorderRadius.circular(8.0),
                                           color: ColorConstant.primaryColor,
                                           image: DecorationImage(
-                                            image: AssetImage(ImageConstant.journals), // Assuming this is a placeholder
+                                            image: NetworkImage(offerProducts_[index]['imageUrl'] ?? ImageConstant.product2),
                                             fit: BoxFit.cover,
                                           ),
                                         ),
@@ -489,7 +468,7 @@ class _HomePageState extends State<HomePage> {
                                       selectedCategory: categories[index]
                                           ['name'],
                                       description:
-                                          description_for_category[index],
+                                          categories[index]['description'],
                                     ),
                                   ));
                             },
@@ -503,7 +482,7 @@ class _HomePageState extends State<HomePage> {
                                   CircleAvatar(
                                       radius: width * 0.1,
                                       backgroundImage:
-                                          AssetImage(products[index])),
+                                      NetworkImage(categories[index]['imageUrl'] ?? ImageConstant.product2), ),
                                   Padding(
                                     padding: EdgeInsets.all(width * 0.015),
                                     child: Text(
@@ -579,7 +558,7 @@ class _HomePageState extends State<HomePage> {
                                           color: ColorConstant.primaryColor,
                                           image: DecorationImage(
                                               image:
-                                                  AssetImage(products[index]),
+                                              NetworkImage(products_[index]['imageUrl'] ?? ImageConstant.product2),
                                               fit: BoxFit.cover)),
                                     ),
                                     SizedBox(
@@ -599,7 +578,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                           );
                         },
-                        itemCount: products.length),
+                        itemCount: products_.length),
                   ),
                   SizedBox(
                     height: height * 0.015,
@@ -651,7 +630,7 @@ class _HomePageState extends State<HomePage> {
                                               width * 0.03),
                                           image: DecorationImage(
                                               image:
-                                                  AssetImage(products[index]),
+                                              NetworkImage(products_[index]['imageUrl'] ?? ImageConstant.product2),
                                               fit: BoxFit.cover)),
                                     ),
 

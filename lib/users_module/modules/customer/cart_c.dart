@@ -39,13 +39,21 @@ class _CartCustomerState extends State<CartCustomer> {
             .doc(user.uid)
             .collection('cart');
         final snapshot = await cartCollection.get();
+
+        List<Map<String, dynamic>> cartItems = snapshot.docs.map((doc) {
+          return doc.data() as Map<String, dynamic>;
+        }).toList();
+
+        // Fetch product details for each cart item
+        for (var item in cartItems) {
+          final productDetails = await _fetchProductDetails(item['id']);
+          if (productDetails != null) {
+            item.addAll(productDetails); // Merge product details into the cart item
+          }
+        }
+
         setState(() {
-          allCartItems = snapshot.docs.map((doc) {
-            return doc.data() as Map<String, dynamic>;
-          }).toList();
-          // Calculate total amount
-          totalAmount = allCartItems.fold(
-              0, (sum, item) => sum + (item['price'] * item['quantity']));
+          allCartItems = cartItems;
         });
       }
     } catch (e) {
@@ -114,6 +122,23 @@ class _CartCustomerState extends State<CartCustomer> {
       // Show error message (optional)
     }
   }
+
+  Future<Map<String, dynamic>?> _fetchProductDetails(String productId) async {
+    try {
+      DocumentSnapshot productDoc = await FirebaseFirestore.instance
+          .collection('products')
+          .doc(productId)
+          .get();
+
+      if (productDoc.exists) {
+        return productDoc.data() as Map<String, dynamic>;
+      }
+    } catch (e) {
+      print('Error fetching product details: $e');
+    }
+    return null;
+  }
+
 
   Future<void> _toggleLike(Map<String, dynamic> item) async {
     await _addToFav.toggleLike(item['productId'], item);
@@ -218,9 +243,10 @@ class _CartCustomerState extends State<CartCustomer> {
                     itemCount: allCartItems.length,
                     itemBuilder: (context, index) {
                       final item = allCartItems[index];
-                      final productId = item['productId'];
-                      final productName = item['productName'];
+                      final id = item['id'];
+                      final productName = item['name'];
                       final price = item['price'];
+                      final image = item['imageUrl'];
                       final description = item['description'];
                       final category = item['category'];
 
@@ -243,7 +269,7 @@ class _CartCustomerState extends State<CartCustomer> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(width * 0.03),
                                     image: DecorationImage(
-                                      image: AssetImage(ImageConstant.product2),
+                                      image: NetworkImage(image),
                                       fit: BoxFit.fill,
                                     ),
                                   ),
@@ -294,7 +320,7 @@ class _CartCustomerState extends State<CartCustomer> {
                                     ),
                                     SizedBox(width: width * 0.05),
                                     GestureDetector(
-                                      onTap: () => _removeFromCart(productId),
+                                      onTap: () => _removeFromCart(id),
                                       child: Container(
                                         height: height * 0.05,
                                         width: width * 0.15,

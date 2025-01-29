@@ -9,7 +9,7 @@ import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import '../../../services/fetch_jobs.dart';
 
 class JobCatalogs extends StatelessWidget {
-  final String category;
+  final String? category;
 
   const JobCatalogs({Key? key, required this.category}) : super(key: key);
 
@@ -120,10 +120,11 @@ class JobCatalogs extends StatelessWidget {
                                     category: category,
                                     amount: job['amount'] ?? 0.0,
                                     customizationText: orderDetails['customizationText'] ?? 'N/A',
-                                    customizationImage: orderDetails['customizationImage'] ?? '',
+                                    customizationImages: orderDetails['customizationImages'] ?? '',
                                     date: orderDetails['orderDate'] ?? 'N/A',
                                     jobId: jobId,
                                     address: orderDetails['address'] ?? {}, // Pass the address
+                                    imageUrl: orderDetails['imageUrl']?? 'N/A',
                                   ),
                                 ),
                               );
@@ -144,7 +145,7 @@ class JobCatalogs extends StatelessWidget {
                         width: width*0.3,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(width*0.02),
-                          image: DecorationImage(image: AssetImage(ImageConstant.resin_art),fit: BoxFit.cover)
+                          image: DecorationImage(image: NetworkImage(job['imageUrl' ?? ImageConstant.aesthetic_userprofile]),fit: BoxFit.cover)
                         ),
                       ),
                     ],

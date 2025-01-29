@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../constants/color_constants/color_constant.dart';
 import 'package:intl/intl.dart';
 
@@ -27,6 +31,9 @@ class _BuyNowPageState extends State<BuyNowPage> {
   final phoneController = TextEditingController();
 
   String? customizationText;
+  List<String> customizationImages = [];
+
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -102,6 +109,7 @@ class _BuyNowPageState extends State<BuyNowPage> {
             'orderId': orderId,
             'userId': user.uid,
             'category': widget.product['category'],
+            'imageUrl': widget.product['imageUrl'],
             'productId': widget.product['id'] ?? widget.product["productId"],
             'productName': widget.product['name'] ?? widget.product["productName"],
             'price': widget.product['price'] ?? 0.0,
@@ -115,7 +123,7 @@ class _BuyNowPageState extends State<BuyNowPage> {
             'orderDate': formattedDate,
             'status': 'Pending',
             'customizationText': customizationText ?? 'No customizations',
-            'customizationImages': [], // Replace with actual images if available
+            'customizationImages': customizationImages, // Replace with actual images if available
           });
 
           // Remove the item from the cart
@@ -145,6 +153,35 @@ class _BuyNowPageState extends State<BuyNowPage> {
           ),
         );
       }
+    }
+  }
+
+
+  Future<void> _pickImages() async {
+    final List<XFile>? selectedImages = await _picker.pickMultiImage();
+    if (selectedImages != null) {
+      for (XFile image in selectedImages) {
+        String imageUrl = await _uploadImageToStorage(image);
+        if (imageUrl.isNotEmpty) {
+          setState(() {
+            customizationImages.add(imageUrl);
+          });
+        }
+      }
+    }
+  }
+
+  Future<String> _uploadImageToStorage(XFile image) async {
+    try {
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString() + '_' + image.name;
+      Reference storageRef = FirebaseStorage.instance.ref().child('customizations/$fileName');
+      UploadTask uploadTask = storageRef.putFile(File(image.path));
+      TaskSnapshot snapshot = await uploadTask;
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      print('Error uploading image: $e');
+      return '';
     }
   }
 
@@ -188,7 +225,7 @@ class _BuyNowPageState extends State<BuyNowPage> {
                         height: height * 0.2,
                         width: width * 0.4,
                         decoration: BoxDecoration(
-                          image: DecorationImage(image: AssetImage(ImageConstant.resin_art), fit: BoxFit.cover),
+                          image:  DecorationImage(image:  NetworkImage(widget.product['imageUrl'] ?? ImageConstant.product2)),
                           borderRadius: BorderRadius.circular(width * 0.065),
                         ),
                       ),
@@ -256,6 +293,36 @@ class _BuyNowPageState extends State<BuyNowPage> {
                   ],
                 ),
                 SizedBox(height: height * 0.05),
+                // Image upload button
+                Center(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: ColorConstant.secondaryColor,
+                      backgroundColor: ColorConstant.primaryColor
+                    ),
+                    onPressed: _pickImages,
+                    child: Text("Upload Customization Images"),
+                  ),
+                ),
+                SizedBox(height: height * 0.02),
+                // Display uploaded images
+                if (customizationImages.isNotEmpty) ...[
+                  Text("Uploaded Images:", style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(height: height * 0.02),
+                  Wrap(
+                    spacing: 8.0,
+                    children: customizationImages.map((url) {
+                      return Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(image: NetworkImage(url), fit: BoxFit.cover),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
                 // Address fields
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

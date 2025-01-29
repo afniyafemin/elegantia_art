@@ -17,16 +17,6 @@ class _CategoryListState extends State<CategoryList> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<Map<String, dynamic>> categories = [];
 
-  List<String> description_for_category = [
-    "description for Art & Craft" ,
-    "description for Craft Tools" ,
-    "description for Decorative Supplies" ,
-    "description for Gifting" ,
-    "description for Memory Keeping" ,
-    "description for Testing Products" ,
-    "description for tttttt" ,
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -86,7 +76,7 @@ class _CategoryListState extends State<CategoryList> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CatelogsNewUi(selectedCategory: categories[index]['name'] , description: description_for_category[index],),
+                            builder: (context) => CatelogsNewUi(selectedCategory: categories[index]['name'] , description: categories[index]['description'],),
                           ),
                         );
                       },
@@ -111,7 +101,7 @@ class _CategoryListState extends State<CategoryList> {
                                   ),
                                   // Replace with actual image URL from Firestore
                                   image: DecorationImage(
-                                    image: AssetImage(ImageConstant.product1),
+                                    image: NetworkImage(categories[index]['imageUrl'] ?? ImageConstant.product2),
                                     fit: BoxFit.cover,
                                   ),
                                 ),

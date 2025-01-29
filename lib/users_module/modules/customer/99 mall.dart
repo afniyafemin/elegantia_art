@@ -142,7 +142,7 @@ class _MallMallState extends State<MallMall> {
                                           child: Container(
                                             decoration: BoxDecoration(
                                               image: DecorationImage(
-                                                image : AssetImage("asset/images/Product_1.jpg"),
+                                                image :NetworkImage(products[index]['imageUrl']),
                                                 fit: BoxFit.cover,
                                               ),
                                               borderRadius: BorderRadius.circular(12),
@@ -155,7 +155,7 @@ class _MallMallState extends State<MallMall> {
                                         style: TextStyle(
                                           color: ColorConstant.primaryColor,
                                           fontWeight: FontWeight.w800,
-                                          fontSize: height * 0.025,
+                                          fontSize: height * 0.02,
                                         ),
                                       ),
                                       Text(

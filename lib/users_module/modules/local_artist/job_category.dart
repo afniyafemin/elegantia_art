@@ -5,8 +5,6 @@ import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/users_module/modules/local_artist/job_catelogs.dart';
 import 'package:flutter/material.dart';
 
-String j = "";
-
 class JobCategoryPage extends StatefulWidget {
   const JobCategoryPage({super.key});
 
@@ -16,7 +14,7 @@ class JobCategoryPage extends StatefulWidget {
 
 class _JobCategoryPageState extends State<JobCategoryPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  List<String> categories = []; // Initialize an empty list for categories
+  List<Map<String, String>> categories = []; // Initialize an empty list for categories
 
   @override
   void initState() {
@@ -29,7 +27,12 @@ class _JobCategoryPageState extends State<JobCategoryPage> {
       final categoriesRef = _firestore.collection('categories');
       final querySnapshot = await categoriesRef.get();
       setState(() {
-        categories = querySnapshot.docs.map((doc) => doc['name'] as String).toList(); // Assuming each document has a 'name' field
+        categories = querySnapshot.docs.map((doc) {
+          return {
+            'name': doc['name'] as String, // Assuming each document has a 'name' field
+            'imageUrl': doc['imageUrl'] as String // Assuming each document has an 'imageUrl' field
+          };
+        }).toList();
       });
     } catch (error) {
       print("Error fetching categories: $error");
@@ -53,7 +56,6 @@ class _JobCategoryPageState extends State<JobCategoryPage> {
               fontWeight: FontWeight.bold,
               color: ColorConstant.primaryColor),
         ),
-        // centerTitle: true,
       ),
       body: Center(
         child: Column(
@@ -63,30 +65,26 @@ class _JobCategoryPageState extends State<JobCategoryPage> {
                 itemBuilder: (BuildContext context, index) {
                   return InkWell(
                     onTap: () {
-                      j = categories[index];
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => JobCatalogs(category: categories[index],),
+                          builder: (context) => JobCatalogs(category: categories[index]['name']),
                         ),
                       );
-                      setState(() {});
                     },
                     child: Padding(
-                      padding:  EdgeInsets.all(width*0.03),
+                      padding: EdgeInsets.all(width * 0.03),
                       child: Container(
                         decoration: BoxDecoration(
-                          // color: ColorConstant.primaryColor.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(width * 0.03),
                           image: DecorationImage(
-                            image: AssetImage(ImageConstant.product2),
+                            image: NetworkImage(categories[index]['imageUrl'] ?? ImageConstant.aesthetic_userprofile), // Use a default image if null
                             fit: BoxFit.cover,
-                            opacity: 0.5,
                           ),
                         ),
                         child: Center(
                           child: Text(
-                            categories[index],
+                            categories[index]['name']!,
                             style: TextStyle(
                               fontWeight: FontWeight.w800,
                               fontSize: width * 0.03,
@@ -102,7 +100,7 @@ class _JobCategoryPageState extends State<JobCategoryPage> {
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   childAspectRatio: 0.9,
-                  crossAxisSpacing: width*0.005
+                  crossAxisSpacing: width * 0.005,
                 ),
               ),
             ),

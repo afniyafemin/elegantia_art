@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../constants/color_constants/color_constant.dart';
+import '../../../main.dart';
 import '../../../services/favorites_method.dart';
 
 class Pins extends StatefulWidget {
@@ -56,9 +57,6 @@ class _PinsState extends State<Pins> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: ColorConstant.secondaryColor,
       body: SingleChildScrollView(
@@ -161,9 +159,8 @@ class _PinsState extends State<Pins> {
                                               EdgeInsets.all(width * 0.04),
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                  image: const DecorationImage(
-                                                    image: AssetImage(
-                                                        "asset/images/Product_1.jpg"),
+                                                  image: DecorationImage(
+                                                    image: NetworkImage(product['imageUrl']),
                                                     fit: BoxFit.cover,
                                                   ),
                                                   borderRadius:
@@ -177,7 +174,7 @@ class _PinsState extends State<Pins> {
                                             style: TextStyle(
                                               color: ColorConstant.primaryColor,
                                               fontWeight: FontWeight.w800,
-                                              fontSize: height * 0.025,
+                                              fontSize: height * 0.02,
                                             ),
                                           ),
                                           Text(

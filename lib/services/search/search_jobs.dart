@@ -110,9 +110,10 @@ class JobSearchDelegate extends SearchDelegate {
                           category: order['category'] ?? 'N/A', // Safely access category
                           amount: job['collaboration']['amount'] ?? 0.0, // Safely access amount
                           customizationText: order['customizationText'] ?? 'N/A', // Safely access customizationText
-                          customizationImage: order['customizationImage'] ?? '', // Safely access customizationImage
+                          customizationImages: order['customizationImages'] ?? '', // Safely access customizationImage
                           date: order['orderDate'] ?? 'N/A', // Safely access orderDate
                           address: order['address'] ?? [], // Safely access address
+                          imageUrl: order['imageUrl']?? 'N/A',
                         ),
                       ),
                     );

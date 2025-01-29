@@ -7,13 +7,14 @@ import '../../../main.dart';
 
 class JobInfo extends StatefulWidget {
   final String productName;
-  final String category;
+  final String? category;
   final double amount;
   final String customizationText;
-  final String customizationImage;
+  final List<dynamic> customizationImages;
   final String date; // Changed from Date to date to avoid conflict with Dart's Date class
   final String jobId; // Add jobId to the constructor
   final dynamic address; // Fix: Use dynamic to accept both Map and List
+  final String imageUrl;
 
   const JobInfo({
     Key? key,
@@ -21,10 +22,10 @@ class JobInfo extends StatefulWidget {
     required this.category,
     required this.amount,
     required this.customizationText,
-    required this.customizationImage,
+    required this.customizationImages,
     required this.date,
     required this.jobId,
-    required this.address, // Use dynamic for address
+    required this.address, required this.imageUrl, // Use dynamic for address
   }) : super(key: key);
 
   @override
@@ -62,6 +63,24 @@ class _JobInfoState extends State<JobInfo> {
     }
   }
 
+  void _showEnlargedImage(String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: Container(
+            width: width*0.5,
+            height: height*0.4,
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void requestJob() async {
     String userId = FirebaseAuth.instance.currentUser!.uid;
 
@@ -78,9 +97,10 @@ class _JobInfoState extends State<JobInfo> {
         'category': widget.category,
         'amount': widget.amount,
         'customizationText': widget.customizationText,
-        'customizationImage': widget.customizationImage,
+        'customizationImages': widget.customizationImages,
         'date': widget.date,
         'orderId': widget.jobId,
+        'imageUrl':widget.imageUrl
       });
       setState(() {
         isRequested = true;
@@ -132,15 +152,12 @@ class _JobInfoState extends State<JobInfo> {
 
   @override
   Widget build(BuildContext context) {
-    // Use MediaQuery for responsive design
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       body: Stack(
         children: [
           Container(
-            child: Image.asset(ImageConstant.product2, fit: BoxFit.cover),
+            child: Image.network(widget.imageUrl, fit: BoxFit.cover),
           ),
           Padding(
             padding: const EdgeInsets.all(15.0),
@@ -192,6 +209,30 @@ class _JobInfoState extends State<JobInfo> {
                           Text("Ordered Date: ${widget.date}"),
                           SizedBox(height: 16),
                           Divider(color: ColorConstant.primaryColor,),
+                          SizedBox(
+                            height: 200, // Set a fixed height for the image display
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: widget.customizationImages.length,
+                              itemBuilder: (context, index) {
+                                return GestureDetector(
+                                  onTap: () => _showEnlargedImage(widget.customizationImages[index]), // Show enlarged image on tap
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.network(
+                                        widget.customizationImages[index], // Load customization image
+                                        fit: BoxFit.cover,
+                                        width: 100, // Set a fixed width for the image
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 16),
                           // Displaying address details
                           Text("Address:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                           SizedBox(height: 10),

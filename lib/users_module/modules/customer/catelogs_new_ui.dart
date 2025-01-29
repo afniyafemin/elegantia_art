@@ -76,6 +76,9 @@ class _CatelogsNewUiState extends State<CatelogsNewUi> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      SizedBox(
+                        height: height*0.02,
+                      ),
                       Text(
                         widget.selectedCategory,
                         style: TextStyle(
@@ -84,16 +87,20 @@ class _CatelogsNewUiState extends State<CatelogsNewUi> {
                           color: ColorConstant.secondaryColor.withOpacity(0.5)
                         ),
                       ),
-                      Text(
-                        widget.description,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: height * 0.015,
-                          color: ColorConstant.secondaryColor.withOpacity(0.85)
+                      Container(
+                        height: height*0.1,
+                        width: width*0.8,
+                        child: Text(
+                          widget.description,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: height * 0.013,
+                            color: ColorConstant.secondaryColor.withOpacity(0.85)
+                          ),
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(top: height * 0.065, right: width * 0.07),
+                        padding: EdgeInsets.only(top: height * 0.02, right: width * 0.09),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -103,9 +110,11 @@ class _CatelogsNewUiState extends State<CatelogsNewUi> {
                                   isGridView = !isGridView;
                                 });
                               },
-                              child: Icon(
-                                isGridView ? Icons.list : Icons.grid_view_sharp,
-                                color: ColorConstant.secondaryColor,
+                              child: Container(
+                                child: Icon(
+                                  isGridView ? Icons.list : Icons.grid_view_sharp,
+                                  color: ColorConstant.secondaryColor,
+                                ),
                               ),
                             ),
                           ],
@@ -177,7 +186,7 @@ class _CatelogsNewUiState extends State<CatelogsNewUi> {
                                               child: Container(
                                                 decoration: BoxDecoration(
                                                   image: DecorationImage(
-                                                    image: AssetImage(ImageConstant.product2),
+                                                    image: NetworkImage(product['imageUrl'] ?? ImageConstant.product2),
                                                     fit: BoxFit.cover,
                                                   ),
                                                   borderRadius: BorderRadius.circular(12),

@@ -59,10 +59,11 @@ class _RequestedJobsState extends State<RequestedJobs> {
                           category: order['category'] ?? 'N/A',
                           amount: collaboration['amount'] ?? 0.0,
                           customizationText: order['customizationText'] ?? 'N/A',
-                          customizationImage: order['customizationImage'] ?? '',
+                          customizationImages: order['customizationImages'] ?? '',
                           date: order['orderDate'] ?? 'N/A',
                           jobId: collaboration['jobId'] ?? '', // Pass the jobId
                           address: order['address'] ?? {}, // Pass the address
+                          imageUrl: order['imageUrl'] ?? 'N/A',
                         ),
                       ),
                     );

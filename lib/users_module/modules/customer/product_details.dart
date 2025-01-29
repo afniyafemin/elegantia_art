@@ -26,8 +26,6 @@ class _ProductDetailsState extends State<ProductDetails> {
   String? customizationImageURL; // Store the URL of the uploaded image
   bool isLiked = false; // Track the like state
   final AddToFav _addToFav = AddToFav(); // Create an instance of LikeService
-  final CartService _cartService =
-      CartService(); // Create an instance of CartService
   double _productRating = 0.0;
   double _avgRating = 0.0;
   final TextEditingController _feedbackController = TextEditingController();
@@ -41,6 +39,57 @@ class _ProductDetailsState extends State<ProductDetails> {
     _getProductRating();
     _getUserRating();
     _getUserTier();
+  }
+
+  Future<void> _addToCart() async {
+    User? user = FirebaseAuth.instance.currentUser ;
+    if (user == null) {
+      // User is not logged in, handle this case (e.g., show a message)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please log in to add items to your cart.'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      // Reference to the user's cart subcollection
+      CollectionReference cartRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('cart');
+
+      // Check if the product is already in the cart
+      DocumentSnapshot existingProduct = await cartRef.doc(widget.product['id']).get();
+      if (existingProduct.exists) {
+        // Optionally, you can update the quantity if the product already exists
+        await cartRef.doc(widget.product['id']).update({
+          'quantity': FieldValue.increment(quantity), // Increment quantity
+        });
+      } else {
+        // Add the product to the cart
+        await cartRef.doc(widget.product['id']).set({
+          'id': widget.product['id'],
+          'quantity': quantity,
+          // Add any other product details you want to store
+        });
+      }
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Added to cart successfully!'),
+        ),
+      );
+    } catch (e) {
+      print('Error adding to cart: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to add to cart. Please try again.'),
+        ),
+      );
+    }
   }
 
   Future<void> _checkIfLiked() async {
@@ -169,7 +218,7 @@ class _ProductDetailsState extends State<ProductDetails> {
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage(ImageConstant.product2),
+                  image: NetworkImage(widget.product['imageUrl']),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -457,33 +506,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               ElevatedButton(
-                                onPressed: () async {
-                                  try {
-                                    await _cartService.addToCart(
-                                      widget.product['id'],
-                                      {
-                                        'name': widget.product['name'],
-                                        'price': widget.product['offerPrices'][userTier],
-                                        'category': widget.product['category'],
-                                        'customizationText': customizationText,
-                                        'customizationImage':
-                                            customizationImageURL,
-                                        'isLiked': isLiked,
-                                        'description': widget.product['description']
-                                      },
-                                      quantity,
-                                    );
-
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content:
-                                            Text('Added to cart successfully!'),
-                                      ),
-                                    );
-                                  } catch (e) {
-                                    print('Error adding to cart: $e');
-                                  }
-                                },
+                                onPressed: _addToCart,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: ColorConstant.primaryColor,
                                 ),
