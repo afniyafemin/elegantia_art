@@ -244,11 +244,11 @@ class _CartCustomerState extends State<CartCustomer> {
                     itemBuilder: (context, index) {
                       final item = allCartItems[index];
                       final id = item['id'];
-                      final productName = item['name'];
-                      final price = item['price'];
-                      final image = item['imageUrl'];
-                      final description = item['description'];
-                      final category = item['category'];
+                      final productName = item['name'] ?? 'Unknown Product'; // Provide default value
+                      final price = item['price'] ?? 0.0; // Provide default value
+                      final image = item['imageUrl'] ?? ImageConstant.aesthetic_userprofile; // Provide default image
+                      final description = item['description'] ?? 'No description available'; // Provide default description
+                      final category = item['category'] ?? 'No category'; // Provide default category
 
                       return Container(
                         padding: EdgeInsets.all(width * 0.03),

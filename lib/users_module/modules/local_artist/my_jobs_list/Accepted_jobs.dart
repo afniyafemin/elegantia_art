@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../../../constants/color_constants/color_constant.dart';
+import '../../../../main.dart';
 import '../../../../services/fetch_jobs.dart';
 
 class AcceptedJobs extends StatefulWidget {
@@ -21,6 +22,7 @@ class _AcceptedJobsState extends State<AcceptedJobs> {
     super.initState();
     _acceptedJobs = _fetchAcceptedJobs();
   }
+
 
   Future<List<Map<String, dynamic>>> _fetchAcceptedJobs() async {
     List<Map<String, dynamic>> jobs = [];
@@ -69,7 +71,6 @@ class _AcceptedJobsState extends State<AcceptedJobs> {
                     Text("Product Name: ${order['productName'] ?? 'N/A'}"),
                     Text("Amount: ${collab['collaboration']['amount'] ?? 'N/A'}"),
                     Text("Customization Text: ${order['customizationText'] ?? 'N/A'}"),
-                    Text("Customization Image: ${order['customizationImage'] ?? 'N/A'}"),
                     Text("Order Date: ${order['orderDate'] ?? 'N/A'}"),
                     SizedBox(height: 10),
                   ],
@@ -88,6 +89,30 @@ class _AcceptedJobsState extends State<AcceptedJobs> {
         );
       },
     );
+  }
+
+  Future<void> updateOrderStatusToDeliverable(String orderId) async {
+    try {
+      final ordersCollection = FirebaseFirestore.instance.collection('orders');
+      final orderDoc = await ordersCollection
+          .where('orderId', isEqualTo: orderId)
+          .limit(1)
+          .get();
+
+      if (orderDoc.docs.isNotEmpty) {
+        await ordersCollection.doc(orderDoc.docs.first.id).update({
+          'status': 'deliverable', // Set the status to 'deliverable'
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Status updated to deliverable for Order ID: $orderId')),
+        );
+      }
+    } catch (e) {
+      print('Error updating order status: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating order status')),
+      );
+    }
   }
 
   @override
@@ -135,18 +160,23 @@ class _AcceptedJobsState extends State<AcceptedJobs> {
                       child: ListTile(
                         title: Text("Job Name: ${jobs[index]['name']}"),
                         subtitle: Text("Deadline: ${jobs[index]['deadline']}"),
-                        trailing: Container(
-                          height: 40,
-                          width: 80,
-                          decoration: BoxDecoration(
-                            color: ColorConstant.primaryColor,
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Finished",
-                              style: TextStyle(
-                                color: ColorConstant.secondaryColor,
+                        trailing: GestureDetector(
+                          onTap: () {
+                            updateOrderStatusToDeliverable(jobs[index]['name']);
+                          },
+                          child: Container(
+                            height: 40,
+                            width: 80,
+                            decoration: BoxDecoration(
+                              color: ColorConstant.primaryColor,
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Center(
+                              child: Text(
+                                "Finished",
+                                style: TextStyle(
+                                  color: ColorConstant.secondaryColor,
+                                ),
                               ),
                             ),
                           ),

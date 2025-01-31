@@ -12,7 +12,6 @@ import 'package:elegantia_art/users_module/modules/customer/product_details.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'catelogs_new_ui.dart';
 
 class HomePage extends StatefulWidget {
@@ -199,31 +198,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       Row(
                         children: [
-                          // InkWell(
-                          //   onTap: () {
-                          //     setState(() {
-                          //       showSearch(context: context, delegate: CustomSearchDelegate());
-                          //     });
-                          //   },
-                          //   child: CircleAvatar(
-                          //     radius: width*0.04,
-                          //     backgroundColor: ColorConstant.primaryColor,
-                          //     child: Icon(Icons.search,color: ColorConstant.secondaryColor,),
-                          //   ),
-                          // ),
-                          // SizedBox(width: width*0.03,),
-                          // InkWell(
-                          //   onTap: () {
-                          //     setState(() {
-                          //       Navigator.push(context, MaterialPageRoute(builder: (context) => CartCustomer(),));
-                          //     });
-                          //   },
-                          //   child: CircleAvatar(
-                          //     radius: width*0.04,
-                          //     backgroundColor: ColorConstant.primaryColor,
-                          //     child: Icon(Icons.add_shopping_cart,color: ColorConstant.secondaryColor,),
-                          //   ),
-                          // ),
+
                           GestureDetector(
                             onTap: () {
                               Navigator.push(
@@ -273,8 +248,7 @@ class _HomePageState extends State<HomePage> {
                           ''' to know more about the crafts ''',
                           style: TextStyle(
                               fontWeight: FontWeight.w900,
-                              color:
-                                  ColorConstant.primaryColor.withOpacity(0.25),
+                              color: ColorConstant.primaryColor.withOpacity(0.25),
                               fontSize: width * 0.03),
                         ),
                         SizedBox(
@@ -634,28 +608,6 @@ class _HomePageState extends State<HomePage> {
                                               fit: BoxFit.cover)),
                                     ),
 
-                                    // Padding(
-                                    //   padding:  EdgeInsets.only(
-                                    //       left: width*0.253,
-                                    //       top: width*0.275
-                                    //   ),
-                                    //   child: Container(
-                                    //     height: height*0.045,
-                                    //     width: width*0.09,
-                                    //     decoration: BoxDecoration(
-                                    //       boxShadow: [
-                                    //         BoxShadow(
-                                    //             color: ColorConstant.primaryColor,
-                                    //             blurRadius: width*0.01,
-                                    //             spreadRadius: width*0.001
-                                    //         )
-                                    //       ],
-                                    //       borderRadius: BorderRadius.circular(width*0.1),
-                                    //       color: Colors.white,
-                                    //     ),
-                                    //     child: Icon(Icons.favorite_outline,color: ColorConstant.primaryColor,),
-                                    //   ),
-                                    // )
                                   ],
                                 ),
                                 Text(

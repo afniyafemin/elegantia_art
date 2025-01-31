@@ -33,27 +33,38 @@ class _MyOrdersState extends State<MyOrders> {
             .where('userId', isEqualTo: user.uid)
             .get();
 
+        // Check if any documents were fetched
+        if (orderSnapshot.docs.isEmpty) {
+          print('No orders found for user: ${user.uid}');
+        }
+
         // Map the fetched documents to a list of orders
         setState(() {
           orders = orderSnapshot.docs.map((doc) {
             final data = doc.data() as Map<String, dynamic>;
             return {
               'docId': doc.id, // Firestore document ID
-              'orderId': data['orderId'],
-              'productName': data['productName'],
-              'price': data['price'],
-              'orderDate': data['orderDate'],
-              'status': data['status'],
+              'orderId': data['orderId'] ?? 'N/A',
+              'productName': data['productName'] ?? 'N/A',
+              'price': data['price'] ?? 0.0,
+              'orderDate': data['orderDate'] ?? 'N/A',
+              'status': data['status'] ?? 'N/A',
             };
           }).toList();
         });
       } catch (e) {
         print('Error fetching orders: $e');
         // Handle error (e.g., show a message to the user)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to fetch orders: $e')),
+        );
       }
     } else {
       // Handle user not logged in
       print('User  not logged in');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please log in to view your orders.')),
+      );
     }
   }
 
@@ -93,7 +104,8 @@ class _MyOrdersState extends State<MyOrders> {
       ),
       body: orders.isEmpty
           ? Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               'No orders',
@@ -105,20 +117,23 @@ class _MyOrdersState extends State<MyOrders> {
             ),
             GestureDetector(
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> CategoryList()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => CategoryList()));
               },
-                child: Container(
-                  height: height*0.05,
-                  width: width*0.25,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(width*0.02),
-                    color: ColorConstant.primaryColor
+              child: Container(
+                height: height * 0.05,
+                width: width * 0.25,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(width * 0.02),
+                  color: ColorConstant.primaryColor,
+                ),
+                child: Center(
+                  child: Text(
+                    "Shop Now",
+                    style: TextStyle(color: ColorConstant.secondaryColor),
                   ),
-                  child: Center(
-                    child: Text("ShopNow",style: TextStyle(
-                      color: ColorConstant.secondaryColor
-                    ),),
-                  ),))
+                ),
+              ),
+            ),
           ],
         ),
       ) // Show "No orders" message if the list is empty
@@ -130,16 +145,10 @@ class _MyOrdersState extends State<MyOrders> {
             color: ColorConstant.primaryColor.withOpacity(0.75),
             margin: EdgeInsets.only(top: width * 0.03, left: width * 0.03, right: width * 0.03),
             child: ListTile(
-              titleTextStyle: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  color: ColorConstant.primaryColor
+              title: Text("Product Name: ${order['productName']}"),
+              subtitle: Text(
+                'Order ID: ${order['orderId']}\nPrice: ₹${order['price']}\nDate: ${order['orderDate']}\nStatus: ${order['status']}',
               ),
-              subtitleTextStyle: TextStyle(
-                  color: ColorConstant.primaryColor.withOpacity(0.4)
-              ),
-              title: Text(order['productName']),
-              subtitle: Text('Order ID: ${order['orderId']}\nPrice: ₹${order['price']}\nDate: ${order['orderDate']}\nStatus: ${order['status']}'),
-              isThreeLine: true,
               tileColor: ColorConstant.secondaryColor.withOpacity(0.8),
               trailing: ElevatedButton(
                 onPressed: () {
@@ -149,11 +158,12 @@ class _MyOrdersState extends State<MyOrders> {
                     builder: (context) {
                       return AlertDialog(
                         backgroundColor: ColorConstant.secondaryColor,
-                        title: Text("Cancel Order?",
+                        title: Text(
+                          "Cancel Order?",
                           style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w900,
-                              fontSize: width * 0.05
+                            color: Colors.black,
+                            fontWeight: FontWeight.w900,
+                            fontSize: width * 0.05,
                           ),
                         ),
                         actions: [
@@ -162,24 +172,18 @@ class _MyOrdersState extends State<MyOrders> {
                               cancelOrder(order['docId']); // Use the document ID to cancel the order
                               Navigator.pop(context);
                             },
-                            child: Text("Yes",
-                              style: TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: width * 0.03
-                              ),
+                            child: Text(
+                              "Yes",
+                              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w900, fontSize: width * 0.03),
                             ),
                           ),
                           TextButton(
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            child: Text("No",
-                              style: TextStyle(
-                                  color: ColorConstant.primaryColor,
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: width * 0.03
-                              ),
+                            child: Text(
+                              "No",
+                              style: TextStyle(color: ColorConstant.primaryColor, fontWeight: FontWeight.w900, fontSize: width * 0.03),
                             ),
                           ),
                         ],
@@ -189,7 +193,8 @@ class _MyOrdersState extends State<MyOrders> {
                 },
                 child: Text("Cancel"),
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: ColorConstant.primaryColor, backgroundColor: ColorConstant.secondaryColor,
+                  foregroundColor: ColorConstant.primaryColor,
+                  backgroundColor: ColorConstant.secondaryColor,
                 ),
               ),
             ),

@@ -91,6 +91,13 @@ class _PortfolioTemplateState extends State<PortfolioTemplate> {
     }
   }
 
+  void _removeImage(int index) {
+    setState(() {
+      _images.removeAt(index); // Remove the image at the specified index
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -211,6 +218,41 @@ class _PortfolioTemplateState extends State<PortfolioTemplate> {
                         ),
                       ),
                       SizedBox(height: height * 0.03),
+                      // Display selected images
+                      if (_images.isNotEmpty) ...[
+                        Container(
+                          height: height * 0.2,
+                          child: GridView.builder(
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              childAspectRatio: 1,
+                              crossAxisSpacing: 4,
+                              mainAxisSpacing: 4,
+                            ),
+                            itemCount: _images.length,
+                            itemBuilder: (context, index) {
+                              return Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: Image.file(
+                                      _images[index],
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    right: 0,
+                                    child: IconButton(
+                                      icon: Icon(Icons.remove_circle, color: Colors.red),
+                                      onPressed: () => _removeImage(index), // Remove image on button press
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                   GestureDetector(

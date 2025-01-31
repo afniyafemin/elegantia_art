@@ -90,20 +90,20 @@ class _JobPortalState extends State<JobPortal> {
     return collaborations;
   }
 
-  Future<void> applyForJob(String userId, String jobId, double amount) async {
-    final requestedJobsCollection = FirebaseFirestore.instance.collection('requestedJobs');
-
-    try {
-      await requestedJobsCollection.add({
-        'userId': userId,
-        'jobId': jobId,
-        'amount': amount,
-      });
-      print("Job applied successfully!");
-    } catch (e) {
-      print("Error applying for job: $e");
-    }
-  }
+  // Future<void> applyForJob(String userId, String jobId, double amount) async {
+  //   final requestedJobsCollection = FirebaseFirestore.instance.collection('requestedJobs');
+  //
+  //   try {
+  //     await requestedJobsCollection.add({
+  //       'userId': userId,
+  //       'jobId': jobId,
+  //       'amount': amount,
+  //     });
+  //     print("Job applied successfully!");
+  //   } catch (e) {
+  //     print("Error applying for job: $e");
+  //   }
+  // }
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
