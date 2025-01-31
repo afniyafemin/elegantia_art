@@ -1,14 +1,11 @@
-
-
-
 import 'package:elegantia_art/constants/color_constants/color_constant.dart';
 import 'package:elegantia_art/constants/image_constants/image_constant.dart';
 import 'package:elegantia_art/main.dart';
 import 'package:elegantia_art/users_module/modules/module.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../../services/sign_up_method.dart';
+
 
 class SignUp extends StatefulWidget {
   final VoidCallback showLoginPage;
@@ -17,7 +14,8 @@ class SignUp extends StatefulWidget {
   @override
   State<SignUp> createState() => _SignUpState();
 }
-bool pass=true;
+bool pass1=true;
+bool pass2=true;
 
 final TextEditingController nameController = TextEditingController();
 final TextEditingController emailController = TextEditingController();
@@ -133,18 +131,26 @@ class _SignUpState extends State<SignUp> {
                                   )
                               ),
                               child: TextFormField(
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Enter a strong password";
+                                  } else if (value.length < 8) {
+                                    return "Password length should be more than 8 characters";
+                                  }
+                                  return null;
+                                },
                                 cursorColor: ColorConstant.primaryColor,
                                 cursorHeight: height*0.02,
                                 controller: passwordController,
-                                obscureText: pass?true:false,
+                                obscureText: pass1?true:false,
                                 decoration: InputDecoration(
                                   suffixIcon: InkWell(
                                     onTap: () {
                                       setState(() {
-                                        pass=!pass;
+                                        pass1=!pass1;
                                       });
                                     },
-                                      child: Icon(pass?Icons.visibility_off:Icons.visibility,color: ColorConstant.primaryColor,size: height*0.02,)
+                                      child: Icon(pass1?Icons.visibility_off:Icons.visibility,color: ColorConstant.primaryColor,size: height*0.02,)
                                   ),
                                     hintText: "password",
                                     hintStyle: TextStyle(
@@ -171,17 +177,26 @@ class _SignUpState extends State<SignUp> {
                                   )
                               ),
                               child: TextFormField(
+                                validator : (value) {
+                            if (value == null || value.isEmpty) {
+                            return "Enter a strong password";
+                            } else if (value.length < 8) {
+                            return "Password length should be more than 8 characters";
+                            }
+                            return null;
+                            },
                                 cursorColor: ColorConstant.primaryColor,
                                 cursorHeight: height*0.02,
+                                obscureText: pass2?true:false,
                                 controller: confirmPasswordController,
                                 decoration: InputDecoration(
                                     suffixIcon: InkWell(
                                         onTap: () {
                                           setState(() {
-                                            pass=!pass;
+                                            pass2=!pass2;
                                           });
                                         },
-                                        child: Icon(pass?Icons.visibility_off:Icons.visibility,color: ColorConstant.primaryColor,size: height*0.02,)
+                                        child: Icon(pass2?Icons.visibility_off:Icons.visibility,color: ColorConstant.primaryColor,size: height*0.02,)
                                     ),
                                     hintText: "confirm password",
                                     hintStyle: TextStyle(

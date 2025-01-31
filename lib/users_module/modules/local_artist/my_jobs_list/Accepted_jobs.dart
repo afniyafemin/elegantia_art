@@ -160,27 +160,27 @@ class _AcceptedJobsState extends State<AcceptedJobs> {
                       child: ListTile(
                         title: Text("Job Name: ${jobs[index]['name']}"),
                         subtitle: Text("Deadline: ${jobs[index]['deadline']}"),
-                        trailing: GestureDetector(
-                          onTap: () {
-                            updateOrderStatusToDeliverable(jobs[index]['name']);
-                          },
-                          child: Container(
-                            height: 40,
-                            width: 80,
-                            decoration: BoxDecoration(
-                              color: ColorConstant.primaryColor,
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            child: Center(
-                              child: Text(
-                                "Finished",
-                                style: TextStyle(
-                                  color: ColorConstant.secondaryColor,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                        // trailing: GestureDetector(
+                        //   onTap: () {
+                        //     updateOrderStatusToDeliverable(jobs[index]['name']);
+                        //   },
+                        //   child: Container(
+                        //     height: 40,
+                        //     width: 80,
+                        //     decoration: BoxDecoration(
+                        //       color: ColorConstant.primaryColor,
+                        //       borderRadius: BorderRadius.circular(8.0),
+                        //     ),
+                        //     child: Center(
+                        //       child: Text(
+                        //         "Finished",
+                        //         style: TextStyle(
+                        //           color: ColorConstant.secondaryColor,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ),
                     ),
                   ),

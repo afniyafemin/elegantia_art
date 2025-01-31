@@ -109,7 +109,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
       });
 
       // Calculate tier (1 tier for every ₹100 spent)
-      int calculatedTier = (totalSpent / 100).floor();
+      int calculatedTier = (totalSpent / 1000).floor();
 
       // Update the tier in the user's document in the 'users' collection
       await FirebaseFirestore.instance.collection('users').doc(userId).update({
