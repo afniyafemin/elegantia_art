@@ -343,6 +343,7 @@ class _BuyNowPageState extends State<BuyNowPage> {
                       controller: pinController,
                       decoration: InputDecoration(labelText: 'Pin'),
                       validator: (value) => value!.isEmpty ? 'Please enter your pin' : null,
+                      maxLength: 6,
                     ),
                     SizedBox(height: height * 0.02),
                     TextFormField(
@@ -355,6 +356,7 @@ class _BuyNowPageState extends State<BuyNowPage> {
                       controller: phoneController,
                       decoration: InputDecoration(labelText: 'Phone'),
                       validator: (value) => value!.isEmpty ? 'Please enter your phone number' : null,
+                      maxLength: 10,
                     ),
                   ],
                 ),
