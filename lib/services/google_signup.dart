@@ -54,10 +54,9 @@ Future<void> _addUserToFirestore(User? user) async {
       'uid': user.uid,
       'username': user.displayName ?? "Unknown",
       'email': user.email ?? "Unknown",
-      'photoUrl': user.photoURL ?? "",
+      'profileImage': user.photoURL ?? "",
       'phoneNumber': user.phoneNumber ?? "Unknown",
       'createdAt': FieldValue.serverTimestamp(),
-      'points': 0, // Default points for a new user
     });
     print("User added to Firestore: ${user.email}");
   } else {

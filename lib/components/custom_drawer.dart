@@ -196,6 +196,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 color: ColorConstant.primaryColor,
                 fontSize: width * 0.05,
                 fontWeight: FontWeight.w700),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           ),
           SizedBox(
             height: height * 0.02,

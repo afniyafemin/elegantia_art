@@ -52,11 +52,23 @@ class _HomePageState extends State<HomePage> {
     User? user = FirebaseAuth.instance.currentUser ;
     if (user != null) {
       try {
-        // Fetch user tier
-        DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.uid).get();
+        // Fetch user document
+        DocumentReference userDocRef = _firestore.collection('users').doc(user.uid);
+        DocumentSnapshot userDoc = await userDocRef.get();
+
         if (userDoc.exists) {
-          userTier = userDoc['tier'] ?? 0; // Assuming 'tier' is the field name in Firestore
-          profileImageUrl = userDoc['profileImage'] ?? "";
+          // Cast the data to Map<String, dynamic>
+          Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
+
+          // Check if 'tier' field exists
+          if (userData != null && !userData.containsKey('tier')) {
+            // If 'tier' does not exist, set it to 0
+            await userDocRef.set({'tier': 0}, SetOptions(merge: true));
+            userTier = 0; // Set local variable to 0
+          } else {
+            userTier = userData?['tier'] ?? 0; // Fetch the tier if it exists
+          }
+          profileImageUrl = userData?['profileImage'] ?? "";
         }
 
         // Fetch offer products

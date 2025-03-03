@@ -136,12 +136,16 @@ class _JobPortalState extends State<JobPortal> {
                     ),
                   ),
                   SizedBox(width: width*0.03,),
-                  Text(
-                    currentUserName ?? "User ",
-                    style: TextStyle(
-                      fontSize: width * 0.06,
-                      fontWeight: FontWeight.w900,
-                      color: ColorConstant.primaryColor,
+                  Expanded(
+                    child: Text(
+                      currentUserName ?? "User ",
+                      style: TextStyle(
+                        fontSize: width * 0.06,
+                        fontWeight: FontWeight.w900,
+                        color: ColorConstant.primaryColor,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ),
                 ],
