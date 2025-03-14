@@ -25,7 +25,6 @@ class _PortfolioTemplateState extends State<PortfolioTemplate> {
     final pickedFiles = await ImagePicker().pickMultiImage(); // Allow multiple image selection
     if (pickedFiles != null) {
       setState(() {
-        _images.clear(); // Clear previous images
         for (var file in pickedFiles) {
           _images.add(File(file.path)); // Add selected images to the list
         }
